@@ -217,7 +217,7 @@
                             <div class="ing-pct">{{ str_pad($percent, 2, '0', STR_PAD_LEFT) }} %</div>
                             <div>
                                 @if ($abierto)
-                                    <a href="#" class="btn-iniciar">Iniciar</a>
+                                    <a href="{{ route('curso.etapa', $ing['key']) }}" class="btn-iniciar">Iniciar</a>
                                 @else
                                     <span class="btn-locked">
                                         Iniciar

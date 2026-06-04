@@ -48,4 +48,17 @@ return [
         ['key' => 'evaluacion', 'titulo' => 'Evaluación final'],
         ['key' => 'diploma',    'titulo' => 'Diploma'],
     ],
+
+    // Etapas (barra lateral) dentro de cada ingreso. La primera queda activa.
+    'etapas' => [
+        ['key' => 'presentacion',     'titulo' => 'Presentación'],
+        ['key' => 'pruebas',          'titulo' => 'Pruebas complementarias'],
+        ['key' => 'riesgo',           'titulo' => 'Evaluación del riesgo cardiovascular'],
+        ['key' => 'terapeutico',      'titulo' => 'Planteamiento terapéutico'],
+        ['key' => 'monitorizacion',   'titulo' => 'Monitorización y seguimiento'],
+        ['key' => 'monitorizacion-2', 'titulo' => 'Monitorización y seguimiento 2'],
+        ['key' => 'mantenimiento',    'titulo' => 'Terapia de mantenimiento al alta de rehabilitación cardiaca'],
+        ['key' => 'puntos-clave',     'titulo' => 'Puntos clave'],
+        ['key' => 'resumen',          'titulo' => 'Resumen del caso'],
+    ],
 ];
