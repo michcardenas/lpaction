@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -20,8 +21,19 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'last_name',
+        'document_id',
+        'country',
+        'province',
+        'city',
         'email',
         'password',
+        'specialty',
+        'hospital',
+        'center_type',
+        'experience_level',
+        'accepted_privacy',
+        'accepted_novartis',
     ];
 
     /**
@@ -44,6 +56,14 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'accepted_privacy' => 'boolean',
+            'accepted_novartis' => 'boolean',
         ];
+    }
+
+    /** Progreso del curso (un registro por módulo). */
+    public function progress(): HasMany
+    {
+        return $this->hasMany(CourseProgress::class);
     }
 }

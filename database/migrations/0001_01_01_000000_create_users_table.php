@@ -13,10 +13,25 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
+            // 1. Datos personales
+            $table->string('name');                          // Nombre
+            $table->string('last_name')->nullable();         // Apellidos
+            $table->string('document_id')->nullable();       // Documento (DNI/NIE)
+            $table->string('country')->nullable();           // País
+            $table->string('province')->nullable();          // Provincia
+            $table->string('city')->nullable();              // Población
+            $table->string('email')->unique();               // Correo electrónico
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+            $table->string('password');                      // Contraseña
+            // 2. Datos profesionales
+            $table->string('specialty')->nullable();         // Especialidad
+            $table->string('hospital')->nullable();          // Hospital
+            $table->string('center_type')->nullable();       // privado | publico | ambos
+            // 3. Perfil profesional
+            $table->string('experience_level')->nullable();  // 0-7 | 8-15 | 16+
+            // Consentimientos
+            $table->boolean('accepted_privacy')->default(false);
+            $table->boolean('accepted_novartis')->default(false);
             $table->rememberToken();
             $table->timestamps();
         });

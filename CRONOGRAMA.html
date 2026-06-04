@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Cronograma Lp(a)ction — Entrega 20 junio 2026</title>
+<style>
+    @page { size: A4; margin: 13mm 12mm; }
+    * { box-sizing: border-box; }
+    body {
+        font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+        color: #1f2a30; margin: 0; font-size: 11px; line-height: 1.45;
+    }
+    .wrap { max-width: 100%; }
+
+    /* Header */
+    .header {
+        background: #0d1117; color: #fff; border-radius: 8px;
+        padding: 16px 20px; display: flex; justify-content: space-between;
+        align-items: center; margin-bottom: 16px;
+    }
+    .logo { font-size: 22px; font-weight: 800; letter-spacing: -.5px; }
+    .logo span { color: #22d3ee; }
+    .header .sub { font-size: 10px; color: #9fb0b8; margin-top: 2px; }
+    .header .right { text-align: right; }
+    .header .right .big { font-size: 15px; font-weight: 700; color: #22d3ee; }
+    .header .right .small { font-size: 10px; color: #9fb0b8; }
+
+    h1 { font-size: 15px; margin: 0; }
+
+    /* Scope */
+    .scope { display: flex; gap: 12px; margin-bottom: 16px; }
+    .scope .box { flex: 1; border: 1px solid #dfe6e9; border-radius: 8px; padding: 11px 13px; }
+    .scope .box h3 { margin: 0 0 6px; font-size: 11px; }
+    .scope .inc h3 { color: #1c7a3e; }
+    .scope .out h3 { color: #9a3a4a; }
+    .scope ul { margin: 0; padding-left: 16px; }
+    .scope li { margin-bottom: 2px; }
+
+    /* Week blocks */
+    .week { margin-bottom: 14px; break-inside: avoid; }
+    .week-title {
+        font-size: 12px; font-weight: 700; color: #0d1117;
+        padding: 6px 10px; background: #eaf6f9; border-left: 4px solid #22d3ee;
+        border-radius: 4px; margin-bottom: 6px;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    th { background: #26383F; color: #fff; text-align: left; font-size: 10px;
+         padding: 7px 10px; font-weight: 600; }
+    td { padding: 7px 10px; border-bottom: 1px solid #e6ecee; vertical-align: top; }
+    td.day { white-space: nowrap; font-weight: 700; color: #0d6b80; width: 70px; }
+    td.deliver { white-space: nowrap; width: 150px; color: #41535b; }
+    tr.milestone td { background: #f0fbfd; }
+    tr.milestone td.deliver { color: #0d6b80; font-weight: 700; }
+    tr.weekend td { background: #f7f9fa; color: #8a979d; font-style: italic; }
+    .tag { display: inline-block; background: #22d3ee; color: #08323b; font-weight: 700;
+           font-size: 9px; padding: 1px 6px; border-radius: 4px; }
+
+    /* Footer */
+    .foot { margin-top: 14px; display: flex; gap: 12px; }
+    .foot .box { flex: 1; border: 1px solid #dfe6e9; border-radius: 8px; padding: 10px 13px; }
+    .foot h3 { margin: 0 0 6px; font-size: 11px; color: #0d1117; }
+    .foot ul { margin: 0; padding-left: 15px; }
+    .foot li { margin-bottom: 3px; }
+    .delivery { margin-top: 14px; text-align: center; background: #0d1117; color: #fff;
+                border-radius: 8px; padding: 12px; font-size: 13px; font-weight: 700; }
+    .delivery span { color: #22d3ee; }
+    .note { font-size: 9px; color: #8a979d; margin-top: 8px; text-align: center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+    <div class="header">
+        <div>
+            <div class="logo">Lp<span>(a)</span>ction</div>
+            <div class="sub">Plataforma formativa acreditada · Cronograma de desarrollo</div>
+        </div>
+        <div class="right">
+            <div class="big">Entrega: 20 jun 2026</div>
+            <div class="small">Periodo: lun 1 jun → sáb 20 jun · 20 días</div>
+        </div>
+    </div>
+
+    <div class="week">
+        <div class="week-title">Semana 1 — Base y acceso · 1–7 junio</div>
+        <table>
+            <thead><tr><th>Día</th><th>Tarea</th><th>Entregable</th></tr></thead>
+            <tbody>
+                <tr><td class="day">Lun 1</td><td>Cierre de landing (footer Novartis/Qualimed/legal, logo SEC, textura sección 5) + despliegue inicial en Hostinger</td><td class="deliver">Landing en vivo</td></tr>
+                <tr><td class="day">Mar 2</td><td>QA responsive de landing (móvil/tablet/desktop) + scaffolding de autenticación + roles (alumno/admin/comité)</td><td class="deliver">Auth base</td></tr>
+                <tr><td class="day">Mié 3</td><td>Diseño e implementación del esquema de BD del dominio (usuarios, cursos, módulos, etapas, progreso, XP, logros, quiz, diplomas, encuestas) + migraciones</td><td class="deliver">BD lista</td></tr>
+                <tr><td class="day">Jue 4</td><td>Registro de profesional sanitario: formulario (especialidad, hospital, tipo de centro, años, nº colegiado) + validaciones</td><td class="deliver">Registro funcional</td></tr>
+                <tr class="milestone"><td class="day">Vie 5</td><td>Login + recuperación de contraseña + pantallas "Registro exitoso" / "Ingresando a su curso" &nbsp;<span class="tag">HITO</span></td><td class="deliver">Acceso completo</td></tr>
+                <tr class="weekend"><td class="day">Sáb 6 · Dom 7</td><td>Buffer + pruebas de autenticación</td><td class="deliver">—</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="week">
+        <div class="week-title">Semana 2 — Dashboard y gamificación · 8–14 junio</div>
+        <table>
+            <thead><tr><th>Día</th><th>Tarea</th><th>Entregable</th></tr></thead>
+            <tbody>
+                <tr><td class="day">Lun 8</td><td>Layout del home del curso (navegación Inicio / Tutoría / Autores / Perfil) + estructura general</td><td class="deliver">Dashboard base</td></tr>
+                <tr><td class="day">Mar 9</td><td>Tarjetas de los 3 módulos con estados (en curso / pendiente / apto / no apto / bloqueado) + bloqueo progresivo + fechas de disponibilidad</td><td class="deliver">Estados</td></tr>
+                <tr><td class="day">Mié 10</td><td>Gamificación UI: barra de avance del curso, Scope EXP, sistema de vidas (corazón) + modelo de datos de XP</td><td class="deliver">Gamificación</td></tr>
+                <tr><td class="day">Jue 11</td><td>Estructura del Módulo 1: sidebar de etapas con estados + navegación entre etapas</td><td class="deliver">Navegación módulo</td></tr>
+                <tr class="milestone"><td class="day">Vie 12</td><td>Render de etapa: tabs Contenido / Bibliografía + sub-tabs (ej. ECG / Cateterismo / Analítica) &nbsp;<span class="tag">HITO</span></td><td class="deliver">Dashboard navegable</td></tr>
+                <tr class="weekend"><td class="day">Sáb 13 · Dom 14</td><td>Buffer + integración dashboard ↔ módulo</td><td class="deliver">—</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="week">
+        <div class="week-title">Semana 3 — Engine del caso y entrega · 15–20 junio</div>
+        <table>
+            <thead><tr><th>Día</th><th>Tarea</th><th>Entregable</th></tr></thead>
+            <tbody>
+                <tr><td class="day">Lun 15</td><td>Quiz inline: preguntas multi-select + botón "Comprobar" + feedback inmediato</td><td class="deliver">Quiz</td></tr>
+                <tr><td class="day">Mar 16</td><td>Sistema de error: penalización de Scope, marca de etapa en error, retroceso/reintento, estado persistente por usuario × etapa</td><td class="deliver">Lógica de error</td></tr>
+                <tr><td class="day">Mié 17</td><td>XP transactions + actualización de progreso (%) + visor de imágenes médicas (zoom, figura, caption)</td><td class="deliver">Progreso real</td></tr>
+                <tr><td class="day">Jue 18</td><td>Seeder de datos demo del Módulo 1 (2–3 etapas con contenido) + integración del flujo completo</td><td class="deliver">Flujo integrado</td></tr>
+                <tr class="milestone"><td class="day">Vie 19</td><td>QA del flujo completo (registro → dashboard → módulo → quiz → progreso) + despliegue final en Hostinger &nbsp;<span class="tag">HITO</span></td><td class="deliver">Módulo 1 end-to-end</td></tr>
+                <tr class="milestone"><td class="day">Sáb 20</td><td>Revisión final, ajustes y entrega</td><td class="deliver">🚀 ENTREGA</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="delivery">🚀 Entrega del MVP &nbsp;·&nbsp; <span>sábado 20 de junio de 2026</span></div>
+    <div class="note">Lp(a)ction · Mytech Solutions</div>
+
+</div>
+</body>
+</html>
