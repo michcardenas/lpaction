@@ -120,13 +120,19 @@
         <div class="login-content">
             <h1 class="text-3xl lg:text-[34px] font-semibold mb-7">Ingreso</h1>
 
-            <form action="#" method="POST" class="login-card w-full max-w-[790px] p-7 lg:p-9">
+            <form action="{{ route('login') }}" method="POST" class="login-card w-full max-w-[790px] p-7 lg:p-9">
                 @csrf
+
+                @if ($errors->any())
+                    <div class="mb-5 px-4 py-3 rounded-lg text-[14px]" style="background:rgba(224,86,75,0.12); border:1px solid rgba(224,86,75,0.4); color:#e0564b;">
+                        {{ $errors->first() }}
+                    </div>
+                @endif
 
                 {{-- Usuario --}}
                 <div class="mb-5">
                     <label for="email" class="login-label block mb-2">Usuario</label>
-                    <input id="email" name="email" type="email" autocomplete="email"
+                    <input id="email" name="email" type="email" autocomplete="email" value="{{ old('email') }}"
                            placeholder="Tu correo electrónico"
                            class="login-input w-full px-4 py-3.5">
                 </div>

@@ -14,6 +14,7 @@ class CourseProgress extends Model
         'module_key',
         'status',
         'percent',
+        'etapa_index',
         'completed_at',
     ];
 

@@ -12,8 +12,9 @@
     <style>
         @view-transition { navigation: auto; }
         * { box-sizing: border-box; }
+        [hidden] { display: none !important; }   /* el atributo hidden siempre oculta */
         html, body { height: 100%; }
-        /* ===== Pantalla completa fluida (llena todo el viewport) ===== */
+        /* ===== Pantalla completa: llena todo el viewport en cualquier PC ===== */
         body {
             font-family: 'Montserrat', ui-sans-serif, system-ui, sans-serif; margin: 0;
             height: 100vh; display: flex; flex-direction: column; overflow: hidden;
@@ -21,27 +22,30 @@
                 radial-gradient(ellipse at 70% 45%, #33505b 0%, transparent 55%),
                 linear-gradient(160deg, #273a42 0%, #1d2c33 60%, #16242a 100%);
         }
+        /* el wrapper no afecta el layout (sus hijos actúan como hijos directos del body) */
+        .etapa-page { display: contents; }
 
         /* ===== Top bar ===== */
         .etapa-top {
             height: 76px; flex-shrink: 0;
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 28px;
+            display: flex; align-items: center;
+            padding: 0 33px 0 40px;
             background: #0c1417;
             border-bottom: 1px solid rgba(255,255,255,0.06);
         }
-        .top-left { display: flex; align-items: center; gap: 14px; }
+        /* El grupo izquierdo mide lo del sidebar → "Avance del caso" arranca alineado con el contenido */
+        .top-left { display: flex; align-items: center; gap: 14px; width: 352px; flex-shrink: 0; }
         .top-back { width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center; color: #05BAEE; }
         .top-name { font-weight: 600; font-size: 22px; color: #fff; }
-        .top-center { display: flex; align-items: center; gap: 16px; }
-        .top-lbl { font-weight: 500; font-size: 15px; color: #cdd8dc; white-space: nowrap; }
-        .top-pct { font-weight: 600; font-size: 15px; color: #fff; }
-        .bar { height: 8px; border-radius: 99px; background: rgba(255,255,255,0.14); overflow: hidden; }
+        .top-center { display: flex; align-items: center; gap: 16px; flex: 1; min-width: 0; }
+        .top-lbl { font-weight: 500; font-size: 16px; color: #f1f5f6; white-space: nowrap; }
+        .top-pct { font-weight: 600; font-size: 16px; color: #fff; }
+        .bar { height: 9px; border-radius: 99px; background: rgba(255,255,255,0.8); overflow: hidden; }
         .bar > i { display: block; height: 100%; background: #05BAEE; border-radius: 99px; }
-        .top-right { display: flex; align-items: center; gap: 14px; }
-        .top-scope { font-weight: 500; font-size: 15px; color: #cdd8dc; white-space: nowrap; }
-        .top-scope b { color: #fff; font-weight: 600; }
-        .top-heart { color: #6f8b94; }
+        .top-right { display: flex; align-items: center; gap: 16px; }
+        .top-scope { font-weight: 400; font-size: 16px; color: #e9eff1; white-space: nowrap; }
+        .top-scope b { color: #fff; font-weight: 700; }
+        .top-heart { color: #c9d3d7; display: inline-flex; }
 
         /* ===== Cuerpo: sidebar + main ===== */
         .etapa-body { flex: 1; display: flex; min-height: 0; }
@@ -49,87 +53,229 @@
         /* ===== Sidebar de etapas ===== */
         .etapa-side {
             width: 360px; flex-shrink: 0;
-            background: rgba(8, 16, 19, 0.55);
-            border-right: 1px solid rgba(255,255,255,0.05);
-            padding: 14px 0 0;
+            background: #26383F;
+            padding: 0;
             overflow-y: auto;
             display: flex; flex-direction: column;
         }
         .side-item {
-            display: flex; align-items: center; justify-content: space-between; gap: 14px;
-            padding: 16px 28px;
-            font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 15px; line-height: 135%;
-            color: #8aa0a8; cursor: default;
-            border-bottom: 1px solid rgba(255,255,255,0.04);
+            display: flex; align-items: center; justify-content: space-between; gap: 32px;
+            padding: 16px 32px;
+            font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 14px; line-height: 150%; letter-spacing: 0.02em;
+            color: rgba(255,255,255,0.55); cursor: default;
+            border: 0.5px solid rgba(255,255,255,0.10);   /* #FFFFFF1A */
+            /* brillo sutil tipo cristal sobre el #26383F */
+            background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 62%);
         }
-        .side-item .ico { flex-shrink: 0; color: #6f8b94; }
-        .side-item.active {
-            background: rgba(255,255,255,0.06);
-            color: #ffffff;
-            border-left: 3px solid #05BAEE;
-            padding-left: 25px;
+        .side-item { text-decoration: none; }
+        .side-item .ico { flex-shrink: 0; color: rgba(255,255,255,0.40); }
+        /* completada: texto claro + check verde */
+        .side-item.completada { color: rgba(255,255,255,0.80); cursor: pointer; }
+        .side-item.completada .ico { color: #54c06a; }
+        /* activa: texto blanco + reloj cyan */
+        .side-item.activa { color: #FFFFFF; cursor: pointer; }
+        .side-item.activa .ico { color: #05BAEE; }
+        /* etapa que se está viendo: fondo resaltado */
+        .side-item.viendo {
+            background: linear-gradient(180deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.03) 100%);
+            color: #FFFFFF;
         }
-        .side-item.active .ico { color: #05BAEE; }
-        /* Área azul al final del menú (rellena el espacio bajo el último ítem) */
-        .side-bottom { flex: 1 0 auto; min-height: 70px; background: #0F3B52; }
+        /* Espacio bajo el último ítem — mismo tono que toda la columna (#26383F) */
+        .side-bottom { flex: 1 0 auto; min-height: 70px; background: #26383F; }
 
         /* ===== Main ===== */
         .etapa-main { flex: 1; position: relative; min-width: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; }
         /* Escenario del contenido: tamaño de diseño fijo, escalado para caber sin scroll.
            Los márgenes que queden son del mismo teal del fondo → no se ve recuadro. */
-        .main-stage { width: 1080px; height: 824px; flex-shrink: 0; position: relative; padding: 30px 44px; transform-origin: center center; }
-        .content-col { width: 660px; position: relative; z-index: 2; }
+        .main-stage { width: 1080px; height: 824px; flex-shrink: 0; position: relative; padding: 30px 32px; transform-origin: center center; }
+        .content-col { width: 656px; position: relative; z-index: 2; }
 
-        .seg { display: inline-flex; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); border-radius: 9px; padding: 4px; }
+        .seg { display: inline-flex; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.22); border-radius: 0; padding: 4px; }
         .seg button {
             font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 14px;
-            color: #cdd8dc; background: transparent; border: 0; cursor: pointer;
-            padding: 7px 18px; border-radius: 6px; transition: .2s;
+            color: #e6edef; background: transparent; border: 0; cursor: pointer;
+            padding: 8px 20px; border-radius: 0; transition: .2s;
         }
-        .seg button.on { background: #ffffff; color: #18272d; font-weight: 600; }
-        .seg-top { position: absolute; top: 30px; right: 40px; z-index: 3; }
+        .seg button.on { background: #ffffff; color: #16262c; font-weight: 600; }
+        .seg-top { position: absolute; top: 32px; right: 8px; z-index: 3; }
 
-        .h-caso { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 28px; color: #05BAEE; margin: 0 0 14px; }
-        .h-sec { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 24px; color: #fff; margin: 0 0 12px; }
+        .h-caso { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 26px; color: #05BAEE; margin: 0 0 32px; }
+        .h-sec { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 27px; color: #fff; margin: 0 0 22px; }
 
-        /* tabs */
-        .tabs { display: inline-flex; gap: 4px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.10); border-radius: 10px; padding: 5px; margin-bottom: 12px; }
+        /* tabs (ocupan todo el ancho del contenido, repartidos) */
+        .tabs { display: flex; width: 100%; gap: 4px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.16); border-radius: 0; padding: 4px; margin-bottom: 10px; }
         .tab {
-            font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 14px;
-            color: #b9c7cc; background: transparent; border: 0; cursor: pointer;
-            padding: 9px 18px; border-radius: 7px; white-space: nowrap; transition: .2s;
+            flex: 1;
+            font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 15px;
+            color: #cfdadd; background: transparent; border: 0; cursor: pointer;
+            padding: 10px 12px; border-radius: 0; white-space: nowrap; transition: .2s; text-align: center;
         }
-        .tab.on { background: #ffffff; color: #18272d; font-weight: 600; }
+        .tab.on { background: #ffffff; color: #16262c; font-weight: 600; }
 
         /* tarjeta perfil */
         .perfil-card {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.12);
-            border-radius: 12px;
-            padding: 18px 24px;
-            margin-bottom: 20px;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.16);
+            border-radius: 0;
+            padding: 24px 26px;
+            margin-bottom: 28px;
         }
-        .perfil-card p { margin: 0 0 11px; font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 16px; line-height: 148%; color: #dfe7ea; }
+        .perfil-card p { margin: 0 0 15px; font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 16px; line-height: 150%; color: #e6edef; }
         .perfil-card p:last-child { margin-bottom: 0; }
         .perfil-card b { font-weight: 700; color: #ffffff; }
 
-        .motivo-p { font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 16px; line-height: 155%; color: #cdd9dd; margin: 0; max-width: 640px; }
+        .motivo-p { font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 16px; line-height: 160%; color: #d3dee1; margin: 0; max-width: 640px; }
 
-        /* paciente a la derecha */
-        .etapa-juan { position: absolute; right: 70px; top: 70px; z-index: 1; pointer-events: none; user-select: none; }
-        .etapa-juan img { height: 600px; width: auto; display: block; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.45)); }
+        /* ===== Vistas Contenido / Bibliografía ===== */
+        .view { position: absolute; inset: 30px 8px; z-index: 2; }
+        /* la vista de bibliografía termina arriba del botón (no se solapan) */
+        #view-biblio { display: flex; flex-direction: column; bottom: 100px; }
+        .biblio-list { flex: 1; min-height: 0; overflow-y: auto; padding-right: 16px; margin-top: 2px; }
+        .biblio-list::-webkit-scrollbar { width: 8px; }
+        .biblio-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.18); border-radius: 8px; }
+        .biblio-h { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 24px; line-height: 130%; letter-spacing: 0; color: #FFFFFF; margin: 0 0 18px; }
+        .biblio-item { font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 16px; line-height: 150%; letter-spacing: 0.02em; color: #FFFFFF; margin: 0 0 17px; max-width: 1010px; }
+        .biblio-item:last-child { margin-bottom: 0; }
+
+        /* Animación suave al cambiar de pestaña / vista (fade + leve subida) */
+        @keyframes fadeSwap { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        .tab-panel { animation: fadeSwap .28s ease; }
+        .view { animation: fadeSwap .28s ease; }
+
+        /* ===== Etapa con contenido largo: scroll, termina arriba del botón ===== */
+        .view-scroll { overflow-y: auto; bottom: 96px; scrollbar-width: none; -ms-overflow-style: none; }
+        .view-scroll::-webkit-scrollbar { display: none; width: 0; height: 0; }
+
+        /* ===== Etapa: Pruebas complementarias ===== */
+        .pruebas { width: 100%; }
+        .prueba-panel { margin-top: 4px; }
+        /* Tarjeta del ECG — specs: ancho 1016px, gap 16px entre elementos */
+        .ecg-block {
+            width: 100%;
+            background: rgba(255,255,255,0.10);   /* #FFFFFF1A */
+            border: 1px solid rgba(255,255,255,0.40);   /* #FFFFFF66 */
+            border-radius: 0;
+            padding: 22px;
+            display: flex; flex-direction: column; gap: 16px;
+        }
+        .prueba-h { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 24px; line-height: 130%; letter-spacing: 0; color: #fff; margin: 0; }
+        .prueba-p { font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 16px; line-height: 150%; letter-spacing: 0.02em; color: #d3dee1; margin: 0; }
+        .ecg-frame { position: relative; border-radius: 0; overflow: hidden; }
+        .ecg-frame img { display: block; width: 100%; height: auto; }
+        .ecg-icon { position: absolute; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; background: rgba(18,28,33,0.55); border: 1px solid rgba(255,255,255,0.18); border-radius: 0; color: #fff; cursor: pointer; -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
+        .ecg-expand { top: 12px; right: 12px; }
+        .ecg-download { bottom: 12px; right: 12px; text-decoration: none; }
+        .ecg-caption { font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 12px; line-height: 150%; letter-spacing: 0.02em; color: #aab7bb; margin: 0; }
+
+        /* Cateterismo: tarjeta (como el ECG) + grilla de videos */
+        .cat-block { width: 100%; background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.40); border-radius: 0; padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+        .videos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 24px; margin: 0; }
+        .video-item { margin: 0; }
+        .video-player { position: relative; aspect-ratio: 476 / 310; border-radius: 8px; overflow: hidden; background: linear-gradient(135deg, #70757a 0%, #44484b 100%); }
+        .video-player img, .video-player video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+        .video-controls { position: absolute; left: 0; right: 0; bottom: 0; display: flex; align-items: center; gap: 12px; padding: 12px; background: linear-gradient(0deg, rgba(0,0,0,0.40), rgba(0,0,0,0)); }
+        .vid-btn { width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: rgba(15,18,20,0.55); border: 0; border-radius: 7px; color: #fff; cursor: pointer; -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
+        .vid-bar { flex: 1; height: 4px; background: rgba(255,255,255,0.30); border-radius: 99px; overflow: hidden; }
+        .vid-bar > i { display: block; height: 100%; width: 0; background: #fff; }
+        .video-cap { font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 13px; line-height: 148%; color: #aab7bb; margin: 10px 0 0; }
+        /* Reproductor grande (Puntos clave): ancho completo */
+        .video-full { margin: 0; max-width: 1010px; }
+        .video-full .video-player { aspect-ratio: 1016 / 617; }
+
+        /* Resumen del caso */
+        .resumen-card { max-width: 560px; margin: 90px auto 0; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.16); padding: 32px 40px; text-align: center; }
+        .resumen-head { display: flex; align-items: center; justify-content: center; gap: 12px; color: #fff; margin-bottom: 16px; }
+        .resumen-title { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 19px; color: #fff; }
+        .resumen-txt { font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 15px; line-height: 160%; color: #c8d3d7; margin: 0 auto 24px; max-width: 420px; }
+        .btn-descargar { display: inline-flex; align-items: center; gap: 10px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 15px; background: #05BAEE; color: #fff; border: 0; padding: 12px 28px; border-radius: 6px; cursor: pointer; text-decoration: none; transition: background .2s; }
+        .btn-descargar:hover { background: #04a3d1; }
+        .resumen-foot { display: flex; justify-content: center; margin-top: 34px; }
+        .btn-finalizar { font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 15px; background: rgba(185,185,185,0.25); color: #BFBFBF; border: 0; padding: 13px 38px; border-radius: 6px; cursor: pointer; transition: background .2s, color .2s; }
+        .btn-finalizar:hover { background: rgba(185,185,185,0.40); color: #fff; }
+
+        /* Analítica sanguínea: cuadro + lista de valores */
+        .analitica-block { width: 100%; background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.40); border-radius: 0; padding: 22px 24px; }
+        .analitica-block .prueba-h { margin: 0 0 10px; }
+        .analitica-intro { font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 16px; line-height: 150%; color: #d3dee1; margin: 0 0 8px; }
+        .analitica-list { list-style: none; margin: 0; padding: 0; max-width: 1000px; }
+        .analitica-list li { font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 16px; line-height: 168%; color: #d3dee1; position: relative; padding-left: 20px; }
+        .analitica-list li::before { content: '•'; position: absolute; left: 5px; color: #d3dee1; }
+        .analitica-list b { color: #fff; }
+        .analitica-sublist { list-style: none; margin: 2px 0 2px 24px; padding: 0; }
+        .analitica-sublist li::before { content: '◦'; }
+
+        /* Cuestionario — specs: 1016px, #2A2A2A, borde 1px #FFFFFF66, blur(40px) */
+        .pregunta-card {
+            width: 100%;
+            background: #2A2A2A;
+            border: 1px solid rgba(255,255,255,0.40);
+            -webkit-backdrop-filter: blur(40px); backdrop-filter: blur(40px);
+            border-radius: 0; margin-top: 28px; overflow: hidden;
+        }
+        .pregunta-head { padding: 26px 32px 22px; }
+        .pregunta-q { font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 18px; line-height: 175%; letter-spacing: 0.02em; color: #fff; margin: 0; }
+        .pregunta-sub { font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 14px; line-height: 150%; letter-spacing: 0.02em; color: rgba(255,255,255,0.60); margin: 4px 0 0; }
+        /* opciones en grid 2×2 con separadores */
+        .pregunta-opts { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid rgba(255,255,255,0.14); }
+        .opt { display: flex; align-items: center; gap: 16px; padding: 26px 32px; font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 16px; line-height: 150%; letter-spacing: 0.02em; color: #fff; cursor: pointer; transition: background .15s; }
+        .opt:hover { background: rgba(255,255,255,0.03); }
+        .opt:nth-child(odd) { border-right: 1px solid rgba(255,255,255,0.14); }
+        .opt:nth-child(-n+2) { border-bottom: 1px solid rgba(255,255,255,0.14); }
+        .opt input { display: none; }
+        .opt-mark { flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.45); position: relative; transition: border-color .15s; }
+        .opt input:checked + .opt-mark { border: 0; background: linear-gradient(180deg, #05BAEE 0%, #2F728C 100%); }
+        .opt input:checked + .opt-mark::after { content: '\2713'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 13px; font-weight: 800; }
+        .opt-txt { vertical-align: middle; }
+        /* footer con el botón */
+        .pregunta-foot { display: flex; align-items: center; gap: 12px; padding: 18px 32px; border-top: 1px solid rgba(255,255,255,0.14); }
+        .pregunta-foot form { margin: 0; display: contents; }
+        .foot-spacer { flex: 1; }
+        /* Siguiente etapa: gris/deshabilitado por defecto; se activa (borde cyan) al acertar */
+        .btn-next-q { font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 14px; line-height: 150%; letter-spacing: 0.01em; background: rgba(185,185,185,0.25); color: #BFBFBF; border: 1px solid transparent; padding: 11px 28px; border-radius: 5px; cursor: default; pointer-events: none; transition: background .2s, color .2s, border-color .2s; }
+        .btn-next-q.enabled { background: transparent; color: #fff; border-color: #05BAEE; cursor: pointer; pointer-events: auto; }
+        .btn-next-q.enabled:hover { background: rgba(5,186,238,0.14); }
+        .btn-comprobar { font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 14px; line-height: 150%; letter-spacing: 0.01em; background: #FFFFFF; color: #454545; border: 0; padding: 11px 30px; border-radius: 5px; cursor: pointer; transition: background .2s; }
+        .btn-comprobar:hover { background: #efefef; }
+        .btn-comprobar:disabled { background: rgba(185,185,185,0.25); color: #BFBFBF; cursor: default; }
+        .btn-repetir { display: inline-flex; align-items: center; gap: 10px; font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 14px; background: rgba(255,255,255,0.10); border: 0; color: rgba(255,255,255,0.78); padding: 11px 22px; border-radius: 5px; cursor: pointer; transition: background .2s, color .2s; animation: fadeSwap .3s ease; }
+        .btn-repetir:hover { background: rgba(255,255,255,0.16); color: #fff; }
+
+        /* Estados tras Comprobar — brillo verde/rojo en una esquina (la letra queda blanca) */
+        .opt.correct { background: radial-gradient(circle at bottom right, rgba(56,79,29,0.45) 0%, rgba(56,79,29,0) 50%); }
+        .opt.wrong   { background: radial-gradient(circle at bottom right, rgba(155,48,40,0.35) 0%, rgba(155,48,40,0) 50%); }
+        .pregunta-opts .opt.wrong .opt-mark, .pregunta-opts .opt.correct .opt-mark { border-width: 0; }
+        .pregunta-opts .opt.wrong .opt-mark { background: #C0392B; }
+        .pregunta-opts .opt.correct .opt-mark { background: #59A700; }
+        .pregunta-opts .opt.wrong .opt-mark::after,
+        .pregunta-opts .opt.correct .opt-mark::after { content: ''; position: absolute; inset: 0; background: none; border-radius: 0; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; font-weight: 800; }
+        .pregunta-opts .opt.wrong .opt-mark::after { content: '\2715'; }
+        .pregunta-opts .opt.correct .opt-mark::after { content: '\2713'; }
+
+        .justif { padding: 22px 32px; border-top: 1px solid rgba(255,255,255,0.14); }
+        .justif-h { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 15px; color: #fff; margin: 0 0 8px; }
+        .justif-txt { font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 14px; line-height: 165%; color: rgba(255,255,255,0.75); margin: 0; }
+
+        .resultado { display: flex; align-items: center; gap: 12px; padding: 16px 32px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px; color: #fff; }
+        .resultado.bad { background: rgba(150,52,45,0.92); }
+        .resultado.ok { background: #384F1D; }
+        .resultado-ico { width: 26px; height: 26px; border-radius: 50%; border: 2px solid #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; flex-shrink: 0; }
+
+        /* paciente a la derecha: la figura va desde "Historia clínica" hasta el final de "Motivo de consulta" */
+        .etapa-juan { position: absolute; right: -165px; top: -56px; z-index: 1; pointer-events: none; user-select: none; }
+        .etapa-juan img { height: 820px; width: auto; display: block; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.45)); }
 
         /* botón siguiente */
         .btn-next {
-            position: absolute; right: 40px; bottom: 36px; z-index: 4;
-            font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 15px; color: #e9eef0;
-            background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.22);
-            padding: 14px 26px; border-radius: 9px; cursor: pointer; transition: .2s;
+            position: absolute; right: 32px; bottom: 44px; z-index: 4;
+            font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 15px; color: #eef3f4;
+            background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.32);
+            padding: 12px 24px; border-radius: 0; cursor: pointer; transition: .2s;
         }
         .btn-next:hover { background: rgba(5,186,238,0.15); border-color: #05BAEE; color: #fff; }
     </style>
 </head>
 <body>
+    <div class="etapa-page">
 
         {{-- ===== TOP BAR ===== --}}
         <header class="etapa-top">
@@ -142,15 +288,15 @@
 
             <div class="top-center">
                 <span class="top-lbl">Avance del caso</span>
-                <span class="bar" style="width:340px;"><i style="width:0%"></i></span>
-                <span class="top-pct">00%</span>
+                <span class="bar" style="width:340px;"><i style="width:{{ $avance }}%"></i></span>
+                <span class="top-pct">{{ $avance }}%</span>
             </div>
 
             <div class="top-right">
-                <span class="top-scope">Scope: <b>000 / 000 Exp</b></span>
-                <span class="bar" style="width:120px;"><i style="width:0%"></i></span>
+                <span class="top-scope">Scope: <b><span id="xp-val">0</span> / 500 Exp</b></span>
+                <span class="bar" style="width:120px;"><i id="xp-bar" style="width:0%"></i></span>
                 <span class="top-heart">
-                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M19 14c1.5-1.5 2.5-3.2 2.5-5.1A4 4 0 0 0 14 6.5L12 8.5l-2-2A4 4 0 0 0 2.5 8.9c0 1.9 1 3.6 2.5 5.1l7 7Z"/></svg>
+                    <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35c-.3 0-.6-.1-.84-.3C7.2 17.66 2.5 13.88 2.5 9.6 2.5 6.5 4.9 4.5 7.4 4.5c1.8 0 3.42.94 4.6 2.42C13.18 5.44 14.8 4.5 16.6 4.5c2.5 0 4.9 2 4.9 5.1 0 4.28-4.7 8.06-8.66 11.45-.24.2-.54.3-.84.3Z"/></svg>
                 </span>
             </div>
         </header>
@@ -160,17 +306,23 @@
 
             {{-- Sidebar de etapas --}}
             <aside class="etapa-side">
-                @foreach ($curso['etapas'] as $i => $etapa)
-                    <div class="side-item {{ $i === 0 ? 'active' : '' }}">
+                @foreach ($etapasEstado as $etapa)
+                    @php $clickable = in_array($etapa['estado'], ['completada', 'activa']); @endphp
+                    <a href="{{ $clickable ? route('curso.etapa', [$ingreso, $etapa['key']]) : '#' }}"
+                       class="side-item {{ $etapa['estado'] }} {{ $etapa['viendo'] ? 'viendo' : '' }}"
+                       @unless($clickable) onclick="return false;" @endunless>
                         <span>{{ $etapa['titulo'] }}</span>
-                        @if ($i === 0)
-                            {{-- reloj (etapa activa) --}}
+                        @if ($etapa['estado'] === 'completada')
+                            {{-- check (completada) --}}
+                            <svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="12" r="9"/><path d="m8.4 12 2.4 2.4 4.8-5.2"/></svg>
+                        @elseif ($etapa['estado'] === 'activa')
+                            {{-- reloj (activa) --}}
                             <svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
                         @else
                             {{-- candado (bloqueada) --}}
                             <svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
                         @endif
-                    </div>
+                    </a>
                 @endforeach
 
                 {{-- Área azul al final del menú --}}
@@ -183,43 +335,27 @@
 
                 {{-- Toggle Contenido / Bibliografía --}}
                 <div class="seg seg-top">
-                    <button type="button" class="on">Contenido</button>
-                    <button type="button">Bibliografía</button>
+                    <button type="button" id="tab-contenido" class="on">Contenido</button>
+                    <button type="button" id="tab-biblio">Bibliografía</button>
                 </div>
 
-                <div class="content-col">
-                    <h1 class="h-caso">Presentación del caso</h1>
-
-                    <h2 class="h-sec">Historia clínica</h2>
-
-                    {{-- Tabs --}}
-                    <div class="tabs">
-                        <button type="button" class="tab on">Perfil del paciente</button>
-                        <button type="button" class="tab">Historia médica</button>
-                        <button type="button" class="tab">Medicación</button>
-                        <button type="button" class="tab">Alergias</button>
-                    </div>
-
-                    {{-- Tarjeta perfil del paciente --}}
-                    <div class="perfil-card">
-                        <p><b>Edad y sexo:</b> varón, 52 años</p>
-                        <p><b>Peso, estatura:</b> 82 kg, 167 cm (índice de masa corporal [IMC]: 29,4 kg/m² ; sobrepeso).</p>
-                        <p><b>Hábitos:</b> fumador desde los 15 años; índice paquetes-año (IPA): 42.</p>
-                        <p><b>Ocupación:</b> empresario.</p>
-                        <p><b>Estilo de vida:</b> vida sedentaria, alto nivel de estrés.</p>
-                    </div>
-
-                    <h2 class="h-sec">Motivo de consulta</h2>
-                    <p class="motivo-p">
-                        Paciente que es traído a Urgencias de nuestro hospital por los servicios de
-                        emergencias debido a un cuadro de 2 h de evolución de dolor torácico
-                        retroesternal muy intenso que irradia hacia región epigástrica y base del
-                        cuello. El paciente refiere clínica acompañante de sudoración profusa y
-                        náuseas asociadas, aunque no ha presentado ningún vómito.
-                    </p>
+                {{-- Vista: Contenido (cambia por etapa) --}}
+                <div id="view-contenido" class="view @if($etapaActual !== 'presentacion') view-scroll @endif">
+                    @if (view()->exists('curso.etapas.' . $etapaActual . '-contenido'))
+                        @include('curso.etapas.' . $etapaActual . '-contenido')
+                    @else
+                        <h1 class="h-caso">{{ collect($etapasEstado)->firstWhere('key', $etapaActual)['titulo'] ?? 'Etapa' }}</h1>
+                        <p class="prueba-p" style="margin-top:10px;">Contenido en construcción.</p>
+                    @endif
                 </div>
 
-                {{-- Paciente --}}
+                {{-- Vista: Bibliografía (cambia por etapa) --}}
+                <div id="view-biblio" class="view" style="display:none;">
+                    @includeIf('curso.etapas.' . $etapaActual . '-biblio')
+                </div>
+
+                {{-- Paciente (solo en Presentación) --}}
+                @if ($etapaActual === 'presentacion')
                 <div class="etapa-juan">
                     {{-- anillos en la base --}}
                     <svg style="position:absolute; left:50%; bottom:6px; transform:translateX(-50%); opacity:.5;" width="460" height="120" viewBox="0 0 460 120" fill="none" aria-hidden="true">
@@ -229,32 +365,183 @@
                     </svg>
                     <img src="{{ asset($curso['paciente']['imagen']) }}" alt="{{ $curso['paciente']['nombre'] }}">
                 </div>
+                @endif
 
-                {{-- Siguiente etapa --}}
-                <button type="button" class="btn-next">Siguiente etapa</button>
+                {{-- Siguiente etapa (botón flotante; las etapas con cuestionario llevan el suyo dentro) --}}
+                @unless (in_array($etapaActual, ['pruebas', 'riesgo', 'terapeutico', 'monitorizacion', 'monitorizacion-2', 'resumen']))
+                <form method="POST" action="{{ route('curso.avanzar', $ingreso) }}" style="display:contents;">
+                    @csrf
+                    <input type="hidden" name="desde" value="{{ $etapaActual }}">
+                    <button type="submit" class="btn-next">{{ $esUltimaEtapa ? 'Finalizar ingreso' : 'Siguiente etapa' }}</button>
+                </form>
+                @endunless
 
               </div>{{-- /main-stage --}}
             </main>
         </div>
 
+    </div>{{-- /etapa-page --}}
+
     <script>
-        // Escala SOLO el contenido del main para que quepa sin scroll.
-        // El layout (topbar, menú, main) sigue fluido y llena la pantalla;
-        // los márgenes que queden son del mismo teal del fondo (no se ve recuadro).
+        // Layout fluido (llena toda la pantalla). El contenido del main se escala para
+        // caber/llenar sin scroll; los márgenes que queden son del mismo teal (no se ven).
         (function () {
             function scaleMainStage() {
                 var main = document.querySelector('.etapa-main');
                 var stage = document.querySelector('.main-stage');
                 if (!main || !stage) return;
+                if (!main.clientWidth || !main.clientHeight) { requestAnimationFrame(scaleMainStage); return; }
                 var s = Math.min(main.clientWidth / 1080, main.clientHeight / 824);
-                s = Math.min(s, 1.3);
+                s = Math.min(Math.max(s, 0.2), 1.6);   // tope alto → en pantallas grandes el contenido llena más
                 stage.style.transform = 'scale(' + s + ')';
             }
+            setTimeout(scaleMainStage, 250);
             window.addEventListener('resize', scaleMainStage);
             window.addEventListener('load', scaleMainStage);
             if (document.readyState !== 'loading') scaleMainStage();
             else document.addEventListener('DOMContentLoaded', scaleMainStage);
             if (document.fonts && document.fonts.ready) document.fonts.ready.then(scaleMainStage);
+        })();
+
+        // ===== Toggle Contenido / Bibliografía =====
+        (function () {
+            var tabC = document.getElementById('tab-contenido');
+            var tabB = document.getElementById('tab-biblio');
+            var viewC = document.getElementById('view-contenido');
+            var viewB = document.getElementById('view-biblio');
+            var juan = document.querySelector('.etapa-juan');
+            if (!tabC || !tabB || !viewC || !viewB) return;
+            function show(biblio) {
+                tabB.classList.toggle('on', biblio);
+                tabC.classList.toggle('on', !biblio);
+                viewB.style.display = biblio ? 'flex' : 'none';
+                viewC.style.display = biblio ? 'none' : 'block';
+                if (juan) juan.style.display = biblio ? 'none' : 'block';
+            }
+            tabC.addEventListener('click', function () { show(false); });
+            tabB.addEventListener('click', function () { show(true); });
+        })();
+
+        // ===== Pestañas genéricas (sirve para cualquier etapa) =====
+        // Cada .tabs cambia los [data-panel] que estén dentro de su propio contenedor.
+        (function () {
+            document.querySelectorAll('.tabs').forEach(function (tabsEl) {
+                var scope = tabsEl.closest('.tabs-scope') || tabsEl.parentElement;
+                var tabs = tabsEl.querySelectorAll('.tab');
+                tabs.forEach(function (tab) {
+                    tab.addEventListener('click', function () {
+                        var key = tab.getAttribute('data-tab');
+                        tabs.forEach(function (t) { t.classList.toggle('on', t === tab); });
+                        scope.querySelectorAll('[data-panel]').forEach(function (p) {
+                            p.style.display = (p.getAttribute('data-panel') === key) ? 'block' : 'none';
+                        });
+                    });
+                });
+            });
+        })();
+
+        // ===== Cuestionario interactivo (respuesta única) =====
+        (function () {
+            var card = document.getElementById('cuestionario');
+            if (!card) return;
+            var xpVal = document.getElementById('xp-val');
+            var xpBar = document.getElementById('xp-bar');
+            var maxXP = 500;
+            var currentXP = parseInt(xpVal ? xpVal.textContent : '0', 10) || 0;
+            var lastDelta = 0;
+            var xp = parseInt(card.getAttribute('data-xp'), 10) || 50;
+
+            var comprobar = card.querySelector('.btn-comprobar');
+            var repetir   = card.querySelector('.btn-repetir');
+            var sigBtn    = card.querySelector('.btn-next-q');
+            var justif    = card.querySelector('.justif');
+            var justifTxt = card.querySelector('.justif-txt');
+            var resultado = card.querySelector('.resultado');
+            var resIco    = card.querySelector('.resultado-ico');
+            var resTxt    = card.querySelector('.resultado-txt');
+            var answered  = false;
+
+            function setXP(v) {
+                currentXP = Math.max(0, v);
+                if (xpVal) xpVal.textContent = currentXP;
+                if (xpBar) xpBar.style.width = Math.min(100, currentXP / maxXP * 100) + '%';
+            }
+
+            // Repetir aparece (con animación) al elegir una opción
+            card.querySelectorAll('input[name="pregunta"]').forEach(function (r) {
+                r.addEventListener('change', function () { if (!answered) repetir.hidden = false; });
+            });
+
+            comprobar.addEventListener('click', function () {
+                if (answered) return;
+                var sel = card.querySelector('input[name="pregunta"]:checked');
+                if (!sel) return;                       // requiere una opción
+                answered = true;
+                var opt = sel.closest('.opt');
+                var correcta = opt.getAttribute('data-correcta') === '1';
+
+                opt.classList.add(correcta ? 'correct' : 'wrong');
+                if (!correcta) {
+                    var corr = card.querySelector('.opt[data-correcta="1"]');
+                    if (corr) corr.classList.add('correct');   // revela la correcta
+                }
+
+                justifTxt.textContent = opt.getAttribute('data-justif') || '';
+                justif.hidden = false;
+
+                if (correcta) {
+                    resultado.className = 'resultado ok';
+                    resIco.textContent = '✓';
+                    resTxt.textContent = '¡Excelente!   + ' + xp + ' XP';
+                    lastDelta = xp;
+                    sigBtn.classList.add('enabled');           // habilita Siguiente etapa
+                } else {
+                    resultado.className = 'resultado bad';
+                    resIco.textContent = '✕';
+                    resTxt.textContent = '¡Respuesta incorrecta!   - ' + xp + ' XP';
+                    lastDelta = -xp;
+                }
+                resultado.hidden = false;
+                setXP(currentXP + lastDelta);
+
+                card.querySelectorAll('input[name="pregunta"]').forEach(function (r) { r.disabled = true; });
+                comprobar.disabled = true;                     // ya no se puede re-comprobar
+                repetir.hidden = false;
+            });
+
+            repetir.addEventListener('click', function () {
+                answered = false;
+                if (lastDelta) { setXP(currentXP - lastDelta); lastDelta = 0; }   // revierte el intento
+                card.querySelectorAll('.opt').forEach(function (o) { o.classList.remove('wrong', 'correct'); });
+                card.querySelectorAll('input[name="pregunta"]').forEach(function (r) { r.disabled = false; r.checked = false; });
+                justif.hidden = true;
+                resultado.hidden = true;
+                comprobar.disabled = false;
+                sigBtn.classList.remove('enabled');            // Siguiente vuelve a deshabilitado
+                repetir.hidden = true;                         // se oculta hasta re-elegir
+            });
+        })();
+
+        // ===== Cateterismo: imágenes (play/ampliar = pantalla completa; si es video, reproduce) =====
+        (function () {
+            document.querySelectorAll('.video-player').forEach(function (p) {
+                var media = p.querySelector('img, video');
+                if (!media) return;
+                var play = p.querySelector('.vid-play');
+                var expand = p.querySelector('.vid-expand');
+                var bar = p.querySelector('.vid-bar > i');
+                function full() {
+                    if (media.requestFullscreen) media.requestFullscreen();
+                    else if (media.webkitRequestFullscreen) media.webkitRequestFullscreen();
+                }
+                if (expand) expand.addEventListener('click', full);
+                if (media.tagName === 'VIDEO') {
+                    if (play) play.addEventListener('click', function () { if (media.paused) media.play(); else media.pause(); });
+                    media.addEventListener('timeupdate', function () { if (bar && media.duration) bar.style.width = (media.currentTime / media.duration * 100) + '%'; });
+                } else if (play) {
+                    play.addEventListener('click', full);   // imagen: "play" abre en grande
+                }
+            });
         })();
     </script>
 </body>
