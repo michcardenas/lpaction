@@ -62,11 +62,13 @@ return [
         ['key' => 'resumen',          'titulo' => 'Resumen del caso'],
     ],
 
-    // Bibliografía de la etapa "Presentación del caso" (se numera sola en la vista).
+    // Bibliografía del módulo (34 referencias, se numera sola en la vista).
     'bibliografia' => [
         'Mehta A, Shapiro MD. Apolipoproteins in vascular biology and atherosclerotic disease. Nat Rev Cardiol. 2022;19(3):168-79. doi: 10.1038/s41569-021-00613-5.',
         'Panza GA, Blazek O, Tortora J, Saucier S, Fernandez AB. Prevalence of lipoprotein(a) measurement in patients with or at risk of cardiovascular disease. J Clin Lipidol. 2023;17(6):748-55. doi: 10.1016/j.jacl.2023.09.016.',
+        'Nissen SE, Wolski K., Cho L. et al, Lipoprotein(a) levels in a global population with established atherosclerotic cardiovascular disease. Open Heart. 2022;9(2):e002060. doi: 10.1136/openhrt-2022-002060.',
         'Mach F, Koskinas KC, Roeters van Lennep JE, Tokgözoğlu L, Badimon L, Baigent C, et al. 2025 focused update of the 2019 ESC/EAS guidelines for the management of dyslipidaemias. Eur Heart J. 2025;46(42):4359-78. doi: 10.1093/eurheartj/ehaf190.',
+        'Michos ED, Saucier S, Mehran R, Koschinsky ML. Lipoprotein(a) and women´s cardiovascular health. A review. JACC Adv. 2026;102744. doi: 10.1016/j.jacadv.2026.102744.',
         'Kronenberg F, Mora S, Stroes ESG, Ference BA, Arsenault BJ, Berglund L, et al. Lipoprotein(a) in atherosclerotic cardiovascular disease and aortic stenosis: a European Atherosclerosis Society consensus statement. Eur Heart J. 2022;43(39):3925-46. doi: 10.1093/eurheartj/ehac361.',
         'Satała J, Witkowska A, Pawlos A, et al. Changes in lipoprotein(a) concentrations in patients with acute coronary syndrome. Pol Arch Intern Med. 2025;135:16959. doi: 10.20452/pamw.16959.',
         'Glavinovic T, Thanassoulis G, de Graaf J, Sniderman AD. Physiological bases for the superiority of apolipoprotein B over low-density lipoprotein cholesterol and non–high-density lipoprotein cholesterol as a marker of cardiovascular risk. J Am Heart Assoc. 2022;11(20):e025858. doi: 10.1161/JAHA.122.025858.',
@@ -105,20 +107,20 @@ return [
         'xp'          => 50,
         'opciones'    => [
             [
-                'key' => 'apoa', 'texto' => 'Apolipoproteína A (ApoA).', 'correcta' => false,
+                'key' => 'apoa', 'texto' => 'Apolipoproteína A (ApoA).', 'correcta' => false, 'puntos' => -50,
                 'justificacion' => 'La ApoA es un marcador útil del riesgo cardiovascular (RCV). Sin embargo, no aporta tanta información como la Apo B o la Lp(a) sobre el riesgo aterogénico del paciente. La ApoA-I es el principal componente de HDL y favorece el transporte reverso de colesterol, con efecto protector vascular. Unos niveles altos se asocian a menor RCV por su acción antiaterogénica y antiinflamatoria. En cambio, un desequilibrio con ApoB (partículas aterogénicas) aumenta el riesgo. El cociente ApoB/ApoA-I refleja este balance y es un mejor predictor que los lípidos convencionales: los valores elevados se relacionan con mayor riesgo de eventos cardiovasculares, incluso con LDL normal1.',
             ],
             [
-                'key' => 'lpa', 'texto' => 'Lipoproteína (a) [Lp(a)].', 'correcta' => false,
-                'justificacion' => 'Justificación pendiente.',
+                'key' => 'lpa', 'texto' => 'Lipoproteína (a) [Lp(a)].', 'correcta' => true, 'puntos' => 50,
+                'justificacion' => 'La Lp(a) debe medirse al menos una vez en adultos y se recomienda incluirla en la estratificación del riesgo, especialmente en pacientes con enfermedad cardiovascular establecida o SCA. Aunque sus niveles están determinados en gran medida por la genética, pueden variar en el contexto del SCA; por ello, si se mide durante el evento agudo, es razonable repetirla a los 1–3 meses en situación clínica estable para confirmar el valor, especialmente si el resultado condiciona decisiones de riesgo o tratamiento. En seguimiento, no se recomiendan determinaciones seriadas sistemáticas, salvo cambios clínicos relevantes o inicio de tratamiento específico2-7.',
             ],
             [
-                'key' => 'apob', 'texto' => 'Apolipoproteína B (ApoB).', 'correcta' => true,
-                'justificacion' => 'La apoB es recomendable junto al cLDL para evaluar el riesgo aterogénico, ya que refleja el número total de partículas aterogénicas [LDL, VLDL, lipoproteínas de densidad intermedia (IDL), Lp(a)], a diferencia del LDL, que solo mide su contenido en colesterol. Es especialmente útil en situaciones de discordancia (diabetes, hipertrigliceridemia, estatinas). Además, es una medida precisa, estandarizada y sin necesidad de ayuno. Permite identificar mejor el riesgo residual y optimizar el tratamiento, con mejor rendimiento que el cLDL6-12.',
+                'key' => 'apob', 'texto' => 'Apolipoproteína B (ApoB).', 'correcta' => true, 'puntos' => 50,
+                'justificacion' => 'La apoB es recomendable junto al cLDL para evaluar el riesgo aterogénico, ya que refleja el número total de partículas aterogénicas [LDL, VLDL, lipoproteínas de densidad intermedia (IDL) y Lp(a)], a diferencia del LDL, que solo mide su contenido en colesterol. Es especialmente útil en situaciones de discordancia (diabetes, hipertrigliceridemia, estatinas). Además, es una medida precisa, estandarizada y sin necesidad de ayuno. Permite identificar mejor el riesgo residual y optimizar el tratamiento, con mejor rendimiento que el cLDL8-14.',
             ],
             [
-                'key' => 'cthdl', 'texto' => 'CT/HDL.', 'correcta' => false,
-                'justificacion' => 'Justificación pendiente.',
+                'key' => 'cthdl', 'texto' => 'CT/HDL.', 'correcta' => false, 'puntos' => -50,
+                'justificacion' => 'El cociente CT/HDL se ha empleado tradicionalmente como marcador del RCV. Sin embargo, presenta limitaciones relevantes frente a parámetros más actuales como la apoB o la Lp(a). Este cociente ofrece una estimación indirecta del equilibrio entre lipoproteínas aterogénicas y antiaterogénicas, sin reflejar el número real de partículas aterogénicas ni su heterogeneidad. En situaciones frecuentes como la diabetes, el síndrome metabólico o la hipertrigliceridemia, puede infraestimar el riesgo. En cambio, la apoB cuantifica directamente el número de partículas aterogénicas y la Lp(a) identifica el riesgo residual independiente, proporcionando una estratificación más precisa del RCV.',
             ],
         ],
     ],
@@ -130,20 +132,20 @@ return [
         'xp'          => 100,
         'opciones'    => [
             [
-                'key' => 'unica', 'texto' => 'Una única determinación basal en la juventud.', 'correcta' => false,
-                'justificacion' => 'Justificación pendiente.',
+                'key' => 'unica', 'texto' => 'Una única determinación basal en la juventud.', 'correcta' => false, 'puntos' => -20,
+                'justificacion' => 'Aunque esta ha sido la recomendación clásica de las guías y la práctica habitual, la evidencia reciente en pacientes con SCA apoya considerar una segunda determinación en situación estable, especialmente si la medición se realizó durante el evento agudo y el resultado condiciona la estratificación del riesgo o decisiones terapéuticas6,7.',
             ],
             [
-                'key' => 'semestral', 'texto' => 'Mediciones semestrales/anuales sistemáticas para monitorizar la eficacia del tratamiento hipolipemiante.', 'correcta' => false,
-                'justificacion' => 'Justificación pendiente.',
+                'key' => 'semestral', 'texto' => 'Mediciones semestrales/anuales sistemáticas para monitorizar la eficacia del tratamiento hipolipemiante.', 'correcta' => false, 'puntos' => -30,
+                'justificacion' => 'A diferencia del cLDL o los TG, la Lp(a) apenas varía con los hipolipemiantes convencionales, ya que sus niveles están determinados principalmente por la expresión del gen LPA y no se modifican de forma relevante con la dieta, el ejercicio o las estatinas, y pueden incluso aumentar15. No obstante, algunas estrategias terapéuticas específicas, como la terapia dirigida frente a la proproteína convertasa subtilisina/kexina tipo 9 (TD a PCSK9), han demostrado capacidad para reducir sus niveles, aunque de forma limitada.',
             ],
             [
-                'key' => 'tres', 'texto' => 'Tres determinaciones anuales, calculando una media aritmética entre las tres que compense las oscilaciones de la Lp(a).', 'correcta' => false,
-                'justificacion' => 'Justificación pendiente.',
+                'key' => 'tres', 'texto' => 'Tres determinaciones anuales, calculando una media aritmética entre las tres que compense las oscilaciones de la Lp(a).', 'correcta' => false, 'puntos' => -50,
+                'justificacion' => 'La Lp(a) presenta una determinación genética superior al 90%, con escasa variabilidad fisiológica en ausencia de cambios metabólicos relevantes (como enfermedad renal crónica o menopausia) o eventos cardiovasculares como el SCA. Por ello, su medición repetida en pacientes metabólicamente estables resulta poco eficiente, ya que no aporta cambios en la estratificación del riesgo ni en la toma de decisiones terapéuticas.',
             ],
             [
-                'key' => 'dos', 'texto' => 'Realizar al menos dos mediciones: una inicial de cribado y una segunda 1–3 meses después, o bien tras cambios metabólicos mayores o eventos cardiovasculares.', 'correcta' => true,
-                'justificacion' => 'La Lp(a) puede mostrar variación en el contexto de un SCA, por lo que puede medirse durante el ingreso junto al perfil lipídico y repetirse a los 1-3 meses, cuando el paciente se encuentre clínicamente estable, para confirmar un valor basal más representativo si este condiciona decisiones clínicas. Tras un IAM, se han descrito diferencias entre los niveles medidos en fase aguda y los obtenidos posteriormente. En seguimiento estable, no se recomiendan mediciones seriadas sistemáticas, salvo cambios clínicos relevantes o tratamientos específicos dirigidos a la Lp(a)3-5.',
+                'key' => 'dos', 'texto' => 'Realizar al menos dos mediciones: una inicial de cribado y una segunda 1–3 meses después, o bien tras cambios metabólicos mayores o eventos cardiovasculares.', 'correcta' => true, 'puntos' => 100,
+                'justificacion' => 'La Lp(a) puede mostrar variación en el contexto de un evento cardiovascular agudo, por lo que conviene medirla durante el ingreso junto al perfil lipídico y repetir su determinación a los 1–3 meses, cuando el paciente se encuentre clínicamente estable, para confirmar un valor basal más representativo si este condiciona decisiones clínicas. Tras un infarto agudo de miocardio (IAM), se han descrito diferencias entre los niveles medidos en fase aguda y los obtenidos posteriormente. Existe también la recomendación de repetir la medición en situaciones de cambios metabólicos mayores, como tras la menopausia en mujeres con una determinación previa de riesgo intermedio, en los que un valor elevado posterior pueda determinar cambios de la estrategia de seguimiento5. En seguimiento estable, no se recomiendan mediciones seriadas sistemáticas, salvo cambios clínicos relevantes o tratamientos específicos dirigidos a la Lp(a)5-7.',
             ],
         ],
     ],
@@ -155,20 +157,20 @@ return [
         'xp'          => 100,
         'opciones'    => [
             [
-                'key' => 'betabloqueantes', 'texto' => 'No pautaría betabloqueantes.', 'correcta' => true,
-                'justificacion' => 'No se aconseja el uso rutinario de betabloqueantes tras un infarto de miocardio en pacientes con fracción de eyección ≥50% si no existen otras indicaciones. La evidencia actual muestra que no reducen la mortalidad, el reinfarto ni la insuficiencia cardíaca en este grupo14,15. A pesar de que las guías del American College of Cardiology (ACC) y la American Heart Association (AHA) los recomiendan, esta directriz se basa en estudios previos a la era actual, y la evidencia reciente cuestiona su beneficio en FEVI preservada15-18. Su perfil de seguridad es similar al placebo14. Por tanto, en un paciente con IAM y FEVI ≥50% no se recomienda su uso sistemático, en ausencia de otras indicaciones específicas.',
+                'key' => 'betabloqueantes', 'texto' => 'No pautaría betabloqueantes.', 'correcta' => true, 'puntos' => 100,
+                'justificacion' => 'No se aconseja el uso rutinario de betabloqueantes tras un infarto de miocardio en pacientes revascularizados con fracción de eyección ≥50% si no existen otras indicaciones. La evidencia actual muestra que no reducen la mortalidad, el reinfarto ni la insuficiencia cardiaca en este grupo16,17. A pesar de que las guías del American College of Cardiology (ACC) y la American Heart Association (AHA) los recomiendan, esta directriz se basa en estudios previos a la era actual, y la evidencia reciente ha confirmado la ausencia de beneficio en FEVI preservada17-20. Su perfil de seguridad es similar al placebo16. Por tanto, en un paciente con IAM y FEVI ≥50% no se recomienda su uso sistemático, en ausencia de otras indicaciones específicas.',
             ],
             [
-                'key' => 'estatina', 'texto' => 'Pautaría de inicio solo estatina de alta potencia.', 'correcta' => false,
-                'justificacion' => 'Justificación pendiente.',
+                'key' => 'estatina', 'texto' => 'Pautaría de inicio solo estatina de alta potencia.', 'correcta' => false, 'puntos' => -30,
+                'justificacion' => 'En pacientes con SCA, se prefiere la terapia combinada con estatina de alta potencia y ezetimiba, debido a que conduce a una reducción más rápida e intensa del cLDL, con lo que se incrementa el porcentaje de pacientes que alcanzan objetivos (especialmente en pacientes de muy alto riesgo) y reduce el riesgo de desarrollar eventos cardiovasculares, en comparación con la monoterapia5. La combinación aporta una reducción adicional del 20–25% de cLDL y ha demostrado beneficio clínico (IMPROVE-IT)21. Las guías de la European Society of Cardiology (ESC) 2025 recomiendan iniciar esta estrategia antes del alta, evitando retrasos terapéuticos, así como considerar TD a PCSK9 si no se alcanzan objetivos5,22,23.',
             ],
             [
-                'key' => 'nada', 'texto' => 'No haría nada diferente.', 'correcta' => false,
-                'justificacion' => 'Justificación pendiente.',
+                'key' => 'nada', 'texto' => 'No haría nada diferente.', 'correcta' => false, 'puntos' => -20,
+                'justificacion' => 'Tras la evidencia del ensayo REBOOT y de metaanálisis contemporáneos, no se recomienda el uso rutinario de betabloqueantes tras un IAM en pacientes revascularizados de forma completa y con FEVI conservada (>50%), ya que no han demostrado que reduzcan la mortalidad, el reinfarto ni la insuficiencia cardiaca. En este contexto, la estrategia más adecuada es optimizar el tratamiento de prevención secundaria (antiagregación, control lipídico intensivo, inhibidores de la enzima convertidora de la angiotensina [IECA] o antagonistas de los receptores de la angiotensina II [ARA-II] si están indicados, y control intensivo de los factores de riesgo). Los betabloqueantes quedarían reservados para indicaciones específicas como arritmias, angina o hipertensión no controlada19.',
             ],
             [
-                'key' => 'antiagregacion', 'texto' => 'No pautaría doble antiagregación.', 'correcta' => false,
-                'justificacion' => 'Justificación pendiente.',
+                'key' => 'antiagregacion', 'texto' => 'No pautaría doble antiagregación.', 'correcta' => false, 'puntos' => -50,
+                'justificacion' => 'La doble antiagregación plaquetaria con aspirina y un inhibidor del receptor P2Y12 es un pilar fundamental tras un infarto con implante de stents DES. En general, tras un SCA se recomienda mantenerla durante 12 meses, con posibilidad de acortarla o individualizarla en función del riesgo isquémico y hemorrágico. El uso de AAS en monoterapia desde el inicio en este contexto se asocia a un mayor riesgo de eventos isquémicos, especialmente trombosis aguda y subaguda del stent23.',
             ],
         ],
     ],
@@ -180,20 +182,20 @@ return [
         'xp'          => 50,
         'opciones'    => [
             [
-                'key' => 'semaglutida', 'texto' => 'Semaglutida.', 'correcta' => true,
-                'justificacion' => 'Un paciente tras un IAM, con un IMC ≥27 kg/m² y sin diabetes cumple los criterios del estudio SELECT para tratamiento con semaglutida, con evidencia de beneficio cardiovascular. La Guía ESC 2024 sobre el diagnóstico y el tratamiento de los síndromes coronarios crónicos recomienda considerar su uso en prevención secundaria en este perfil de pacientes, ya que el estudio SELECT demostró una reducción significativa de los eventos cardiovasculares mayores con semaglutida 2,4 mg/semanal en pacientes con enfermedad cardiovascular establecida, sobrepeso u obesidad y sin diabetes, independientemente del valor de HbA1c. No obstante, su indicación depende de la aprobación regulatoria y su implementación local22-24.',
+                'key' => 'semaglutida', 'texto' => 'Semaglutida.', 'correcta' => true, 'puntos' => 50,
+                'justificacion' => 'Un paciente tras un IAM, con un IMC ≥27 kg/m² y sin diabetes cumple los criterios del estudio SELECT para tratamiento con semaglutida, con evidencia de beneficio cardiovascular. La Guía ESC 2024 sobre el diagnóstico y el tratamiento de los síndromes coronarios crónicos recomienda considerar su uso en prevención secundaria en este perfil de pacientes, ya que el estudio SELECT demostró una reducción significativa de los eventos cardiovasculares mayores con semaglutida 2,4 mg/semanal en pacientes con enfermedad cardiovascular establecida, sobrepeso u obesidad y sin diabetes, independientemente del valor de HbA1c. No obstante, su indicación depende de la aprobación regulatoria y su implementación local24-26.',
             ],
             [
-                'key' => 'bempedoico', 'texto' => 'Ácido bempedoico es una opción por considerar.', 'correcta' => false,
-                'justificacion' => 'Justificación pendiente.',
+                'key' => 'bempedoico', 'texto' => 'Ácido bempedoico es una opción por considerar.', 'correcta' => true, 'puntos' => 50,
+                'justificacion' => 'El ácido bempedoico añadido a estatinas de alta potencia reduce el cLDL en aproximadamente un 15–18%, como demostraron los estudios CLEAR Harmony y CLEAR Wisdom en pacientes con enfermedad cardiovascular aterosclerótica o hipercolesterolemia familiar, con resultados consistentes independientemente de la intensidad de la estatina. Sin embargo, la evidencia en contexto de triple terapia es limitada. El ensayo ES-BempeDACS mostró que añadir ácido bempedoico a estatina y ezetimiba en SCA no mejora el control de cLDL ni reduce eventos cardiovasculares a corto plazo, aunque es seguro. Por ello, las guías ESC 2025 lo recomiendan en pacientes que no alcanzan objetivos con estatina y ezetimiba o con intolerancia a estatinas5,27-29.',
             ],
             [
-                'key' => 'mantener', 'texto' => 'Mantener tratamiento y control analítico a los 3 meses.', 'correcta' => false,
-                'justificacion' => 'Justificación pendiente.',
+                'key' => 'mantener', 'texto' => 'Mantener tratamiento y control analítico a los 3 meses.', 'correcta' => false, 'puntos' => -30,
+                'justificacion' => 'La inercia terapéutica en estos pacientes es frecuente y se asocia a un peor control del RCV, favoreciendo la aparición de eventos adversos. Existe un claro beneficio tiempo-dependiente en la optimización precoz del tratamiento, por lo que el ajuste activo e intensivo de la terapia resulta clave para mejorar el pronóstico5,22.',
             ],
             [
-                'key' => 'icosapento', 'texto' => 'Icosapento de etilo.', 'correcta' => false,
-                'justificacion' => 'Justificación pendiente.',
+                'key' => 'icosapento', 'texto' => 'Icosapento de etilo.', 'correcta' => false, 'puntos' => -70,
+                'justificacion' => 'El icosapento de etilo no está indicado en este caso, ya que se reserva para pacientes con enfermedad cardiovascular aterosclerótica establecida, en tratamiento con estatinas, que presenten cifras de TG persistentemente elevadas (150–499 mg/dL) y cLDL comprendido entre 40 y 100 mg/dL. Su uso está orientado a reducir el riesgo cardiovascular residual, como demuestran las recomendaciones y el ensayo REDUCE-IT, con dosis de 4 g/día. Fuera de este perfil, no ha demostrado beneficio clínico30,31.',
             ],
         ],
     ],
@@ -205,20 +207,20 @@ return [
         'xp'          => 30,
         'opciones'    => [
             [
-                'key' => 'lpa', 'texto' => 'Elevación de Lp(a).', 'correcta' => true,
-                'justificacion' => 'El colesterol contenido en la Lp(a) [Lp(a)-C] se incluye dentro de la medición estándar del cLDL, mientras que la Lp(a) no responde de forma significativa a estatinas, ezetimiba, ácido bempedoico ni a la mayoría de hipolipemiantes convencionales. En pacientes con Lp(a) elevada, una proporción relevante del cLDL medido corresponde a Lp(a)-C, que no se reduce con estos tratamientos, lo que puede aparentar una respuesta subóptima, pese a que el cLDL "real" [excluyendo Lp(a)-C] haya disminuido adecuadamente3,13,30.',
+                'key' => 'lpa', 'texto' => 'Elevación de Lp(a).', 'correcta' => true, 'puntos' => 30,
+                'justificacion' => 'El colesterol contenido en la Lp(a) [Lp(a)-C] se incluye dentro de la medición estándar del cLDL, mientras que la Lp(a) no responde de forma significativa a estatinas, ezetimiba, ácido bempedoico ni a la mayoría de hipolipemiantes convencionales. En pacientes con Lp(a) elevada, una proporción relevante del cLDL medido corresponde a Lp(a)-C, que no se reduce con estos tratamientos, lo que puede aparentar una respuesta subóptima, pese a que el cLDL «real» [excluyendo Lp(a)-C] haya disminuido adecuadamente5,15,32.',
             ],
             [
-                'key' => 'adherencia', 'texto' => 'Falta de adherencia terapéutica.', 'correcta' => false,
-                'justificacion' => 'Justificación pendiente.',
+                'key' => 'adherencia', 'texto' => 'Falta de adherencia terapéutica.', 'correcta' => true, 'puntos' => 50,
+                'justificacion' => 'La falta de adherencia terapéutica es la causa más frecuente de respuesta insuficiente al tratamiento hipolipemiante. Puede deberse a efectos adversos, olvidos o falta de comprensión del beneficio. Su impacto supera al de otros factores y explica que una proporción significativa de pacientes no alcance los objetivos de cLDL33.',
             ],
             [
-                'key' => 'pcsk9', 'texto' => 'Sobreexpresión o mutaciones de ganancia de función en PCSK9.', 'correcta' => false,
-                'justificacion' => 'Justificación pendiente.',
+                'key' => 'pcsk9', 'texto' => 'Sobreexpresión o mutaciones de ganancia de función en PCSK9.', 'correcta' => true, 'puntos' => 20,
+                'justificacion' => 'Una sobreexpresión de PCSK9 puede contribuir a una menor reducción de cLDL en pacientes tratados con hipolipemiantes de alta intensidad. La proteína PCSK9 favorece la degradación de los receptores LDL hepáticos, limitando la depuración del cLDL. Las estatinas aumentan la expresión de estos receptores; sin embargo, también incrementan la producción de PCSK9, lo cual atenúa parcialmente su efecto, especialmente en pacientes con sobreexpresión o mutaciones de ganancia de función en PCSK934.',
             ],
             [
-                'key' => 'tiempo', 'texto' => 'Al poco tiempo transcurrido desde el inicio del tratamiento.', 'correcta' => false,
-                'justificacion' => 'Justificación pendiente.',
+                'key' => 'tiempo', 'texto' => 'Al poco tiempo transcurrido desde el inicio del tratamiento.', 'correcta' => false, 'puntos' => -100,
+                'justificacion' => 'La mejoría del perfil lipídico tras la optimización terapéutica debería evidenciarse en un plazo de 4–12 semanas, y las guías recomiendan reevaluar el cLDL a las 4–6 semanas tras iniciar o intensificar el tratamiento hipolipemiante en el contexto de SCA. Ante un control subóptimo, resulta fundamental adoptar una actitud proactiva que evite la inercia terapéutica y permita una intensificación adecuada del tratamiento5.',
             ],
         ],
     ],

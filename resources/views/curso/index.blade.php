@@ -208,7 +208,10 @@
                         @php
                             $p = $progress->get($ing['key']);
                             $status = $p->status ?? 'locked';
-                            $percent = $p->percent ?? 0;
+                            // Avance real del módulo: etapa alcanzada / total de etapas (igual que la barra de la etapa).
+                            $etapasTotal = count($curso['etapas']);
+                            $idx = (int) ($p->etapa_index ?? 0);
+                            $percent = $status === 'completed' ? 100 : (int) round($idx / max($etapasTotal, 1) * 100);
                             $abierto = in_array($status, ['available', 'in_progress', 'completed']);
                         @endphp
                         <div class="ing-row {{ $abierto ? '' : 'locked' }}">

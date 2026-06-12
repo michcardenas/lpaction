@@ -102,6 +102,23 @@ class CursoController extends Controller
         return redirect()->route('curso.etapa', [$ingreso, $etapas[$next]['key']]);
     }
 
+    /** "Reiniciar capítulo": reinicia todo el ingreso y vuelve a la Presentación. */
+    public function reiniciar(Request $request, $ingreso)
+    {
+        $user = Auth::user();
+        $progreso = $this->ingresoAbierto($user, $ingreso);
+
+        $progreso->update([
+            'etapa_index'  => 0,
+            'status'       => 'in_progress',
+            'percent'      => 0,
+            'completed_at' => null,
+        ]);
+
+        $etapas = config('curso.etapas');
+        return redirect()->route('curso.etapa', [$ingreso, $etapas[0]['key']]);
+    }
+
     /** Devuelve el progreso del ingreso si está desbloqueado; si no, 404. */
     private function ingresoAbierto($user, $ingreso): CourseProgress
     {

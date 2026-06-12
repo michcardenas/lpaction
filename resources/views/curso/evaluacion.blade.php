@@ -27,9 +27,10 @@
         .ev-back { display: inline-flex; align-items: center; gap: 8px; color: #cfe6ef; text-decoration: none; font-weight: 500; font-size: 15px; transition: color .2s; }
         .ev-back:hover { color: #fff; }
 
-        /* Contenido con animación de aparición */
-        .ev-main { flex: 1; padding: 48px 56px; }
-        .ev-stage { max-width: 1320px; margin: 0 auto; animation: evAppear .55s cubic-bezier(.22,.61,.36,1) both; }
+        /* Contenido: escenario fijo escalado a la pantalla (igual que las etapas) + animación */
+        .ev-main { flex: 1; display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 24px 32px; }
+        .ev-stage { width: 1320px; flex-shrink: 0; transform-origin: center center; }
+        .ev-inner { animation: evAppear .55s cubic-bezier(.22,.61,.36,1) both; }
         @keyframes evAppear { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
 
         .ev-title { font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0; }
@@ -74,6 +75,7 @@
 
     <main class="ev-main">
         <div class="ev-stage">
+            <div class="ev-inner">
             <h1 class="ev-title">Evaluación final</h1>
             <p class="ev-subtitle">Certificación del conocimiento adquirido</p>
 
@@ -112,7 +114,31 @@
             <div class="ev-foot">
                 <button type="button" class="ev-comenzar" onclick="return false;">Comenzar evaluación</button>
             </div>
+            </div>{{-- /ev-inner --}}
         </div>
     </main>
+
+    <script>
+        // Escala el contenido para que se vea igual y llene la pantalla en cualquier PC (como las etapas).
+        (function () {
+            var main = document.querySelector('.ev-main');
+            var stage = document.querySelector('.ev-stage');
+            if (!main || !stage) return;
+            function scaleEv() {
+                stage.style.transform = 'none';
+                var sw = stage.offsetWidth, sh = stage.offsetHeight;
+                if (!main.clientWidth || !sw) { requestAnimationFrame(scaleEv); return; }
+                var s = Math.min(main.clientWidth / sw, main.clientHeight / sh);
+                s = Math.min(Math.max(s, 0.5), 1.7);
+                stage.style.transform = 'scale(' + s + ')';
+            }
+            setTimeout(scaleEv, 60);
+            window.addEventListener('resize', scaleEv);
+            window.addEventListener('load', scaleEv);
+            if (document.readyState !== 'loading') scaleEv();
+            else document.addEventListener('DOMContentLoaded', scaleEv);
+            if (document.fonts && document.fonts.ready) document.fonts.ready.then(scaleEv);
+        })();
+    </script>
 </body>
 </html>

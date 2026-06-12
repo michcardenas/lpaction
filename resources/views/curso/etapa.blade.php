@@ -260,6 +260,34 @@
         .resultado.ok { background: #384F1D; }
         .resultado-ico { width: 26px; height: 26px; border-radius: 50%; border: 2px solid #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; flex-shrink: 0; }
 
+        /* Modal "Reiniciar capítulo" (confirma Repetir etapa). Fuera del stage escalado. */
+        .reset-modal { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 24px; background: rgba(8,14,17,0.62); backdrop-filter: blur(3px); animation: resetFade .2s ease both; }
+        .reset-modal[hidden] { display: none; }
+        .reset-card { width: 100%; max-width: 470px; background: linear-gradient(180deg, rgba(40,56,63,0.97) 0%, rgba(28,42,48,0.97) 100%); border: 1px solid rgba(255,255,255,0.14); border-radius: 18px; padding: 40px 40px 32px; text-align: center; box-shadow: 0 30px 80px rgba(0,0,0,0.45); animation: resetPop .28s cubic-bezier(.22,.61,.36,1) both; }
+        .reset-ico { width: 66px; height: 66px; border-radius: 50%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.16); display: inline-flex; align-items: center; justify-content: center; color: #cfe6ef; margin-bottom: 20px; }
+        .reset-title { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 22px; color: #fff; margin: 0 0 14px; }
+        .reset-text { font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 14px; line-height: 165%; color: rgba(255,255,255,0.72); margin: 0 0 28px; }
+        .reset-text strong { color: #fff; font-weight: 600; }
+        .reset-actions { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+        .reset-cancel { font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 15px; background: none; border: 0; color: rgba(255,255,255,0.78); cursor: pointer; padding: 12px 8px; transition: color .2s; }
+        .reset-cancel:hover { color: #fff; }
+        .reset-confirm { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 15px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.20); color: #fff; padding: 13px 26px; border-radius: 8px; cursor: pointer; transition: background .2s, border-color .2s; }
+        .reset-confirm:hover { background: rgba(255,255,255,0.20); border-color: rgba(255,255,255,0.32); }
+        @keyframes resetFade { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes resetPop { from { opacity: 0; transform: translateY(14px) scale(.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+        /* Lightbox de imágenes (ampliar ECG / cateterismo + descargar). Fuera del stage escalado. */
+        .img-lightbox { position: fixed; inset: 0; z-index: 10000; display: flex; flex-direction: column; background: rgba(6,10,12,0.93); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); animation: resetFade .2s ease both; }
+        .img-lightbox[hidden] { display: none; }
+        .lb-bar { flex-shrink: 0; display: flex; justify-content: flex-end; align-items: center; gap: 14px; padding: 16px 22px; }
+        .lb-btn { display: inline-flex; align-items: center; gap: 8px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 14px; color: #fff; background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.22); border-radius: 8px; padding: 9px 16px; cursor: pointer; text-decoration: none; transition: background .2s; }
+        .lb-btn:hover { background: rgba(255,255,255,0.20); }
+        .lb-close { padding: 9px 11px; }
+        .lb-stage { flex: 1; min-height: 0; overflow: auto; display: flex; align-items: center; align-items: safe center; justify-content: center; justify-content: safe center; padding: 0 24px 16px; }
+        .lb-img { width: 94vw; max-height: 82vh; object-fit: contain; border-radius: 4px; box-shadow: 0 24px 70px rgba(0,0,0,0.55); cursor: zoom-in; }
+        .lb-img.zoom { max-width: none; max-height: none; width: 165%; flex-shrink: 0; cursor: zoom-out; }
+        .lb-caption { flex-shrink: 0; text-align: center; color: rgba(255,255,255,0.78); font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 13px; line-height: 150%; padding: 0 24px 18px; margin: 0 auto; max-width: 1000px; }
+
         /* paciente a la derecha: la figura va desde "Historia clínica" hasta el final de "Motivo de consulta" */
         .etapa-juan { position: absolute; right: -165px; top: -56px; z-index: 1; pointer-events: none; user-select: none; }
         .etapa-juan img { height: 820px; width: auto; display: block; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.45)); }
@@ -380,6 +408,43 @@
             </main>
         </div>
 
+        {{-- Modal: Reiniciar capítulo (confirmación de "Repetir etapa") --}}
+        @if (in_array($etapaActual, ['pruebas', 'riesgo', 'terapeutico', 'monitorizacion', 'monitorizacion-2']))
+        <div class="reset-modal" id="reset-modal" hidden>
+            <div class="reset-card" role="dialog" aria-modal="true" aria-labelledby="reset-title">
+                <span class="reset-ico">
+                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                </span>
+                <h3 class="reset-title" id="reset-title">Reiniciar capítulo</h3>
+                <p class="reset-text">Vas a repetir este capítulo. Si continúas, se eliminarán tus respuestas y los puntos obtenidos solo en esta sección. El resto de tu progreso no se verá afectado.<br><strong>¿Quieres reiniciar este capítulo?</strong></p>
+                <div class="reset-actions">
+                    <button type="button" class="reset-cancel" id="reset-cancel">Cancelar</button>
+                    <form method="POST" action="{{ route('curso.reiniciar', $ingreso) }}" style="margin:0;">
+                        @csrf
+                        <button type="submit" class="reset-confirm" id="reset-confirm">Reiniciar capítulo</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        @endif
+
+        {{-- Lightbox para ampliar imágenes (ECG, cateterismo) + descargar --}}
+        <div class="img-lightbox" id="img-lightbox" hidden>
+            <div class="lb-bar">
+                <a class="lb-btn lb-download" id="lb-download" href="#" download>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 12 5 5 5-5"/><path d="M5 21h14"/></svg>
+                    Descargar
+                </a>
+                <button type="button" class="lb-btn lb-close" id="lb-close" aria-label="Cerrar">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+            </div>
+            <div class="lb-stage" id="lb-stage">
+                <img id="lb-img" class="lb-img" src="" alt="">
+            </div>
+            <p class="lb-caption" id="lb-caption"></p>
+        </div>
+
     </div>{{-- /etapa-page --}}
 
     <script>
@@ -440,7 +505,7 @@
             });
         })();
 
-        // ===== Cuestionario interactivo (respuesta única) =====
+        // ===== Cuestionario interactivo (puntaje por opción; admite varias correctas) =====
         (function () {
             var card = document.getElementById('cuestionario');
             if (!card) return;
@@ -462,9 +527,9 @@
             var answered  = false;
 
             function setXP(v) {
-                currentXP = Math.max(0, v);
+                currentXP = v;                                  // permite restar (puede bajar de 0)
                 if (xpVal) xpVal.textContent = currentXP;
-                if (xpBar) xpBar.style.width = Math.min(100, currentXP / maxXP * 100) + '%';
+                if (xpBar) xpBar.style.width = Math.max(0, Math.min(100, currentXP / maxXP * 100)) + '%';
             }
 
             // Repetir aparece (con animación) al elegir una opción
@@ -478,12 +543,14 @@
                 if (!sel) return;                       // requiere una opción
                 answered = true;
                 var opt = sel.closest('.opt');
-                var correcta = opt.getAttribute('data-correcta') === '1';
+                var pts = parseInt(opt.getAttribute('data-puntos'), 10) || 0;
+                var correcta = pts > 0;                 // correcta = puntos positivos
+                xp = Math.abs(pts);                     // XP a sumar/restar según la opción elegida
 
                 opt.classList.add(correcta ? 'correct' : 'wrong');
                 if (!correcta) {
-                    var corr = card.querySelector('.opt[data-correcta="1"]');
-                    if (corr) corr.classList.add('correct');   // revela la correcta
+                    // revela TODAS las opciones correctas (puede haber más de una)
+                    card.querySelectorAll('.opt[data-correcta="1"]').forEach(function (c) { c.classList.add('correct'); });
                 }
 
                 justifTxt.textContent = opt.getAttribute('data-justif') || '';
@@ -509,37 +576,69 @@
                 repetir.hidden = false;
             });
 
-            repetir.addEventListener('click', function () {
-                answered = false;
-                if (lastDelta) { setXP(currentXP - lastDelta); lastDelta = 0; }   // revierte el intento
-                card.querySelectorAll('.opt').forEach(function (o) { o.classList.remove('wrong', 'correct'); });
-                card.querySelectorAll('input[name="pregunta"]').forEach(function (r) { r.disabled = false; r.checked = false; });
-                justif.hidden = true;
-                resultado.hidden = true;
-                comprobar.disabled = false;
-                sigBtn.classList.remove('enabled');            // Siguiente vuelve a deshabilitado
-                repetir.hidden = true;                         // se oculta hasta re-elegir
-            });
+            // "Repetir etapa" → confirma con el modal "Reiniciar capítulo"
+            var modal   = document.getElementById('reset-modal');
+            var mCancel = document.getElementById('reset-cancel');
+            function cerrarModal() { if (modal) modal.hidden = true; }
+
+            // "Repetir etapa" abre el modal; confirmar reinicia TODO el modulo desde Presentacion (POST a curso.reiniciar)
+            repetir.addEventListener('click', function () { if (modal) modal.hidden = false; });
+            if (mCancel) mCancel.addEventListener('click', cerrarModal);
+            if (modal) modal.addEventListener('click', function (e) { if (e.target === modal) cerrarModal(); });
         })();
 
-        // ===== Cateterismo: imágenes (play/ampliar = pantalla completa; si es video, reproduce) =====
+        // ===== Lightbox: ampliar imágenes (ECG, cateterismo) con zoom + descargar =====
         (function () {
+            var lb      = document.getElementById('img-lightbox');
+            var lbImg   = document.getElementById('lb-img');
+            var lbCap   = document.getElementById('lb-caption');
+            var lbDl    = document.getElementById('lb-download');
+            var lbClose = document.getElementById('lb-close');
+
+            function abrir(src, txt) {
+                if (!lb) return;
+                lbImg.classList.remove('zoom');
+                lbImg.src = src;
+                lbImg.alt = txt || '';
+                lbCap.textContent = txt || '';
+                lbDl.href = src;
+                lbDl.setAttribute('download', '');     // fuerza descarga (mismo origen)
+                lb.hidden = false;
+            }
+            function cerrar() { if (lb) { lb.hidden = true; lbImg.classList.remove('zoom'); } }
+
+            if (lb) {
+                lbImg.addEventListener('click', function () { lbImg.classList.toggle('zoom'); });  // clic = acercar/alejar
+                lbClose.addEventListener('click', cerrar);
+                lb.addEventListener('click', function (e) { if (e.target === lb || e.target.id === 'lb-stage') cerrar(); });
+                document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !lb.hidden) cerrar(); });
+            }
+
+            // ECG: botón "ampliar" abre el lightbox
+            document.querySelectorAll('.ecg-frame').forEach(function (frame) {
+                var img = frame.querySelector('img');
+                var exp = frame.querySelector('.ecg-expand');
+                if (img && exp) exp.addEventListener('click', function () { abrir(img.getAttribute('src'), img.getAttribute('alt')); });
+            });
+
+            // Cateterismo: imágenes → lightbox; vídeos reales → reproducir/pantalla completa
             document.querySelectorAll('.video-player').forEach(function (p) {
-                var media = p.querySelector('img, video');
+                var media  = p.querySelector('img, video');
                 if (!media) return;
-                var play = p.querySelector('.vid-play');
+                var play   = p.querySelector('.vid-play');
                 var expand = p.querySelector('.vid-expand');
-                var bar = p.querySelector('.vid-bar > i');
-                function full() {
-                    if (media.requestFullscreen) media.requestFullscreen();
-                    else if (media.webkitRequestFullscreen) media.webkitRequestFullscreen();
-                }
-                if (expand) expand.addEventListener('click', full);
+                var bar    = p.querySelector('.vid-bar > i');
+                var capEl  = p.closest('.video-item') ? p.closest('.video-item').querySelector('.video-cap') : null;
+                var txt    = capEl ? capEl.textContent.trim() : media.getAttribute('alt');
+
                 if (media.tagName === 'VIDEO') {
                     if (play) play.addEventListener('click', function () { if (media.paused) media.play(); else media.pause(); });
+                    if (expand) expand.addEventListener('click', function () { if (media.requestFullscreen) media.requestFullscreen(); });
                     media.addEventListener('timeupdate', function () { if (bar && media.duration) bar.style.width = (media.currentTime / media.duration * 100) + '%'; });
-                } else if (play) {
-                    play.addEventListener('click', full);   // imagen: "play" abre en grande
+                } else {
+                    var open = function () { abrir(media.getAttribute('src'), txt); };
+                    if (play) play.addEventListener('click', open);
+                    if (expand) expand.addEventListener('click', open);
                 }
             });
         })();
