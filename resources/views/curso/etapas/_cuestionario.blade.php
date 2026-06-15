@@ -38,6 +38,8 @@
         <form method="POST" action="{{ route('curso.avanzar', $ingreso) }}" class="form-siguiente">
             @csrf
             <input type="hidden" name="desde" value="{{ $etapaActual }}">
+            <input type="hidden" name="resultado" value="perfecta" id="cuest-resultado">
+            <input type="hidden" name="puntos" value="0" id="cuest-puntos">
             <button type="submit" class="btn-next-q">{{ $esUltimaEtapa ? 'Finalizar' : 'Siguiente etapa' }}</button>
         </form>
     </div>

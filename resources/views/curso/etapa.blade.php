@@ -69,9 +69,12 @@
         }
         .side-item { text-decoration: none; }
         .side-item .ico { flex-shrink: 0; color: rgba(255,255,255,0.40); }
-        /* completada: texto claro + check verde */
-        .side-item.completada { color: rgba(255,255,255,0.80); cursor: pointer; }
-        .side-item.completada .ico { color: #54c06a; }
+        /* perfecta: etapa superada sin errores → texto claro + check verde */
+        .side-item.perfecta { color: rgba(255,255,255,0.80); cursor: pointer; }
+        .side-item.perfecta .ico { color: #54c06a; }
+        /* error: etapa superada con algún fallo → texto claro + cruz roja */
+        .side-item.error { color: rgba(255,255,255,0.80); cursor: pointer; }
+        .side-item.error .ico { color: #d9534f; }
         /* activa: texto blanco + reloj cyan */
         .side-item.activa { color: #FFFFFF; cursor: pointer; }
         .side-item.activa .ico { color: #05BAEE; }
@@ -321,8 +324,8 @@
             </div>
 
             <div class="top-right">
-                <span class="top-scope">Scope: <b><span id="xp-val">0</span> / 500 Exp</b></span>
-                <span class="bar" style="width:120px;"><i id="xp-bar" style="width:0%"></i></span>
+                <span class="top-scope">Scope: <b><span id="xp-val">{{ $xpBase ?? 0 }}</span> / 500 Exp</b></span>
+                <span class="bar" style="width:120px;"><i id="xp-bar" style="width:{{ max(0, min(100, ($xpBase ?? 0) / 500 * 100)) }}%"></i></span>
                 <span class="top-heart">
                     <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35c-.3 0-.6-.1-.84-.3C7.2 17.66 2.5 13.88 2.5 9.6 2.5 6.5 4.9 4.5 7.4 4.5c1.8 0 3.42.94 4.6 2.42C13.18 5.44 14.8 4.5 16.6 4.5c2.5 0 4.9 2 4.9 5.1 0 4.28-4.7 8.06-8.66 11.45-.24.2-.54.3-.84.3Z"/></svg>
                 </span>
@@ -335,14 +338,17 @@
             {{-- Sidebar de etapas --}}
             <aside class="etapa-side">
                 @foreach ($etapasEstado as $etapa)
-                    @php $clickable = in_array($etapa['estado'], ['completada', 'activa']); @endphp
+                    @php $clickable = in_array($etapa['estado'], ['perfecta', 'error', 'activa']); @endphp
                     <a href="{{ $clickable ? route('curso.etapa', [$ingreso, $etapa['key']]) : '#' }}"
                        class="side-item {{ $etapa['estado'] }} {{ $etapa['viendo'] ? 'viendo' : '' }}"
                        @unless($clickable) onclick="return false;" @endunless>
                         <span>{{ $etapa['titulo'] }}</span>
-                        @if ($etapa['estado'] === 'completada')
-                            {{-- check (completada) --}}
+                        @if ($etapa['estado'] === 'perfecta')
+                            {{-- check verde (etapa superada sin errores) --}}
                             <svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="12" r="9"/><path d="m8.4 12 2.4 2.4 4.8-5.2"/></svg>
+                        @elseif ($etapa['estado'] === 'error')
+                            {{-- cruz roja (etapa superada con algún fallo) --}}
+                            <svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="12" r="9"/><path d="m9 9 6 6M15 9l-6 6"/></svg>
                         @elseif ($etapa['estado'] === 'activa')
                             {{-- reloj (activa) --}}
                             <svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
@@ -513,7 +519,10 @@
             var xpBar = document.getElementById('xp-bar');
             var maxXP = 500;
             var currentXP = parseInt(xpVal ? xpVal.textContent : '0', 10) || 0;
-            var lastDelta = 0;
+            var base       = currentXP;           // XP ya persistido (sin contar esta etapa)
+            var etapaScore = 0;                   // aporte de esta etapa al Scope (reemplaza, no acumula)
+            var huboError  = false;               // se marca si en algun intento se eligio una opcion incorrecta
+            var resuelto   = false;               // true solo al acertar (bloquea la pregunta)
             var xp = parseInt(card.getAttribute('data-xp'), 10) || 50;
 
             var comprobar = card.querySelector('.btn-comprobar');
@@ -524,7 +533,8 @@
             var resultado = card.querySelector('.resultado');
             var resIco    = card.querySelector('.resultado-ico');
             var resTxt    = card.querySelector('.resultado-txt');
-            var answered  = false;
+            var resInput  = document.getElementById('cuest-resultado');
+            var ptsInput  = document.getElementById('cuest-puntos');
 
             function setXP(v) {
                 currentXP = v;                                  // permite restar (puede bajar de 0)
@@ -534,45 +544,44 @@
 
             // Repetir aparece (con animación) al elegir una opción
             card.querySelectorAll('input[name="pregunta"]').forEach(function (r) {
-                r.addEventListener('change', function () { if (!answered) repetir.hidden = false; });
+                r.addEventListener('change', function () { if (!resuelto) repetir.hidden = false; });
             });
 
             comprobar.addEventListener('click', function () {
-                if (answered) return;
+                if (resuelto) return;
                 var sel = card.querySelector('input[name="pregunta"]:checked');
                 if (!sel) return;                       // requiere una opción
-                answered = true;
                 var opt = sel.closest('.opt');
                 var pts = parseInt(opt.getAttribute('data-puntos'), 10) || 0;
                 var correcta = pts > 0;                 // correcta = puntos positivos
                 xp = Math.abs(pts);                     // XP a sumar/restar según la opción elegida
 
+                opt.classList.remove('correct', 'wrong');
                 opt.classList.add(correcta ? 'correct' : 'wrong');
-                if (!correcta) {
-                    // revela TODAS las opciones correctas (puede haber más de una)
-                    card.querySelectorAll('.opt[data-correcta="1"]').forEach(function (c) { c.classList.add('correct'); });
-                }
 
                 justifTxt.textContent = opt.getAttribute('data-justif') || '';
                 justif.hidden = false;
+
+                etapaScore = pts;                          // reemplaza el aporte de esta etapa
+                setXP(base + etapaScore);                  // Scope = XP persistido + esta etapa
 
                 if (correcta) {
                     resultado.className = 'resultado ok';
                     resIco.textContent = '✓';
                     resTxt.textContent = '¡Excelente!   + ' + xp + ' XP';
-                    lastDelta = xp;
                     sigBtn.classList.add('enabled');           // habilita Siguiente etapa
+                    resuelto = true;
+                    card.querySelectorAll('input[name="pregunta"]').forEach(function (r) { r.disabled = true; });
+                    comprobar.disabled = true;
+                    if (resInput) resInput.value = huboError ? 'error' : 'perfecta';
+                    if (ptsInput) ptsInput.value = pts;
                 } else {
                     resultado.className = 'resultado bad';
                     resIco.textContent = '✕';
                     resTxt.textContent = '¡Respuesta incorrecta!   - ' + xp + ' XP';
-                    lastDelta = -xp;
+                    huboError = true;                          // marca error: cruz en el sidebar
                 }
                 resultado.hidden = false;
-                setXP(currentXP + lastDelta);
-
-                card.querySelectorAll('input[name="pregunta"]').forEach(function (r) { r.disabled = true; });
-                comprobar.disabled = true;                     // ya no se puede re-comprobar
                 repetir.hidden = false;
             });
 

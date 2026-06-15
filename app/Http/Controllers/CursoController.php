@@ -58,18 +58,32 @@ class CursoController extends Controller
         }
         $etapaActual = $etapas[$viewIndex]['key'];
 
-        // Estados del sidebar según el progreso.
-        $etapasEstado = collect($etapas)->map(function ($e, $i) use ($etapaIndex, $viewIndex) {
-            $estado = $i < $etapaIndex ? 'completada' : ($i === $etapaIndex ? 'activa' : 'bloqueada');
+        // Resultados guardados por etapa: { key: { estado: perfecta|error, puntos } }.
+        $resultados = $progreso->etapas ?? [];
+
+        // Estados del sidebar: perfecta (check) / error (cruz) / activa (reloj) / bloqueada (candado).
+        $etapasEstado = collect($etapas)->map(function ($e, $i) use ($etapaIndex, $viewIndex, $resultados) {
+            if ($i > $etapaIndex) {
+                $estado = 'bloqueada';
+            } elseif ($i === $etapaIndex) {
+                $estado = 'activa';
+            } else {
+                $estado = (($resultados[$e['key']]['estado'] ?? null) === 'error') ? 'error' : 'perfecta';
+            }
             return array_merge($e, ['estado' => $estado, 'viendo' => $i === $viewIndex]);
         })->all();
+
+        // XP/Scope persistido: suma de puntos de todas las etapas. La base excluye la etapa que se
+        // está viendo para que, al re-responderla, sus puntos se sumen en vivo sin duplicarse.
+        $xpTotal = array_sum(array_map(fn ($r) => (int) ($r['puntos'] ?? 0), $resultados));
+        $xpBase  = $xpTotal - (int) ($resultados[$etapaActual]['puntos'] ?? 0);
 
         $ingresoData  = collect($curso['ingresos'])->firstWhere('key', $ingreso);
         $esUltimaEtapa = $viewIndex >= count($etapas) - 1;
         $avance = (int) round($etapaIndex / max(count($etapas), 1) * 100);
 
         return view('curso.etapa', compact(
-            'user', 'curso', 'ingreso', 'ingresoData', 'etapaActual', 'etapasEstado', 'esUltimaEtapa', 'avance'
+            'user', 'curso', 'ingreso', 'ingresoData', 'etapaActual', 'etapasEstado', 'esUltimaEtapa', 'avance', 'xpBase', 'xpTotal'
         ));
     }
 
@@ -87,9 +101,19 @@ class CursoController extends Controller
             $desde = (int) ($progreso->etapa_index ?? 0);
         }
 
+        // Guarda el resultado de la etapa que se deja: perfecta (sin errores) o error (eligió mal),
+        // y los puntos obtenidos. Las etapas sin cuestionario no envían 'resultado' → perfecta/0.
+        $resultados = $progreso->etapas ?? [];
+        $resultados[$etapas[$desde]['key']] = [
+            'estado' => $request->input('resultado') === 'error' ? 'error' : 'perfecta',
+            'puntos' => (int) $request->input('puntos', 0),
+        ];
+
         // Última etapa: finaliza el ingreso y va a la evaluación final.
         if ($desde >= count($etapas) - 1) {
-            $progreso->update(['status' => 'completed', 'percent' => 100, 'completed_at' => now()]);
+            $progreso->update([
+                'status' => 'completed', 'percent' => 100, 'completed_at' => now(), 'etapas' => $resultados,
+            ]);
             return redirect()->route('evaluacion');
         }
 
@@ -97,6 +121,7 @@ class CursoController extends Controller
         $progreso->update([
             'etapa_index' => max((int) ($progreso->etapa_index ?? 0), $next),
             'status'      => 'in_progress',
+            'etapas'      => $resultados,
         ]);
 
         return redirect()->route('curso.etapa', [$ingreso, $etapas[$next]['key']]);
@@ -113,6 +138,7 @@ class CursoController extends Controller
             'status'       => 'in_progress',
             'percent'      => 0,
             'completed_at' => null,
+            'etapas'       => null,
         ]);
 
         $etapas = config('curso.etapas');

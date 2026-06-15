@@ -15,11 +15,13 @@ class CourseProgress extends Model
         'status',
         'percent',
         'etapa_index',
+        'etapas',
         'completed_at',
     ];
 
     protected $casts = [
         'percent'      => 'integer',
+        'etapas'       => 'array',
         'completed_at' => 'datetime',
     ];
 
