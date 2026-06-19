@@ -49,6 +49,46 @@ return [
         ['key' => 'diploma',    'titulo' => 'Diploma'],
     ],
 
+    // Medallas según el Score final (verde − rojo). Escala sobre el máximo del ingreso (500).
+    // Botones por nivel: sin/bronce → solo "Volver al temario"; plata/oro → "Finalizar caso" + "Mejorar puntuación".
+    // Acciones: 'temario'/'finalizar' → portal del curso; 'mejorar' → vuelve a la etapa (cierra el modal) a repasar.
+    'medallas' => [
+        [
+            'key' => 'sin', 'min' => 0, 'label' => 'Sin medalla', 'color' => '#9aa0a6',
+            'titulo' => 'Resultado insuficiente',
+            'texto'  => 'No se ha alcanzado el nivel de concordancia clínica necesario para completar el caso. Revisa los contenidos asociados y repite las etapas señaladas.',
+            'botones' => [
+                ['texto' => 'Volver al temario', 'estilo' => 'ghost', 'accion' => 'temario'],
+            ],
+        ],
+        [
+            'key' => 'bronce', 'min' => 200, 'label' => 'Medalla de bronce', 'color' => '#cd7f32',
+            'titulo' => 'Requiere refuerzo',
+            'texto'  => 'El resultado muestra una concordancia clínica parcial. Para mejorar la puntuación, repite las evaluaciones señaladas y revisa los criterios del caso.',
+            'botones' => [
+                ['texto' => 'Volver al temario', 'estilo' => 'ghost', 'accion' => 'temario'],
+            ],
+        ],
+        [
+            'key' => 'plata', 'min' => 350, 'label' => 'Medalla de plata', 'color' => '#c4ccd2',
+            'titulo' => 'Buen nivel de concordancia clínica',
+            'texto'  => 'El caso se ha resuelto de forma adecuada, aunque existe margen de mejora. Puedes finalizar o revisar las etapas marcadas para intentar alcanzar el nivel oro.',
+            'botones' => [
+                ['texto' => 'Finalizar caso', 'estilo' => 'ghost', 'accion' => 'finalizar'],
+                ['texto' => 'Mejorar puntuación', 'estilo' => 'cyan', 'accion' => 'mejorar'],
+            ],
+        ],
+        [
+            'key' => 'oro', 'min' => 450, 'label' => 'Medalla de oro', 'color' => '#f2c14e',
+            'titulo' => 'Manejo clínico excelente',
+            'texto'  => 'Has completado el caso con un desempeño óptimo en las decisiones clave. Resultado alineado con el abordaje clínico recomendado en el recorrido.',
+            'botones' => [
+                ['texto' => 'Finalizar caso', 'estilo' => 'ghost', 'accion' => 'finalizar'],
+                ['texto' => 'Mejorar puntuación', 'estilo' => 'cyan', 'accion' => 'mejorar'],
+            ],
+        ],
+    ],
+
     // Etapas (barra lateral) dentro de cada ingreso. La primera queda activa.
     'etapas' => [
         ['key' => 'presentacion',     'titulo' => 'Presentación'],

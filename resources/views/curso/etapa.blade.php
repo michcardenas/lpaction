@@ -42,6 +42,11 @@
         .top-pct { font-weight: 600; font-size: 16px; color: #fff; }
         .bar { height: 9px; border-radius: 99px; background: rgba(255,255,255,0.8); overflow: hidden; }
         .bar > i { display: block; height: 100%; background: #05BAEE; border-radius: 99px; }
+        /* Barra del Score: verde (ganado) + rojo (penalizado), contrapeso */
+        .score-bar { display: flex; }
+        .score-bar > i { border-radius: 0; flex-shrink: 0; transition: width .25s ease; }
+        .score-bar > i.green { background: #54c06a; }
+        .score-bar > i.red { background: #d9534f; }
         .top-right { display: flex; align-items: center; gap: 16px; }
         .top-scope { font-weight: 400; font-size: 16px; color: #e9eff1; white-space: nowrap; }
         .top-scope b { color: #fff; font-weight: 700; }
@@ -291,6 +296,24 @@
         .lb-img.zoom { max-width: none; max-height: none; width: 165%; flex-shrink: 0; cursor: zoom-out; }
         .lb-caption { flex-shrink: 0; text-align: center; color: rgba(255,255,255,0.78); font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 13px; line-height: 150%; padding: 0 24px 18px; margin: 0 auto; max-width: 1000px; }
 
+        /* Pop-up de resultado/medalla ("finalizar caso"): overlay sobre la etapa difuminada, panel SÓLIDO. */
+        .result-modal { position: fixed; inset: 0; z-index: 10001; display: flex; align-items: center; justify-content: center; padding: 28px; background: rgba(8,14,17,0.72); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); animation: resetFade .25s ease both; }
+        .result-modal[hidden] { display: none; }
+        .result-panel { position: relative; width: 100%; max-width: 860px; min-height: 420px; border-radius: 22px; overflow: hidden; background: linear-gradient(135deg, #2a3c43 0%, #182830 100%); border: 1px solid rgba(255,255,255,0.12); box-shadow: 0 40px 100px rgba(0,0,0,0.5); display: flex; align-items: stretch; animation: resetPop .32s cubic-bezier(.22,.61,.36,1) both; }
+        .rp-left { flex: 1; padding: 54px 48px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; z-index: 2; }
+        .rp-medal { width: 74px; height: 74px; object-fit: contain; margin-bottom: 26px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.45)); }
+        .rp-title { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 26px; line-height: 1.1; margin: 0 0 16px; color: #fff; }
+        .rp-text { font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 15px; line-height: 165%; color: #c8d3d7; margin: 0 0 32px; max-width: 440px; }
+        .rp-actions { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; }
+        .rp-btn { display: inline-block; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 15px; color: #cfe6ef; text-decoration: none; padding: 13px 30px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.28); background: rgba(255,255,255,0.04); transition: background .2s, border-color .2s; }
+        .rp-btn:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.45); }
+        .rp-btn.cyan { background: #05BAEE; border-color: #05BAEE; color: #fff; }
+        .rp-btn.cyan:hover { background: #04a3d1; border-color: #04a3d1; }
+        .rp-right { flex: 0 0 300px; position: relative; }
+        .rp-right .rp-juan { position: absolute; right: 0; bottom: 0; height: 106%; width: auto; max-width: none; object-fit: contain; object-position: bottom right; }
+        .rp-rings { position: absolute; right: 22px; bottom: 4px; opacity: .45; z-index: 1; }
+        @media (max-width: 720px) { .result-panel { flex-direction: column; min-height: 0; } .rp-left { padding: 38px 24px 24px; } .rp-right { flex: 0 0 230px; } }
+
         /* paciente a la derecha: la figura va desde "Historia clínica" hasta el final de "Motivo de consulta" */
         .etapa-juan { position: absolute; right: -165px; top: -56px; z-index: 1; pointer-events: none; user-select: none; }
         .etapa-juan img { height: 820px; width: auto; display: block; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.45)); }
@@ -324,8 +347,9 @@
             </div>
 
             <div class="top-right">
-                <span class="top-scope">Scope: <b><span id="xp-val">{{ $xpBase ?? 0 }}</span> / 500 Exp</b></span>
-                <span class="bar" style="width:120px;"><i id="xp-bar" style="width:{{ max(0, min(100, ($xpBase ?? 0) / 500 * 100)) }}%"></i></span>
+                <span class="top-scope">Score: <b><span id="xp-val">{{ $exp ?? 0 }}</span> EXP</b></span>
+                @php $mx = max(1, $maxScore ?? 500); $gW = max(0, min(100, ($exp ?? 0) / $mx * 100)); $rW = max(0, min(100 - $gW, ($rojoBase ?? 0) / $mx * 100)); @endphp
+                <span class="bar score-bar" id="score-bar" data-verde="{{ $verdeBase ?? 0 }}" data-rojo="{{ $rojoBase ?? 0 }}" data-max="{{ $mx }}" style="width:120px;"><i id="xp-green" class="green" style="width:{{ $gW }}%"></i><i id="xp-red" class="red" style="width:{{ $rW }}%"></i></span>
                 <span class="top-heart">
                     <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35c-.3 0-.6-.1-.84-.3C7.2 17.66 2.5 13.88 2.5 9.6 2.5 6.5 4.9 4.5 7.4 4.5c1.8 0 3.42.94 4.6 2.42C13.18 5.44 14.8 4.5 16.6 4.5c2.5 0 4.9 2 4.9 5.1 0 4.28-4.7 8.06-8.66 11.45-.24.2-.54.3-.84.3Z"/></svg>
                 </span>
@@ -451,6 +475,49 @@
             <p class="lb-caption" id="lb-caption"></p>
         </div>
 
+        {{-- Pop-up de resultado/medalla, sobre la etapa difuminada (al "Finalizar ingreso") --}}
+        @if (!empty($mostrarResultado) && !empty($medalla))
+        <div class="result-modal" id="result-modal">
+            <div class="result-panel">
+                @php
+                    $medImg  = 'images/medalla-' . $medalla['key'] . '.png';   // corazón de la medalla
+                    $juanImg = 'images/juan-' . $medalla['key'] . '.png';       // Juan según la medalla/expresión
+                @endphp
+                <div class="rp-left">
+                    @if (file_exists(public_path($medImg)))
+                        <img class="rp-medal" src="{{ asset($medImg) }}" alt="{{ $medalla['label'] }}">
+                    @else
+                        {{-- Respaldo: corazón vectorial del color del nivel hasta que se suba la imagen --}}
+                        <svg class="rp-medal" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="{{ $medalla['color'] }}" stroke="rgba(255,255,255,0.45)" stroke-width="0.9"/>
+                        </svg>
+                    @endif
+                    <h2 class="rp-title">{{ $medalla['titulo'] }}</h2>
+                    <p class="rp-text">{{ $medalla['texto'] }}</p>
+                    <div class="rp-actions">
+                        @foreach ($medalla['botones'] as $b)
+                            @php
+                                $href = ($b['accion'] ?? '') === 'mejorar'
+                                    ? route('curso.etapa', [$ingreso, 'resumen'])   // cierra el modal y vuelve a la etapa a repasar
+                                    : route('curso');                                // temario / finalizar → portal
+                            @endphp
+                            <a class="rp-btn {{ ($b['estilo'] ?? '') === 'cyan' ? 'cyan' : '' }}" href="{{ $href }}">{{ $b['texto'] }}</a>
+                        @endforeach
+                    </div>
+                </div>
+                <div class="rp-right">
+                    <svg class="rp-rings" width="280" height="84" viewBox="0 0 280 84" fill="none" aria-hidden="true">
+                        @for ($r = 1; $r <= 3; $r++)
+                            <ellipse cx="140" cy="74" rx="{{ $r * 44 }}" ry="{{ $r * 10 }}" stroke="#7fa6b2" stroke-width="1" opacity="{{ 0.5 - $r * 0.12 }}"/>
+                        @endfor
+                    </svg>
+                    {{-- Juan de la medalla si existe; si no, el Juan normal --}}
+                    <img class="rp-juan" src="{{ file_exists(public_path($juanImg)) ? asset($juanImg) : asset($curso['paciente']['imagen']) }}" alt="{{ $curso['paciente']['nombre'] }}">
+                </div>
+            </div>
+        </div>
+        @endif
+
     </div>{{-- /etapa-page --}}
 
     <script>
@@ -516,14 +583,14 @@
             var card = document.getElementById('cuestionario');
             if (!card) return;
             var xpVal = document.getElementById('xp-val');
-            var xpBar = document.getElementById('xp-bar');
-            var maxXP = 500;
-            var currentXP = parseInt(xpVal ? xpVal.textContent : '0', 10) || 0;
-            var base       = currentXP;           // XP ya persistido (sin contar esta etapa)
-            var etapaScore = 0;                   // aporte de esta etapa al Scope (reemplaza, no acumula)
-            var huboError  = false;               // se marca si en algun intento se eligio una opcion incorrecta
-            var resuelto   = false;               // true solo al acertar (bloquea la pregunta)
-            var xp = parseInt(card.getAttribute('data-xp'), 10) || 50;
+            var scoreBar = document.getElementById('score-bar');
+            var green = document.getElementById('xp-green');
+            var red   = document.getElementById('xp-red');
+            var maxScore  = scoreBar ? (parseInt(scoreBar.getAttribute('data-max'), 10) || 500) : 500;
+            var baseVerde = scoreBar ? (parseInt(scoreBar.getAttribute('data-verde'), 10) || 0) : 0;
+            var baseRojo  = scoreBar ? (parseInt(scoreBar.getAttribute('data-rojo'), 10) || 0) : 0;
+            var liveVerde = 0, liveRojo = 0;      // aporte de esta etapa (el rojo NO se recupera)
+            var marcadas = {};                    // opciones ya puntuadas (key -> true), no recontar
 
             var comprobar = card.querySelector('.btn-comprobar');
             var repetir   = card.querySelector('.btn-repetir');
@@ -533,56 +600,59 @@
             var resultado = card.querySelector('.resultado');
             var resIco    = card.querySelector('.resultado-ico');
             var resTxt    = card.querySelector('.resultado-txt');
-            var resInput  = document.getElementById('cuest-resultado');
-            var ptsInput  = document.getElementById('cuest-puntos');
+            var verdeInput = document.getElementById('cuest-verde');
+            var rojoInput  = document.getElementById('cuest-rojo');
 
-            function setXP(v) {
-                currentXP = v;                                  // permite restar (puede bajar de 0)
-                if (xpVal) xpVal.textContent = currentXP;
-                if (xpBar) xpBar.style.width = Math.max(0, Math.min(100, currentXP / maxXP * 100)) + '%';
+            function pintarBarra() {
+                var verde = baseVerde + liveVerde, rojo = baseRojo + liveRojo;
+                var exp = verde - rojo;                         // EXP = verde - rojo (el rojo nunca baja)
+                if (xpVal) xpVal.textContent = exp;
+                var g = Math.max(0, Math.min(100, exp / maxScore * 100));
+                var r = Math.max(0, Math.min(100 - g, rojo / maxScore * 100));
+                if (green) green.style.width = g + '%';
+                if (red) red.style.width = r + '%';
             }
 
-            // Repetir aparece (con animación) al elegir una opción
+            // "Repetir" aparece al elegir una opción
             card.querySelectorAll('input[name="pregunta"]').forEach(function (r) {
-                r.addEventListener('change', function () { if (!resuelto) repetir.hidden = false; });
+                r.addEventListener('change', function () { repetir.hidden = false; });
             });
 
             comprobar.addEventListener('click', function () {
-                if (resuelto) return;
                 var sel = card.querySelector('input[name="pregunta"]:checked');
                 if (!sel) return;                       // requiere una opción
+                var key = sel.value;
+                if (marcadas[key]) { repetir.hidden = false; return; }   // ya puntuada: no recuenta
                 var opt = sel.closest('.opt');
                 var pts = parseInt(opt.getAttribute('data-puntos'), 10) || 0;
                 var correcta = pts > 0;                 // correcta = puntos positivos
-                xp = Math.abs(pts);                     // XP a sumar/restar según la opción elegida
+                var xp = Math.abs(pts);
 
-                opt.classList.remove('correct', 'wrong');
-                opt.classList.add(correcta ? 'correct' : 'wrong');
-
+                opt.classList.add(correcta ? 'correct' : 'wrong');   // queda marcada
                 justifTxt.textContent = opt.getAttribute('data-justif') || '';
                 justif.hidden = false;
 
-                etapaScore = pts;                          // reemplaza el aporte de esta etapa
-                setXP(base + etapaScore);                  // Scope = XP persistido + esta etapa
+                marcadas[key] = true;
+                sel.disabled = true;                       // esa opción ya no se re-marca
+                if (correcta) { liveVerde += pts; } else { liveRojo += xp; }   // el rojo NO se recupera
+                pintarBarra();
+                if (verdeInput) verdeInput.value = liveVerde;
+                if (rojoInput) rojoInput.value = liveRojo;
 
                 if (correcta) {
                     resultado.className = 'resultado ok';
                     resIco.textContent = '✓';
                     resTxt.textContent = '¡Excelente!   + ' + xp + ' XP';
-                    sigBtn.classList.add('enabled');           // habilita Siguiente etapa
-                    resuelto = true;
-                    card.querySelectorAll('input[name="pregunta"]').forEach(function (r) { r.disabled = true; });
-                    comprobar.disabled = true;
-                    if (resInput) resInput.value = huboError ? 'error' : 'perfecta';
-                    if (ptsInput) ptsInput.value = pts;
+                    sigBtn.classList.add('enabled');           // basta una correcta para poder avanzar
                 } else {
                     resultado.className = 'resultado bad';
                     resIco.textContent = '✕';
                     resTxt.textContent = '¡Respuesta incorrecta!   - ' + xp + ' XP';
-                    huboError = true;                          // marca error: cruz en el sidebar
+                    // incorrecta: ya sumó al rojo; el sidebar quedará con cruz (rojo>0)
                 }
                 resultado.hidden = false;
                 repetir.hidden = false;
+                if (Object.keys(marcadas).length >= card.querySelectorAll('input[name="pregunta"]').length) comprobar.disabled = true;
             });
 
             // "Repetir etapa" → confirma con el modal "Reiniciar capítulo"
