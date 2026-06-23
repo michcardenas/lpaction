@@ -48,9 +48,9 @@
             @foreach ($cateterismoVideos as $v)
                 <figure class="video-item">
                     <div class="video-player">
-                        <img src="{{ asset('images/' . $v['file'] . '.png') }}" alt="{{ $v['cap'] }}">
+                        <video src="{{ asset('videos/' . $v['file'] . '.mp4') }}" preload="metadata" playsinline></video>
                         <div class="video-controls">
-                            <button type="button" class="vid-btn vid-play" aria-label="Ver en grande">
+                            <button type="button" class="vid-btn vid-play" aria-label="Reproducir/Pausar">
                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
                             </button>
                             <div class="vid-bar"><i></i></div>
