@@ -3,6 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        /* En celulares fijamos el viewport a 390 → el diseño móvil escala como una imagen */
+        (function () {
+            try { var mn = Math.min(screen.width, screen.height);
+                if (mn && mn < 768) document.querySelector('meta[name="viewport"]').setAttribute('content', 'width=390'); } catch (e) {}
+        })();
+    </script>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $curso['paciente']['nombre'] }} — Presentación del caso</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -51,6 +58,7 @@
         .top-scope { font-weight: 400; font-size: 16px; color: #e9eff1; white-space: nowrap; }
         .top-scope b { color: #fff; font-weight: 700; }
         .top-heart { color: #c9d3d7; display: inline-flex; }
+        .sc-max, .heart-mobile { display: none; }   /* solo en móvil */
 
         /* ===== Cuerpo: sidebar + main ===== */
         .etapa-body { flex: 1; display: flex; min-height: 0; }
@@ -122,7 +130,7 @@
 
         /* tarjeta perfil */
         .perfil-card {
-            background: rgba(255,255,255,0.07);
+            background: rgba(255,255,255,0.16);   /* tu ajuste */
             border: 1px solid rgba(255,255,255,0.16);
             border-radius: 0;
             padding: 24px 26px;
@@ -326,14 +334,183 @@
             padding: 12px 24px; border-radius: 0; cursor: pointer; transition: .2s;
         }
         .btn-next:hover { background: rgba(5,186,238,0.15); border-color: #05BAEE; color: #fff; }
+
+        /* ===== Pop-up "Atención" (al darle Siguiente etapa) — desktop + móvil =====
+           Spec: 358 · radius 32 · borde 1px #FFFFFF40 · fondo blanco 10% · blur 40 · pad 32/16/16/16 · gap 32 */
+        .etapa-popup {
+            position: fixed; inset: 0; z-index: 10002;
+            display: flex; align-items: center; justify-content: center; padding: 16px;
+            background: rgba(8,14,17,0.62); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
+            animation: resetFade .2s ease both;
+        }
+        .etapa-popup[hidden] { display: none; }
+        .ep-card {
+            width: 358px; max-width: 100%;
+            display: flex; flex-direction: column; align-items: center; gap: 32px;
+            padding: 32px 16px 16px; border-radius: 32px; text-align: center;
+            background:
+                radial-gradient(85% 50% at 20% 4%, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 55%),   /* brillito sup-izq */
+                radial-gradient(65% 42% at 84% 6%, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 50%),   /* brillito sup-der */
+                rgba(255,255,255,0.10);
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.40), inset 0 1px 0 rgba(255,255,255,0.35);     /* + brillo borde superior */
+            -webkit-backdrop-filter: blur(40px); backdrop-filter: blur(40px);
+            animation: resetPop .28s cubic-bezier(.22,.61,.36,1) both;
+        }
+        .ep-icon {
+            width: 66px; height: 66px; border-radius: 50%; flex-shrink: 0;
+            display: inline-flex; align-items: center; justify-content: center;
+            background: rgba(255,255,255,0.20); border: 1px solid rgba(255,255,255,0.20); color: #cfe6ef;   /* fondo blanco 20% (tu ajuste) */
+        }
+        .ep-body { display: flex; flex-direction: column; gap: 14px; }
+        .ep-title { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 20px; line-height: 130%; color: #fff; margin: 0; }
+        .ep-text { font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 14px; line-height: 150%; color: rgba(255,255,255,0.80); margin: 0; }
+        .ep-text b { color: #fff; font-weight: 600; }
+        .ep-btn {
+            width: 100%; font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 15px; color: #fff;
+            background: rgba(255,255,255,0.06); border: 0; box-shadow: inset 0 0 0 1px #05BAEE;   /* borde azul */
+            padding: 14px 24px; border-radius: 8px; cursor: pointer; transition: background .2s, color .2s;
+        }
+        .ep-btn:hover, .ep-btn:active, .ep-btn:focus { background: #05BAEE; color: #fff; }   /* al click → azul total */
+
+        /* Hamburguesa (solo móvil) */
+        .etapa-burger { display: none; align-items: center; justify-content: center; width: 30px; height: 30px; color: #05BAEE; background: none; border: 0; cursor: pointer; padding: 0; }
+        .etapa-backdrop { display: none; }
+        .etapa-glow { display: none; }   /* globo de luz, solo móvil */
+        .etapa-juan-m { display: none; }   /* imagen con piso, solo móvil */
+        .etapa-bg-glows { display: none; }   /* globos de fondo, solo móvil */
+
+        /* ===================== MÓVIL (≤767px) ===================== */
+        @media (max-width: 767px) {
+            html, body { height: auto !important; }
+            body { overflow: visible !important; display: block !important; min-height: 100vh; }
+
+            /* Top bar móvil: hamburguesa + score + corazón */
+            .etapa-top {
+                position: sticky; top: 0; z-index: 60;
+                height: 66px !important; padding: 0 16px !important; gap: 16px;
+                background:
+                    radial-gradient(130% 190% at 50% 0%, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.05) 45%, rgba(255,255,255,0) 75%),
+                    #0a0a0c !important;
+                -webkit-backdrop-filter: blur(40px); backdrop-filter: blur(40px);
+                box-shadow: 0 0.5px 0 0 #BFBFBF !important;   /* borde inferior 0.5 #BFBFBF outer */
+                border-bottom: 0 !important;
+            }
+            .top-left { width: auto !important; flex: 0 0 auto; gap: 10px; }
+            .top-name, .top-center, .top-back { display: none !important; }   /* móvil: solo hamburguesa */
+            .etapa-burger { display: inline-flex !important; }
+            .top-right { flex: 1; display: flex; align-items: center; gap: 12px; justify-content: flex-start; }
+            /* Texto "X / 500 Exp" (Medium 14 · ls 2% · blanco, sin "Score:") */
+            .top-scope { font-weight: 500 !important; font-size: 14px !important; letter-spacing: 0.02em !important; color: #FFFFFF !important; flex: 0 0 auto; white-space: nowrap; }
+            .top-scope b { font-weight: 500 !important; color: #FFFFFF !important; }
+            .sc-pre { display: none; }            /* sin "Score:" */
+            .sc-max { display: inline; }           /* sí "/ 500" */
+            /* Barra 8px · radius 99 · #D4D4D4 (borde 0.5) */
+            .score-bar { flex: 1; height: 8px !important; background: #D4D4D4 !important; border-radius: 99px !important; box-shadow: 0 0 0 0.5px #D4D4D4; }
+            /* Corazón = imagen experiencia global 32×32 */
+            .top-heart { flex: 0 0 auto; }
+            .heart-desktop { display: none; }
+            .heart-mobile { display: block !important; width: 32px; height: 32px; }
+
+            /* Sidebar de etapas → drawer lateral (se abre con la hamburguesa, no tapa) */
+            .etapa-body { display: block !important; }
+            .etapa-side {
+                position: fixed !important; top: 0; left: 0; bottom: 0; width: 300px; max-width: 85vw;
+                z-index: 100; transform: translateX(-100%); transition: transform .28s ease;
+                box-shadow: 2px 0 24px rgba(0,0,0,0.55);
+            }
+            .etapa-side.open { transform: translateX(0); }
+            .etapa-backdrop { display: block; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 99; opacity: 0; pointer-events: none; transition: opacity .28s; }
+            .etapa-backdrop.open { opacity: 1; pointer-events: auto; }
+
+            /* ===== Contenido: reflow a COLUMNA (rough — luego detalle) ===== */
+            .etapa-main { width: 100% !important; display: block !important; overflow: visible !important; align-items: stretch !important; justify-content: flex-start !important; }
+            .main-stage { width: 100% !important; height: auto !important; transform: none !important; padding: 20px 16px !important; }
+            .content-col { width: 100% !important; }
+            .seg-top { position: static !important; top: auto !important; right: auto !important; display: inline-flex; margin: 0 0 18px; }
+            .view { position: static !important; inset: auto !important; }
+            .view-scroll, #view-biblio { overflow: visible !important; bottom: auto !important; }
+            /* Juan en flujo, centrado abajo */
+            .etapa-juan {
+                position: relative !important; right: auto !important; top: auto !important;
+                width: 390px !important; max-width: none !important; margin: 24px -16px 0 !important;   /* full-bleed (borde a borde) */
+                height: 480px !important; overflow: hidden;
+                -webkit-mask-image: linear-gradient(to bottom, #000 86%, transparent 100%);
+                mask-image: linear-gradient(to bottom, #000 86%, transparent 100%);                   /* desvanecido inferior */
+            }
+            .etapa-juan .etapa-rings, .etapa-juan-d { display: none !important; }   /* móvil: la imagen ya trae el piso/círculos */
+            .etapa-juan-m {
+                display: block !important; position: absolute !important;
+                left: 0 !important; top: -85px !important;                          /* sube → recorta el vacío de arriba */
+                width: 390px !important; max-width: none !important; height: auto !important; margin: 0 !important;
+                -webkit-mask-image: none !important; mask-image: none !important;
+            }
+            /* Botón "Siguiente etapa": fill · hug 45 · radius 4 · borde 1px #2F728C · pad 12/24 · blanco 10% · blur 40 */
+            .btn-next {
+                position: static !important; right: auto !important; bottom: auto !important;
+                display: block; width: 100%; margin-top: 4px !important; text-align: center;   /* tu ajuste */
+                padding: 12px 24px !important; line-height: 21px !important;                  /* hug 45 */
+                background: rgba(255,255,255,0.22) !important;                                /* blanco 22% (tu ajuste) */
+                border: 0 !important; box-shadow: inset 0 0 0 1px #2F728C !important;
+                border-radius: 4px !important;
+                -webkit-backdrop-filter: blur(40px); backdrop-filter: blur(40px);
+            }
+            /* Tabs (Perfil/Historia/Medicación/Alergias): scroll horizontal, no desbordan la página */
+            .tabs { overflow-x: auto !important; scrollbar-width: none; }
+            .tabs::-webkit-scrollbar { display: none; height: 0; }
+            .tabs .tab { flex: 0 0 auto !important; }
+
+            /* ===== DETALLE: glow + título + cajas de tabs (specs Figma) ===== */
+            .main-stage { position: relative; z-index: 0; overflow-x: clip; }      /* stacking context + contiene el glow */
+            .etapa-glow {
+                display: block; position: absolute; z-index: -1; pointer-events: none;
+                width: 543px; height: 308px; left: 50%; top: 90px; margin-left: -271px;
+                background: #FFFFFF; opacity: 0.22; border-radius: 50%; filter: blur(150px);
+            }
+            /* Globos de luz de fondo (ambiente, distintas esquinas) */
+            .etapa-bg-glows { display: block; position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+            .etapa-bg-glows span { position: absolute; border-radius: 50%; }
+            .etapa-bg-glows span:nth-child(1) { width: 300px; height: 240px; top: -50px;  left: -90px;  background: rgba(255,255,255,0.12); filter: blur(100px); }
+            .etapa-bg-glows span:nth-child(2) { width: 260px; height: 230px; top: 110px;  right: -100px; background: rgba(5,186,238,0.14);  filter: blur(110px); }
+            .etapa-bg-glows span:nth-child(3) { width: 300px; height: 260px; bottom: 200px; left: -110px; background: rgba(130,225,252,0.10); filter: blur(120px); }
+            .etapa-bg-glows span:nth-child(4) { width: 340px; height: 280px; bottom: -70px; right: -90px;  background: rgba(5,186,238,0.12);  filter: blur(120px); }
+            /* Título "Presentación del caso" SemiBold 22/140% #05BAEE */
+            .h-caso { font-size: 22px !important; line-height: 140% !important; margin-bottom: 16px !important; }   /* menos espacio → sube el toggle */
+            /* "Motivo de consulta" (h+p): lo subo un poco + gap interno 8 (img1) */
+            .h-sec:has(+ .motivo-p) { margin-top: -16px !important; margin-bottom: 8px !important; }
+            /* ===== Bibliografía: borrar "Presentación del caso" duplicado + texto Regular 14 + subir título ===== */
+            #view-biblio .h-caso { display: none !important; }                                   /* duplicado fuera */
+            #view-biblio .biblio-list { overflow: visible !important; flex: none !important; padding-right: 0 !important; }
+            .biblio-item { font-weight: 400 !important; font-size: 14px !important; line-height: 150% !important; }   /* Regular 14/150% (img1) */
+            .biblio-h { margin-top: -8px !important; }                                            /* sube el título "Bibliografía" */
+            /* Cajas de tabs: borde 1px #2F728C · pad 4 · gap 8 · blanco 10% · blur 40 */
+            .seg-top, .tabs {
+                width: 100% !important; display: flex !important; gap: 8px !important; padding: 4px !important;
+                background: rgba(255,255,255,0.10) !important; border: 1px solid #2F728C !important;
+                border-radius: 8px !important;                          /* cajas un poco redondeadas */
+                -webkit-backdrop-filter: blur(40px); backdrop-filter: blur(40px);
+            }
+            .seg-top button, .tabs .tab {
+                font-weight: 500 !important; font-size: 12px !important; line-height: 150% !important; letter-spacing: 0.01em !important; padding: 8px 14px !important;
+                border-radius: 6px !important;                          /* botones un poco redondeados */
+            }
+            .seg-top button { flex: 1 !important; }
+            .seg-top button.on, .tabs .tab.on { color: #454545 !important; }
+        }
     </style>
 </head>
 <body>
     <div class="etapa-page">
 
+        {{-- Globos de luz de fondo (ambiente, solo móvil) --}}
+        <div class="etapa-bg-glows" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+
         {{-- ===== TOP BAR ===== --}}
         <header class="etapa-top">
             <div class="top-left">
+                <button type="button" class="etapa-burger" aria-label="Etapas"
+                        onclick="document.querySelector('.etapa-side').classList.toggle('open');document.querySelector('.etapa-backdrop').classList.toggle('open')">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+                </button>
                 <a href="{{ route('curso') }}" class="top-back" aria-label="Volver">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
                 </a>
@@ -347,11 +524,12 @@
             </div>
 
             <div class="top-right">
-                <span class="top-scope">Score: <b><span id="xp-val">{{ $exp ?? 0 }}</span> EXP</b></span>
+                <span class="top-scope"><span class="sc-pre">Score: </span><b><span id="xp-val">{{ $exp ?? 0 }}</span><span class="sc-max"> / {{ $maxScore ?? 500 }}</span> Exp</b></span>
                 @php $mx = max(1, $maxScore ?? 500); $gW = max(0, min(100, ($exp ?? 0) / $mx * 100)); $rW = max(0, min(100 - $gW, ($rojoBase ?? 0) / $mx * 100)); @endphp
                 <span class="bar score-bar" id="score-bar" data-verde="{{ $verdeBase ?? 0 }}" data-rojo="{{ $rojoBase ?? 0 }}" data-max="{{ $mx }}" style="width:120px;"><i id="xp-green" class="green" style="width:{{ $gW }}%"></i><i id="xp-red" class="red" style="width:{{ $rW }}%"></i></span>
                 <span class="top-heart">
-                    <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35c-.3 0-.6-.1-.84-.3C7.2 17.66 2.5 13.88 2.5 9.6 2.5 6.5 4.9 4.5 7.4 4.5c1.8 0 3.42.94 4.6 2.42C13.18 5.44 14.8 4.5 16.6 4.5c2.5 0 4.9 2 4.9 5.1 0 4.28-4.7 8.06-8.66 11.45-.24.2-.54.3-.84.3Z"/></svg>
+                    <svg class="heart-desktop" width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35c-.3 0-.6-.1-.84-.3C7.2 17.66 2.5 13.88 2.5 9.6 2.5 6.5 4.9 4.5 7.4 4.5c1.8 0 3.42.94 4.6 2.42C13.18 5.44 14.8 4.5 16.6 4.5c2.5 0 4.9 2 4.9 5.1 0 4.28-4.7 8.06-8.66 11.45-.24.2-.54.3-.84.3Z"/></svg>
+                    <img class="heart-mobile" src="{{ asset('images/experiencia-global.png') }}" alt="Experiencia" width="32" height="32">
                 </span>
             </div>
         </header>
@@ -387,9 +565,13 @@
                 <div class="side-bottom"></div>
             </aside>
 
+            {{-- Backdrop del drawer (móvil) --}}
+            <div class="etapa-backdrop" onclick="document.querySelector('.etapa-side').classList.remove('open');this.classList.remove('open')"></div>
+
             {{-- Main --}}
             <main class="etapa-main">
               <div class="main-stage">
+                <div class="etapa-glow" aria-hidden="true"></div>
 
                 {{-- Toggle Contenido / Bibliografía --}}
                 <div class="seg seg-top">
@@ -415,27 +597,42 @@
                 {{-- Paciente (solo en Presentación) --}}
                 @if ($etapaActual === 'presentacion')
                 <div class="etapa-juan">
-                    {{-- anillos en la base --}}
-                    <svg style="position:absolute; left:50%; bottom:6px; transform:translateX(-50%); opacity:.5;" width="460" height="120" viewBox="0 0 460 120" fill="none" aria-hidden="true">
+                    {{-- anillos en la base (solo desktop; en móvil la imagen ya los trae) --}}
+                    <svg class="etapa-rings" style="position:absolute; left:50%; bottom:6px; transform:translateX(-50%); opacity:.5;" width="460" height="120" viewBox="0 0 460 120" fill="none" aria-hidden="true">
                         @for ($r = 1; $r <= 4; $r++)
                             <ellipse cx="230" cy="105" rx="{{ $r * 52 }}" ry="{{ $r * 13 }}" stroke="#7fa6b2" stroke-width="1" opacity="{{ 0.5 - $r * 0.1 }}"/>
                         @endfor
                     </svg>
-                    <img src="{{ asset($curso['paciente']['imagen']) }}" alt="{{ $curso['paciente']['nombre'] }}">
+                    <img class="etapa-juan-d" src="{{ asset($curso['paciente']['imagen']) }}" alt="{{ $curso['paciente']['nombre'] }}">
+                    <img class="etapa-juan-m" src="{{ asset('images/paciente.png') }}" alt="{{ $curso['paciente']['nombre'] }}">
                 </div>
                 @endif
 
                 {{-- Siguiente etapa (botón flotante; las etapas con cuestionario llevan el suyo dentro) --}}
                 @unless (in_array($etapaActual, ['pruebas', 'riesgo', 'terapeutico', 'monitorizacion', 'monitorizacion-2', 'resumen']))
-                <form method="POST" action="{{ route('curso.avanzar', $ingreso) }}" style="display:contents;">
+                <form method="POST" action="{{ route('curso.avanzar', $ingreso) }}" id="form-avanzar" style="display:contents;">
                     @csrf
                     <input type="hidden" name="desde" value="{{ $etapaActual }}">
-                    <button type="submit" class="btn-next">{{ $esUltimaEtapa ? 'Finalizar ingreso' : 'Siguiente etapa' }}</button>
+                    <button type="button" class="btn-next" onclick="document.getElementById('etapa-popup').removeAttribute('hidden')">{{ $esUltimaEtapa ? 'Finalizar ingreso' : 'Siguiente etapa' }}</button>
                 </form>
                 @endunless
 
               </div>{{-- /main-stage --}}
             </main>
+        </div>
+
+        {{-- Pop-up "Atención: más de una respuesta correcta" (al darle Siguiente etapa) --}}
+        <div class="etapa-popup" id="etapa-popup" hidden>
+            <div class="ep-card" role="dialog" aria-modal="true" aria-labelledby="ep-title">
+                <span class="ep-icon">
+                    <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M12 16.5v-5"/><path d="M12 8h.01"/></svg>
+                </span>
+                <div class="ep-body">
+                    <h3 class="ep-title" id="ep-title">Atención: puede haber más de una respuesta correcta</h3>
+                    <p class="ep-text">En algunas preguntas <b>puede haber una, dos o tres opciones correctas</b>. Aunque el botón <b>"Siguiente etapa"</b> se active al seleccionar una respuesta válida, tu objetivo es identificar todas las opciones correctas antes de avanzar. Para <b>repetir una pregunta</b>, pulsa <b>"Siguiente etapa"</b> y luego <b>vuelve</b> al <b>capítulo marcado en rojo</b>. Desde ahí podrás <b>repetir únicamente esa pregunta</b>.</p>
+                </div>
+                <button type="button" class="ep-btn" onclick="document.getElementById('form-avanzar').submit()">Entendido</button>
+            </div>
         </div>
 
         {{-- Modal: Reiniciar capítulo (confirmación de "Repetir etapa") --}}
@@ -528,17 +725,30 @@
                 var main = document.querySelector('.etapa-main');
                 var stage = document.querySelector('.main-stage');
                 if (!main || !stage) return;
+                if (window.innerWidth < 768) { stage.style.transform = ''; return; }   // móvil: sin escalado (layout en columna)
                 if (!main.clientWidth || !main.clientHeight) { requestAnimationFrame(scaleMainStage); return; }
                 var s = Math.min(main.clientWidth / 1080, main.clientHeight / 824);
                 s = Math.min(Math.max(s, 0.2), 1.6);   // tope alto → en pantallas grandes el contenido llena más
                 stage.style.transform = 'scale(' + s + ')';
             }
+            // Móvil: mueve el título del caso (.h-caso) ARRIBA del toggle Contenido/Bibliografía
+            function moveCasoTitle() {
+                if (window.innerWidth >= 768) return;
+                var seg = document.querySelector('.seg-top');
+                var h = document.querySelector('#view-contenido .h-caso');
+                if (seg && h && !seg.previousElementSibling?.classList?.contains('h-caso')) seg.parentNode.insertBefore(h, seg);
+            }
             setTimeout(scaleMainStage, 250);
             window.addEventListener('resize', scaleMainStage);
             window.addEventListener('load', scaleMainStage);
-            if (document.readyState !== 'loading') scaleMainStage();
-            else document.addEventListener('DOMContentLoaded', scaleMainStage);
+            if (document.readyState !== 'loading') { scaleMainStage(); moveCasoTitle(); }
+            else document.addEventListener('DOMContentLoaded', function () { scaleMainStage(); moveCasoTitle(); });
             if (document.fonts && document.fonts.ready) document.fonts.ready.then(scaleMainStage);
+            // Móvil: al tocar un tab (Perfil/Historia/Medicación/Alergias) lo trae a la vista (scroll horizontal)
+            document.addEventListener('click', function (e) {
+                var t = e.target.closest('.tabs .tab');
+                if (t && window.innerWidth < 768) t.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+            });
         })();
 
         // ===== Toggle Contenido / Bibliografía =====
