@@ -3,6 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {{-- En celulares: bloquea el diseño a 390px y deja que el navegador lo escale → se ve idéntico
+         (como una imagen) en cualquier ancho de teléfono, sin romperse. Tablets quedan para después. --}}
+    <script>
+        (function () {
+            var vp = document.querySelector('meta[name="viewport"]');
+            if (!vp) return;
+            function apply() {
+                var phone = Math.min(screen.width || 9999, screen.height || 9999) < 768;
+                vp.setAttribute('content', phone ? 'width=390' : 'width=device-width, initial-scale=1.0');
+            }
+            apply();
+            window.addEventListener('orientationchange', apply);
+        })();
+    </script>
     <title>Registro — Lp(a)ction</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -96,23 +110,141 @@
         .reg-loader-text.is-dissolving { opacity: 0; }
         .reg-loader-title { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 24px; color: #fff; margin: 0 0 14px; }
         .reg-loader-sub { font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 15px; line-height: 150%; color: rgba(255, 255, 255, 0.78); margin: 0 auto; max-width: 380px; }
+
+        /* ── Nav superior fijo (spec Figma móvil): 64px · padding 16 · space-between
+              · borde inf 0.5px #BFBFBF · glass (radial blanco + blur 40) ── */
+        @media (max-width: 767px) {
+            .reg-nav {
+                position: sticky; top: 0; z-index: 50;
+                height: 64px;
+                /* glass oscuro: base + radial blanco (spec white 25–50%, atenuado para verse como el Figma) + blur 40 */
+                background: radial-gradient(120% 190% at 80% 0%, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.04) 55%, transparent 100%), #0a0a0c;
+                -webkit-backdrop-filter: blur(40px);
+                backdrop-filter: blur(40px);
+                border-bottom: 0.5px solid #BFBFBF;
+            }
+            .reg-nav-inner {
+                max-width: 100% !important;
+                padding-left: 16px !important; padding-right: 16px !important;
+                height: 64px !important;
+            }
+            .reg-nav-sec { height: 36px !important; }
+            .reg-nav-btn {
+                font-family: 'Montserrat', sans-serif !important;
+                font-weight: 500 !important; font-size: 12px !important; letter-spacing: 0.01em !important; line-height: 150% !important;
+                color: #FFFFFF !important; background: #05BAEE !important;
+                padding: 12px 16px !important; border-radius: 4px !important; text-decoration: none !important;
+            }
+
+            /* ── Cuerpo del registro en móvil: la página scrollea + form a 358 (Fill) ── */
+            body.login-bg { height: auto !important; min-height: 100vh; }
+            main.reg-scale-outer {
+                overflow: visible !important; height: auto !important;
+                display: block !important;
+            }
+            /* Imagen de fondo (molécula bg removido): 358×321 · drop shadow 0 4 4 #000 50%
+               · FIJA al fondo (no scrollea con el form) */
+            .reg-molecule {
+                display: block !important;
+                position: fixed !important;
+                left: 50% !important; right: auto !important;
+                transform: translateX(-50%) !important;
+                top: 150px !important;
+                width: 358px !important; height: 321px !important;
+                object-fit: contain !important;
+                filter: drop-shadow(0 4px 4px rgba(0,0,0,0.50)) !important;
+                z-index: 0 !important;
+            }
+            .reg-stage > div {
+                padding-left: 16px !important; padding-right: 16px !important;
+            }
+            /* Form card (spec Figma): Fill 358 · padding 16 · gap 16 · bg #000 5% · borde 1px #000 10% · blur 12.
+               El .reg-card ya trae bg/borde/blur que coinciden → solo fijo ancho, padding y gap. */
+            #reg-form.reg-card {
+                max-width: 100% !important; width: 100% !important;
+                padding: 16px !important;
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 16px !important;
+            }
+            #reg-form.reg-card > * { margin: 0 !important; }   /* gap 16 entre bloques */
+            /* Label de campo: "texto" + "*" con gap ~8 (el span .req + el espacio existente) */
+            .login-label .req { margin-left: 4px; }
+            /* Bloque (spec Figma): vertical · gap 8 (título↔campos · campo↔campo) · 326 ancho */
+            .reg-block { display: flex !important; flex-direction: column !important; gap: 8px !important; }
+            .reg-block > * { margin: 0 !important; }
+            #reg-form .grid { gap: 8px !important; }            /* campos dentro de cada grid a 8 */
+            /* Título "Registro": Montserrat SemiBold 22 / 140% / ls0 / #111111 */
+            .reg-title {
+                font-family: 'Montserrat', sans-serif !important;
+                font-weight: 600 !important;
+                font-size: 22px !important;
+                line-height: 140% !important;
+                letter-spacing: 0 !important;
+                color: #111111 !important;
+            }
+
+            /* ── Footer registro móvil: copyright centrado (2 líneas) + links 1 fila + divisor ── */
+            .footer-dark .max-w-7xl {
+                padding-left: 16px !important; padding-right: 16px !important;
+                gap: 14px !important;
+            }
+            .footer-dark p.footer-txt { text-align: center !important; }
+            .reg-footer-links {
+                width: 100% !important;
+                justify-content: center !important;
+                flex-wrap: nowrap !important;
+                border-top: 0.5px solid rgba(255,255,255,0.18);
+                padding-top: 14px;
+            }
+            .reg-footer-links a { white-space: nowrap !important; }
+            .reg-footer-links span { margin: 0 8px !important; }   /* separadores más pegados → caben en 1 fila */
+
+            /* ── Modal loader "Registro completado" (spec Figma): 358 · Hug 308 · radius 32 · borde 1px #FFF40
+                  · padding 32/16/16/16 · gap 32 · bg #FFF10 · blur 40 · spinner 139 · texto gap 16 ── */
+            .reg-loader-card {
+                width: 358px !important;
+                height: auto !important; min-height: 0 !important;
+                padding: 32px 16px 16px !important;
+                gap: 32px !important;
+            }
+            .reg-spinner { width: 139px !important; height: 139px !important; }
+            /* Título modal: Montserrat SemiBold 22 / 140% / ls0 / blanco · gap 16 al subtítulo */
+            .reg-loader-title {
+                font-family: 'Montserrat', sans-serif !important;
+                font-weight: 600 !important;
+                font-size: 22px !important;
+                line-height: 140% !important;
+                letter-spacing: 0 !important;
+                color: #FFFFFF !important;
+                margin: 0 0 16px !important;
+            }
+            /* Subtítulo modal: Montserrat Regular 14 / 150% / ls0 / blanco / 326 */
+            .reg-loader-sub {
+                font-family: 'Montserrat', sans-serif !important;
+                font-weight: 400 !important;
+                font-size: 14px !important;
+                line-height: 150% !important;
+                letter-spacing: 0 !important;
+                color: #FFFFFF !important;
+                width: 326px !important; max-width: 100% !important;
+            }
+        }
     </style>
 </head>
 <body class="login-bg h-screen flex flex-col text-[#1b2a31]">
 
-    {{-- Header --}}
-    <header class="header-bar text-white">
-        <div class="max-w-7xl mx-auto px-6 lg:px-10 h-16 flex items-center justify-between">
+    {{-- Header / Nav superior fijo (spec Figma móvil) --}}
+    <header class="reg-nav header-bar text-white">
+        <div class="reg-nav-inner max-w-7xl mx-auto px-6 lg:px-10 h-16 flex items-center justify-between">
+            {{-- Logo Lp(a)ction (izq) --}}
             <a href="{{ route('home') }}" class="shrink-0 flex items-center">
                 <img src="{{ asset('images/logo-lpaction.svg') }}" alt="Lp(a)ction" class="h-7 w-auto">
             </a>
-            <div class="flex items-center gap-4 lg:gap-5">
-                <div class="hidden md:flex items-center gap-2.5">
-                    <span class="org-text text-white/80">Organizado por:</span>
-                    <img src="{{ asset('images/sec-logo.png') }}" alt="Sociedad Española de Cardiología" class="h-9 w-auto">
-                </div>
-                <a href="{{ route('login') }}" class="btn-acceder">Acceder</a>
-            </div>
+            {{-- Logo SEC (centro en móvil) --}}
+            <img src="{{ asset('images/sec-logo-hd.png') }}" alt="Sociedad Española de Cardiología" class="reg-nav-sec" style="height:36px; width:auto; object-fit:contain;">
+            {{-- Acceder (der) --}}
+            <a href="{{ route('login') }}" class="btn-acceder reg-nav-btn">Acceder</a>
         </div>
     </header>
 
@@ -121,12 +253,13 @@
 
         <div class="reg-stage">
         <div class="relative z-10 px-6 lg:px-10 pt-6 lg:pt-7 pb-6">
-            <h1 class="text-3xl lg:text-[32px] font-semibold mb-3">Registro</h1>
+            <h1 class="reg-title text-3xl lg:text-[32px] font-semibold mb-3">Registro</h1>
 
             <form id="reg-form" action="{{ route('register') }}" method="POST" class="reg-card p-4" style="max-width:1284px;">
                 @csrf
 
-                {{-- 1. Datos personales --}}
+                {{-- 1. Datos personales (bloque · gap 8) --}}
+                <div class="reg-block">
                 <h2 class="sec-title mb-3">1. Datos personales</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-3 mb-3">
                     <div>
@@ -185,6 +318,7 @@
                         <input name="password_confirmation" type="password" placeholder="Repite tu contraseña" class="login-input w-full px-4 py-2">
                     </div>
                 </div>
+                </div>{{-- /bloque Datos personales --}}
 
                 {{-- 2. Datos profesionales --}}
                 <h2 class="sec-title mt-4 mb-3">2. Datos profesionales</h2>
@@ -272,7 +406,7 @@
             <p class="footer-txt text-white/70 text-center md:text-left">
                 © 2026 Sociedad Española de Cardiología. Plataforma tecnológica y metodología por © Qualimed Ediciones S.L.
             </p>
-            <div class="flex items-center footer-txt text-white/85">
+            <div class="reg-footer-links flex items-center footer-txt text-white/85">
                 <a href="#" class="hover:text-[#05BAEE] transition-colors">Aviso legal</a>
                 <span style="display:inline-block; width:1px; height:14px; background:rgba(255,255,255,0.35); margin:0 20px;"></span>
                 <a href="#" class="hover:text-[#05BAEE] transition-colors">Política de privacidad</a>

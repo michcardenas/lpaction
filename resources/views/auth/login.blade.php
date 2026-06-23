@@ -3,6 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {{-- En celulares: bloquea el diseño a 390px y deja que el navegador lo escale → se ve idéntico
+         (como una imagen) en cualquier ancho de teléfono, sin romperse. Tablets quedan para después. --}}
+    <script>
+        (function () {
+            var vp = document.querySelector('meta[name="viewport"]');
+            if (!vp) return;
+            function apply() {
+                var phone = Math.min(screen.width || 9999, screen.height || 9999) < 768;
+                vp.setAttribute('content', phone ? 'width=390' : 'width=device-width, initial-scale=1.0');
+            }
+            apply();
+            window.addEventListener('orientationchange', apply);
+        })();
+    </script>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Ingreso — Lp(a)ction</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -92,23 +106,117 @@
             line-height: 150%;
             letter-spacing: 0.01em;
         }
+
+        /* ── Loader "Accediendo al curso" (mismo modal que el registro) ── */
+        .reg-loader-overlay { position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center; background: rgba(26,38,44,0.55); opacity: 0; transition: opacity .35s ease; }
+        .reg-loader-overlay[hidden] { display: none; }
+        .reg-loader-overlay.is-visible { opacity: 1; }
+        .reg-loader-card { width: 540px; height: 442px; padding: 64px 32px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 64px; border-radius: 32px; background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.40); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px); box-shadow: 0 30px 90px rgba(0,0,0,0.28); transform: scale(0.94); transition: transform .45s cubic-bezier(.2,.8,.2,1); text-align: center; }
+        .reg-loader-overlay.is-visible .reg-loader-card { transform: scale(1); }
+        .reg-spinner { width: 160px; height: 160px; animation: reg-spin 1.1s linear infinite; }
+        .reg-spin-track { fill: none; stroke: rgba(255,255,255,0.16); stroke-width: 1.6; }
+        .reg-spin-arc { fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-dasharray: 46 180; }
+        @keyframes reg-spin { to { transform: rotate(360deg); } }
+        .reg-loader-title { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 24px; color: #fff; margin: 0 0 14px; }
+        .reg-loader-sub { font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 15px; line-height: 150%; color: rgba(255,255,255,0.78); margin: 0 auto; max-width: 380px; }
+        /* Modal a spec Figma móvil: 358 · padding 32/16 · gap 32 · spinner 139 · título 22 · sub 14 */
+        @media (max-width: 767px) {
+            .reg-loader-card { width: 358px; height: auto; min-height: 0; padding: 32px 16px 16px; gap: 32px; }
+            .reg-spinner { width: 139px; height: 139px; }
+            .reg-loader-title { font-weight: 600; font-size: 22px; line-height: 140%; letter-spacing: 0; color: #FFFFFF; margin: 0 0 16px; }
+            .reg-loader-sub { font-weight: 400; font-size: 14px; line-height: 150%; letter-spacing: 0; color: #FFFFFF; width: 326px; max-width: 100%; }
+        }
+
+        /* ── Móvil: nav glass + molécula fija + footer (igual que registro) ── */
+        @media (max-width: 767px) {
+            /* Nav superior fijo */
+            .reg-nav {
+                position: sticky; top: 0; z-index: 50; height: 64px;
+                background: radial-gradient(120% 190% at 80% 0%, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.04) 55%, transparent 100%), #0a0a0c;
+                -webkit-backdrop-filter: blur(40px); backdrop-filter: blur(40px);
+                border-bottom: 0.5px solid #BFBFBF;
+            }
+            .reg-nav-inner { max-width: 100% !important; padding-left: 16px !important; padding-right: 16px !important; height: 64px !important; }
+            .reg-nav-sec { height: 36px !important; }
+            .reg-nav-btn {
+                font-family: 'Montserrat', sans-serif !important; font-weight: 500 !important; font-size: 12px !important;
+                letter-spacing: 0.01em !important; line-height: 150% !important; color: #FFFFFF !important; background: #05BAEE !important;
+                padding: 12px 16px !important; border-radius: 4px !important; text-decoration: none !important;
+            }
+            /* Molécula de fondo: 358×321 · FIJA · drop shadow 0 4 4 #000 50% */
+            main { overflow: visible !important; }
+            .login-molecule {
+                position: fixed !important; left: 50% !important; right: auto !important;
+                transform: translateX(-50%) !important; top: 150px !important;
+                width: 358px !important; height: 321px !important; object-fit: contain !important;
+                filter: drop-shadow(0 4px 4px rgba(0,0,0,0.50)) !important; z-index: 0 !important;
+            }
+            /* Footer: copyright centrado (2 líneas) + links 1 fila + divisor */
+            .footer-dark .max-w-7xl { padding-left: 16px !important; padding-right: 16px !important; gap: 14px !important; }
+            .footer-dark p.footer-txt { text-align: center !important; }
+            .reg-footer-links {
+                width: 100% !important; justify-content: center !important; flex-wrap: nowrap !important;
+                border-top: 0.5px solid rgba(255,255,255,0.18); padding-top: 14px;
+            }
+            .reg-footer-links a { white-space: nowrap !important; }
+            .reg-footer-links span { margin: 0 8px !important; }
+
+            /* ── Formulario Ingreso (spec Figma): título SemiBold 22 · form Fill 358 · gap 16 ── */
+            .login-content { padding-left: 16px !important; padding-right: 16px !important; }
+            .login-title {
+                font-family: 'Montserrat', sans-serif !important;
+                font-weight: 600 !important;
+                font-size: 22px !important;
+                line-height: 140% !important;
+                letter-spacing: 0 !important;
+                color: #111111 !important;
+            }
+            #login-form.login-card {
+                max-width: 100% !important; width: 100% !important;
+                padding: 16px !important;
+                display: flex !important; flex-direction: column !important; gap: 16px !important;
+            }
+            #login-form.login-card > * { margin: 0 !important; }   /* gap 16 controla todo */
+            .login-cta { gap: 16px !important; }                    /* Ingresar ↔ Crear cuenta */
+            /* subir la caja un poco (menos espacio título ↔ form) */
+            .login-title { margin-bottom: 16px !important; }
+            /* Inputs (campo 326×78): gap 4 entre label e input */
+            #login-form .login-label { margin-bottom: 4px !important; }
+            /* Recordar (selector/checkbox): gap 16 checkbox ↔ texto */
+            .login-remember { gap: 16px !important; }
+            /* Recuperar contraseña: botón ghost full-width · radius 4 · padding 12/4 · centrado */
+            .login-recuperar {
+                display: block !important; width: 100% !important; text-align: center !important;
+                padding: 12px 4px !important; border-radius: 4px !important;
+            }
+            /* Ingresar: full-width · radius 4 · padding 12/24 */
+            .login-cta .btn-primary {
+                width: 100% !important; border-radius: 4px !important; align-self: stretch !important;
+                padding: 12px 24px !important;
+            }
+            /* ── Tamaños de letra (spec Figma) ── */
+            #login-form .login-label { font-size: 14px !important; }   /* labels Usuario / Contraseña */
+            /* Recordar: Montserrat Medium 14 / 150% / ls 2% / #575757 */
+            .login-remember span {
+                font-family: 'Montserrat', sans-serif !important;
+                font-weight: 500 !important; font-size: 14px !important;
+                line-height: 150% !important; letter-spacing: 0.02em !important; color: #575757 !important;
+            }
+            /* "Soy médico y no estoy registrado. Crear cuenta" en una sola línea */
+            .login-cta p { font-size: 12px !important; white-space: nowrap !important; }
+        }
     </style>
 </head>
 <body class="login-bg min-h-screen flex flex-col text-[#1b2a31]">
 
-    {{-- Header (dark, sin menú) --}}
-    <header class="header-bar text-white">
-        <div class="max-w-7xl mx-auto px-6 lg:px-10 h-16 flex items-center justify-between">
+    {{-- Header / Nav superior fijo (igual que registro) --}}
+    <header class="reg-nav header-bar text-white">
+        <div class="reg-nav-inner max-w-7xl mx-auto px-6 lg:px-10 h-16 flex items-center justify-between">
             <a href="{{ route('home') }}" class="shrink-0 flex items-center">
                 <img src="{{ asset('images/logo-lpaction.svg') }}" alt="Lp(a)ction" class="h-7 w-auto">
             </a>
-            <div class="flex items-center gap-4 lg:gap-5">
-                <div class="hidden md:flex items-center gap-2.5">
-                    <span class="org-text text-white/80">Organizado por:</span>
-                    <img src="{{ asset('images/sec-logo.png') }}" alt="Sociedad Española de Cardiología" class="h-9 w-auto">
-                </div>
-                <a href="{{ route('login') }}" class="btn-acceder">Acceder</a>
-            </div>
+            <img src="{{ asset('images/sec-logo-hd.png') }}" alt="Sociedad Española de Cardiología" class="reg-nav-sec" style="height:36px; width:auto; object-fit:contain;">
+            <a href="{{ route('register') }}" class="btn-acceder reg-nav-btn">Acceder</a>
         </div>
     </header>
 
@@ -118,9 +226,9 @@
         <img class="login-molecule" src="{{ asset('images/molecula-lpa.png') }}" alt="Lp(a)" aria-hidden="true">
 
         <div class="login-content">
-            <h1 class="text-3xl lg:text-[34px] font-semibold mb-7">Ingreso</h1>
+            <h1 class="login-title text-3xl lg:text-[34px] font-semibold mb-7">Ingreso</h1>
 
-            <form action="{{ route('login') }}" method="POST" class="login-card w-full max-w-[790px] p-7 lg:p-9">
+            <form id="login-form" action="{{ route('login') }}" method="POST" class="login-card w-full max-w-[790px] p-7 lg:p-9">
                 @csrf
 
                 @if ($errors->any())
@@ -154,19 +262,19 @@
                 </div>
 
                 {{-- Recordar --}}
-                <label class="flex items-center gap-2.5 mb-5 cursor-pointer select-none">
+                <label class="login-remember flex items-center gap-2.5 mb-5 cursor-pointer select-none">
                     <input type="checkbox" name="remember"
                            class="w-[18px] h-[18px] rounded-[4px] border border-[#c3ced3] accent-[#05BAEE] cursor-pointer">
                     <span class="text-[14px] text-[#3a4a52]">Recordar usuario y contraseña</span>
                 </label>
 
-                {{-- Recuperar --}}
-                <a href="#" class="inline-block text-[14px] text-[#3a4a52] hover:text-[#05BAEE] transition-colors mb-7">
+                {{-- Recuperar (botón ghost full-width) --}}
+                <a href="#" class="login-recuperar inline-block text-[14px] text-[#3a4a52] hover:text-[#05BAEE] transition-colors mb-7">
                     Recuperar contraseña
                 </a>
 
-                {{-- Acciones --}}
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
+                {{-- Acciones (cta) --}}
+                <div class="login-cta flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
                     <button type="submit" class="btn-primary self-start">Ingresar</button>
                     <p class="text-[14px] text-[#3a4a52]">
                         Soy médico y no estoy registrado.
@@ -184,7 +292,7 @@
             <p class="footer-txt text-white/70 text-center md:text-left">
                 © 2026 Sociedad Española de Cardiología. Plataforma tecnológica y metodología por © Qualimed Ediciones S.L.
             </p>
-            <div class="flex items-center footer-txt text-white/85">
+            <div class="reg-footer-links flex items-center footer-txt text-white/85">
                 <a href="#" class="hover:text-[#05BAEE] transition-colors">Aviso legal</a>
                 <span style="display:inline-block; width:1px; height:14px; background:rgba(255,255,255,0.35); margin:0 20px;"></span>
                 <a href="#" class="hover:text-[#05BAEE] transition-colors">Política de privacidad</a>
@@ -193,6 +301,27 @@
             </div>
         </div>
     </footer>
+
+    {{-- Loader "Accediendo al curso" (aparece al pulsar Ingresar) --}}
+    <div id="login-loader" class="reg-loader-overlay" hidden>
+        <div class="reg-loader-card">
+            <svg class="reg-spinner" viewBox="0 0 50 50" aria-hidden="true">
+                <defs>
+                    <linearGradient id="loginSpin" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#05BAEE" stop-opacity="0"/>
+                        <stop offset="60%" stop-color="#05BAEE" stop-opacity=".5"/>
+                        <stop offset="100%" stop-color="#05BAEE" stop-opacity="1"/>
+                    </linearGradient>
+                </defs>
+                <circle class="reg-spin-track" cx="25" cy="25" r="20"/>
+                <circle class="reg-spin-arc" cx="25" cy="25" r="20" stroke="url(#loginSpin)"/>
+            </svg>
+            <div class="reg-loader-text">
+                <h3 class="reg-loader-title">Accediendo al curso</h3>
+                <p class="reg-loader-sub">Esto solo tardará unos segundos.</p>
+            </div>
+        </div>
+    </div>
 
     <script>
         function togglePwd() {
@@ -213,6 +342,20 @@
             if (document.readyState !== 'loading') scaleLogin();
             else document.addEventListener('DOMContentLoaded', scaleLogin);
             if (document.fonts && document.fonts.ready) document.fonts.ready.then(scaleLogin);
+        })();
+
+        // ===== Loader "Accediendo al curso" al pulsar Ingresar =====
+        (function () {
+            var form = document.getElementById('login-form');
+            var overlay = document.getElementById('login-loader');
+            if (!form || !overlay) return;
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                overlay.hidden = false;
+                void overlay.offsetWidth;           // reflow → anima la entrada
+                overlay.classList.add('is-visible');
+                setTimeout(function () { form.submit(); }, 1600);  // muestra el loader y luego envía
+            });
         })();
     </script>
 </body>
