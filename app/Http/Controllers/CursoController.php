@@ -211,7 +211,11 @@ class CursoController extends Controller
         ]);
     }
 
-    /** "Reiniciar capítulo": borra las respuestas y puntos SOLO de esta etapa; el resto del progreso queda intacto. */
+    /**
+     * "Repetir etapa": reabre el capítulo para repasarlo o seguir respondiendo.
+     * NO borra nada: el verde y el rojo ya acumulados se conservan (el rojo no se
+     * recupera) y el score acumulado no cambia. Solo se vuelve a la etapa.
+     */
     public function reiniciar(Request $request, $ingreso)
     {
         $user = Auth::user();
@@ -222,10 +226,7 @@ class CursoController extends Controller
         $idx = array_search($etapaKey, array_column($etapas, 'key'), true);
         abort_if($idx === false, 404);
 
-        $resultados = $progreso->etapas ?? [];
-        unset($resultados[$etapaKey]);                 // limpia verde/rojo/sel SOLO de este capítulo
-        $progreso->update(['etapas' => $resultados]);  // etapa_index y el resto del progreso NO se tocan
-
+        // Sin cambios en los puntos: solo se reabre la etapa (no se quita nada de lo ya hecho).
         return redirect()->route('curso.etapa', [$ingreso, $etapaKey]);
     }
 

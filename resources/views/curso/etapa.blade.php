@@ -583,7 +583,7 @@
 
             <div class="top-right">
                 <span class="top-scope"><span class="sc-pre">Score: </span><b><span id="xp-val">{{ $exp ?? 0 }}</span><span class="sc-max"> / {{ $maxScore ?? 450 }}</span> Exp</b></span>
-                @php $mx = max(1, $maxScore ?? 450); $gW = max(0, min(100, ($exp ?? 0) / $mx * 100)); $rW = max(0, min(100 - $gW, ($rojoBase ?? 0) / $mx * 100)); @endphp
+                @php $mx = max(1, $maxScore ?? 450); $gW = max(0, min(100, ($verdeBase ?? 0) / $mx * 100)); $rW = max(0, min(100 - $gW, ($rojoBase ?? 0) / $mx * 100)); @endphp
                 <span class="bar score-bar" id="score-bar" data-verde="{{ $verdeBase ?? 0 }}" data-rojo="{{ $rojoBase ?? 0 }}" data-max="{{ $mx }}" style="width:120px;"><i id="xp-green" class="green" style="width:{{ $gW }}%"></i><i id="xp-red" class="red" style="width:{{ $rW }}%"></i></span>
                 <span class="top-heart">
                     <svg class="heart-desktop" width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35c-.3 0-.6-.1-.84-.3C7.2 17.66 2.5 13.88 2.5 9.6 2.5 6.5 4.9 4.5 7.4 4.5c1.8 0 3.42.94 4.6 2.42C13.18 5.44 14.8 4.5 16.6 4.5c2.5 0 4.9 2 4.9 5.1 0 4.28-4.7 8.06-8.66 11.45-.24.2-.54.3-.84.3Z"/></svg>
@@ -718,14 +718,14 @@
                 <span class="reset-ico">
                     <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
                 </span>
-                <h3 class="reset-title" id="reset-title">Reiniciar etapa</h3>
-                <p class="reset-text">Vas a repetir este capítulo. Si continúas, se eliminarán tus respuestas y los puntos obtenidos solo en esta sección. El resto de tu progreso no se verá afectado.<br><strong>¿Quieres reiniciar este capítulo?</strong></p>
+                <h3 class="reset-title" id="reset-title">Repetir etapa</h3>
+                <p class="reset-text">Vas a repetir este capítulo. Tus respuestas y los puntos ya obtenidos se conservan (el rojo no se recupera); solo volverás a abrirlo para repasarlo o seguir respondiendo.<br><strong>¿Quieres repetir este capítulo?</strong></p>
                 <div class="reset-actions">
                     <button type="button" class="reset-cancel" id="reset-cancel">Cancelar</button>
                     <form method="POST" action="{{ route('curso.reiniciar', $ingreso) }}" style="margin:0;">
                         @csrf
                         <input type="hidden" name="etapa" value="{{ $etapaActual }}">
-                        <button type="submit" class="reset-confirm" id="reset-confirm">Reiniciar etapa</button>
+                        <button type="submit" class="reset-confirm" id="reset-confirm">Repetir etapa</button>
                     </form>
                 </div>
             </div>
@@ -814,11 +814,13 @@
             ->filter(fn ($m) => (int) ($m['min'] ?? 0) > 0)
             ->map(function ($m) {
                 $img = 'images/medalla-' . $m['key'] . '.png';
+                $snd = 'sounds/' . ($m['key'] === 'oro' ? 'medalla-oro.mp3' : 'medalla-win.mp3');
                 return [
                     'min'    => (int) $m['min'],
                     'titulo' => $m['unlock']['titulo'] ?? ('¡' . ($m['label'] ?? 'Medalla') . ' alcanzada!'),
                     'texto'  => $m['unlock']['texto'] ?? ($m['texto'] ?? ''),
                     'img'    => file_exists(public_path($img)) ? asset($img) : '',
+                    'sound'  => file_exists(public_path($snd)) ? asset($snd) : '',
                 ];
             })->sortBy('min')->values()->all();
     @endphp
@@ -899,6 +901,28 @@
             var modal = document.getElementById('medal-unlock');
             if (!modal) return;
             var MED = @json($medallasUnlock);   // ordenadas asc por 'min'
+
+            // Precarga de los sonidos de medalla (archivos ligeros) para que suenen al instante, sin lag.
+            var sndCache = {};
+            MED.forEach(function (m) {
+                if (m.sound && !sndCache[m.sound]) {
+                    var a = new Audio(m.sound);
+                    a.preload = 'auto';
+                    try { a.load(); } catch (e) {}
+                    sndCache[m.sound] = a;
+                }
+            });
+            function sonar(m) {
+                if (!m || !m.sound) return;
+                var a = sndCache[m.sound] || (sndCache[m.sound] = new Audio(m.sound));
+                try {
+                    a.pause();
+                    a.currentTime = 0;                 // siempre desde el inicio
+                    var p = a.play();
+                    if (p && p.catch) p.catch(function () {});   // si el navegador bloquea el autoplay: silencioso, sin error
+                } catch (e) {}
+            }
+
             var sb = document.getElementById('score-bar');
             var inicial = sb ? ((parseInt(sb.getAttribute('data-verde'), 10) || 0) - (parseInt(sb.getAttribute('data-rojo'), 10) || 0)) : 0;
             function idxFor(s) { var i = -1; MED.forEach(function (m, k) { if (s >= m.min) i = k; }); return i; }
@@ -910,6 +934,7 @@
                 document.getElementById('mu-title').textContent = m.titulo;
                 document.getElementById('mu-text').textContent = m.texto;
                 modal.hidden = false;
+                sonar(m);
             }
             function cerrar() { modal.hidden = true; }
             document.getElementById('mu-continue').addEventListener('click', cerrar);
@@ -982,8 +1007,8 @@
                 var verde = baseVerde + liveVerde, rojo = baseRojo + liveRojo;
                 var exp = verde - rojo;                         // EXP = verde - rojo (el rojo nunca baja)
                 if (xpVal) xpVal.textContent = exp;
-                var g = Math.max(0, Math.min(100, exp / maxScore * 100));
-                var r = Math.max(0, Math.min(100 - g, rojo / maxScore * 100));
+                var g = Math.max(0, Math.min(100, verde / maxScore * 100));        // verde = puntos correctos acumulados (SOLO crece; NO se achica al fallar)
+                var r = Math.max(0, Math.min(100 - g, rojo / maxScore * 100));     // rojo = penalizaciones acumuladas, encima del verde (SOLO crece)
                 if (green) green.style.width = g + '%';
                 if (red) red.style.width = r + '%';
             }
