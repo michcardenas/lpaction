@@ -526,8 +526,7 @@
         <div class="intro-band-inner relative mx-auto flex items-center" style="max-width:1332px;">
             <div class="reveal w-full" style="border-left:1px solid #FFFFFF; padding:8px 16px;">
                 <p class="intro-band-p" style="font-family:'Montserrat',sans-serif; font-weight:600; font-size:16px; line-height:150%; letter-spacing:0; color:#FFFFFF; text-shadow:0 1px 3px rgba(0,0,0,.35);">
-                    Este curso online acreditado te sitúa ante el recorrido clínico de Juan para identificar cuándo la Lp(a) cambia la interpretación del riesgo residual, la recurrencia de eventos y la progresión 
-                    valvular.
+                    Este curso online acreditado te sitúa ante el recorrido clínico de Juan para identificar cuándo la Lp(a) cambia la interpretación del riesgo residual y su pronóstico.
                 </p>
             </div>
         </div>
@@ -604,7 +603,7 @@
 
                     <div style="font-family:'Montserrat',sans-serif; font-weight:400; font-size:13px; line-height:150%; letter-spacing:0; color:#FFFFFF; width:358px; max-width:100%;">
                         <p class="mb-4">A lo largo de tres ingresos hospitalarios, seguirás la evolución de Juan en distintos momentos clave de su trayectoria cardiovascular.</p>
-                        <p>En cada fase tendrás que valorar si la información disponible revela un riesgo no completamente explicado por los factores clásicos y si la determinación de Lp(a) puede cambiar la interpretación del caso y el manejo posterior.</p>
+                        <p>En cada contacto clínico con el paciente tendrás la oportunidad de tomar decisiones que impacten en su pronóstico.</p>
                     </div>
                 </div>
 

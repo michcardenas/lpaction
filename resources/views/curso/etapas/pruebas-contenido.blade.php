@@ -5,7 +5,7 @@
     {{-- Tabs de pruebas --}}
     <div class="tabs">
         <button type="button" class="tab on" data-tab="ecg">Electrocardiograma (ECG)</button>
-        <button type="button" class="tab" data-tab="cateterismo">Cateterismo cardiaco</button>
+        <button type="button" class="tab" data-tab="cateterismo">Cateterismo cardíaco</button>
         <button type="button" class="tab" data-tab="analitica">Analítica sanguínea</button>
     </div>
 
@@ -35,39 +35,52 @@
     {{-- Panel Cateterismo --}}
     <div class="tab-panel prueba-panel" data-panel="cateterismo" style="display:none">
         <div class="cat-block">
-        <h3 class="prueba-h">Cateterismo cardiaco</h3>
-
         @php
-            $cateterismoVideos = [
-                ['file' => 'cateterismo-1', 'cap' => 'Vídeo 1. Coronariografía. Arteria coronaria derecha con oclusión en segmento medio.'],
-                ['file' => 'cateterismo-2', 'cap' => 'Vídeo 2. Coronariografía. Estenosis significativa en descendente anterior.'],
-                ['file' => 'cateterismo-3', 'cap' => 'Vídeo 3. Ecocardiograma (plano 4 cámaras). Fracción de eyección del ventrículo izquierdo conservada.'],
+            // Bloques de pruebas de imagen: cada uno con su título (estilo prueba-h) y su grilla de vídeos.
+            $bloquesImagen = [
+                [
+                    'titulo' => 'Cateterismo cardíaco',
+                    'videos' => [
+                        ['file' => 'cateterismo-1', 'cap' => 'Vídeo 1. Coronariografía. Arteria coronaria derecha con oclusión en segmento medio.'],
+                        ['file' => 'cateterismo-2', 'cap' => 'Vídeo 2. Coronariografía. Estenosis significativa en descendente anterior.'],
+                    ],
+                    'nota' => 'Tras su llegada a Urgencias, el paciente es trasladado inmediatamente al área de Hemodinámica para la realización de una coronariografía urgente. <span style="opacity:.5">(Resto del texto pendiente.)</span>',
+                ],
+                [
+                    'titulo' => 'Ecocardiograma',
+                    'videos' => [
+                        ['file' => 'cateterismo-3', 'cap' => 'Plano de 4 cámaras. Fracción de eyección del ventrículo izquierdo conservada.'],
+                    ],
+                    'nota' => null,
+                ],
             ];
         @endphp
-        <div class="videos-grid">
-            @foreach ($cateterismoVideos as $v)
-                <figure class="video-item">
-                    <div class="video-player">
-                        <video src="{{ asset('videos/' . $v['file'] . '.mp4') }}" preload="metadata" playsinline></video>
-                        <div class="video-controls">
-                            <button type="button" class="vid-btn vid-play" aria-label="Reproducir/Pausar">
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-                            </button>
-                            <div class="vid-bar"><i></i></div>
-                            <button type="button" class="vid-btn vid-expand" aria-label="Pantalla completa">
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>
-                            </button>
-                        </div>
-                    </div>
-                    <figcaption class="video-cap">{{ $v['cap'] }}</figcaption>
-                </figure>
-            @endforeach
-        </div>
 
-        <p class="prueba-p">
-            Tras su llegada a Urgencias, el paciente es trasladado inmediatamente al área de Hemodinámica para la realización
-            de una coronariografía urgente. <span style="opacity:.5">(Resto del texto pendiente.)</span>
-        </p>
+        @foreach ($bloquesImagen as $bloque)
+            <h3 class="prueba-h">{{ $bloque['titulo'] }}</h3>
+            <div class="videos-grid">
+                @foreach ($bloque['videos'] as $v)
+                    <figure class="video-item">
+                        <div class="video-player">
+                            <video src="{{ asset('videos/' . $v['file'] . '.mp4') }}" preload="metadata" playsinline></video>
+                            <div class="video-controls">
+                                <button type="button" class="vid-btn vid-play" aria-label="Reproducir/Pausar">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                                </button>
+                                <div class="vid-bar"><i></i></div>
+                                <button type="button" class="vid-btn vid-expand" aria-label="Pantalla completa">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                        <figcaption class="video-cap">{{ $v['cap'] }}</figcaption>
+                    </figure>
+                @endforeach
+            </div>
+            @if (!empty($bloque['nota']))
+                <p class="prueba-p">{!! $bloque['nota'] !!}</p>
+            @endif
+        @endforeach
         </div>{{-- /cat-block --}}
     </div>
 
