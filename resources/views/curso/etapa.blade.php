@@ -964,13 +964,9 @@
                 }).catch(function () {});
             }
 
-            // Respaldo: al recargar/salir de la página, vuelca lo marcado por si quedó un guardado en vuelo.
-            window.addEventListener('pagehide', function () {
-                if (!marcarUrl || !Object.keys(marcadas).length || !navigator.sendBeacon) return;
-                try {
-                    navigator.sendBeacon(marcarUrl, new URLSearchParams({ _token: csrf, etapa: etapaKey, sel: Object.keys(marcadas).join(',') }));
-                } catch (e) {}
-            });
+            // (Sin beacon en 'pagehide': el guardado por "Comprobar" ya usa fetch keepalive, que sobrevive al F5.
+            //  Un beacon en pagehide PISABA el "Reiniciar capítulo": al navegar re-guardaba la etapa con el
+            //  fallo anterior y volvía a poner la X. Con keepalive el F5 queda cubierto sin esa carrera.)
 
             // Pinta la X (cruz roja) en el item del menu de ESTA etapa apenas hay un fallo (sin esperar a avanzar).
             function marcarCruzMenu() {
