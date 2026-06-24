@@ -65,6 +65,11 @@ return [
             'key' => 'bronce', 'min' => 200, 'label' => 'Medalla de bronce', 'color' => '#cd7f32',
             'titulo' => 'Requiere refuerzo',
             'texto'  => 'El resultado muestra una concordancia clínica parcial. Para mejorar la puntuación, repite las evaluaciones señaladas y revisa los criterios del caso.',
+            // Texto del pop-up que aparece al ALCANZAR la medalla durante el curso (más corto que el final).
+            'unlock' => [
+                'titulo' => '¡Medalla de bronce alcanzada!',
+                'texto'  => 'Concordancia clínica parcial. Hay decisiones correctas, pero aún quedan criterios clave por reforzar.',
+            ],
             'botones' => [
                 ['texto' => 'Volver al temario', 'estilo' => 'ghost', 'accion' => 'temario'],
             ],
@@ -73,6 +78,10 @@ return [
             'key' => 'plata', 'min' => 300, 'label' => 'Medalla de plata', 'color' => '#c4ccd2',
             'titulo' => 'Buen nivel de concordancia clínica',
             'texto'  => 'El caso se ha resuelto de forma adecuada, aunque existe margen de mejora. Puedes finalizar o revisar las etapas marcadas para intentar alcanzar el nivel oro.',
+            'unlock' => [
+                'titulo' => '¡Medalla de plata alcanzada!',
+                'texto'  => 'Has demostrado un manejo adecuado del caso. Algunas decisiones podrían optimizarse para mejorar el nivel de concordancia clínica.',
+            ],
             'botones' => [
                 ['texto' => 'Finalizar caso', 'estilo' => 'ghost', 'accion' => 'finalizar'],
                 ['texto' => 'Mejorar puntuación', 'estilo' => 'cyan', 'accion' => 'mejorar'],
@@ -82,6 +91,10 @@ return [
             'key' => 'oro', 'min' => 400, 'label' => 'Medalla de oro', 'color' => '#f2c14e',
             'titulo' => 'Manejo clínico excelente',
             'texto'  => 'Has completado el caso con un desempeño óptimo en las decisiones clave. Resultado alineado con el abordaje clínico recomendado en el recorrido.',
+            'unlock' => [
+                'titulo' => '¡Medalla de oro alcanzada!',
+                'texto'  => 'Excelente. Has completado el caso con un manejo óptimo y alta concordancia con los criterios clínicos del recorrido.',
+            ],
             'botones' => [
                 ['texto' => 'Finalizar caso', 'estilo' => 'ghost', 'accion' => 'finalizar'],
                 ['texto' => 'Mejorar puntuación', 'estilo' => 'cyan', 'accion' => 'mejorar'],

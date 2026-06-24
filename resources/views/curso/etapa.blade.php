@@ -336,6 +336,11 @@
         .rp-rings { position: absolute; right: 22px; bottom: 4px; opacity: .45; z-index: 1; }
         @media (max-width: 720px) { .result-panel { flex-direction: column; min-height: 0; } .rp-left { padding: 38px 24px 24px; } .rp-right { flex: 0 0 230px; } }
 
+        /* Pop-up de medalla alcanzada (durante el curso): mismo estilo que el final, centrado y sin Juan. */
+        #medal-unlock { z-index: 10003; }
+        #medal-unlock .result-panel { max-width: 520px; min-height: 0; }
+        #medal-unlock .rp-left { padding: 44px 40px; }
+
         /* paciente a la derecha: la figura va desde "Historia clínica" hasta el final de "Motivo de consulta" */
         .etapa-juan { position: absolute; right: -165px; top: -56px; z-index: 1; pointer-events: none; user-select: none; }
         .etapa-juan img { height: 820px; width: auto; display: block; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.45)); }
@@ -787,7 +792,36 @@
         </div>
         @endif
 
+        {{-- Pop-up "¡Medalla alcanzada!" durante el curso (mismo estilo que el final, centrado y sin Juan) --}}
+        <div class="result-modal" id="medal-unlock" hidden>
+            <div class="result-panel">
+                <div class="rp-left">
+                    <img class="rp-medal" id="mu-medal" src="" alt="Medalla">
+                    <h2 class="rp-title" id="mu-title"></h2>
+                    <p class="rp-text" id="mu-text"></p>
+                    <div class="rp-actions">
+                        <button type="button" class="rp-btn cyan" id="mu-continue">Continuar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>{{-- /etapa-page --}}
+
+    @php
+        // Medallas que se ANUNCIAN al alcanzar su puntaje durante el curso (sin medalla no se celebra).
+        $medallasUnlock = collect($curso['medallas'] ?? [])
+            ->filter(fn ($m) => (int) ($m['min'] ?? 0) > 0)
+            ->map(function ($m) {
+                $img = 'images/medalla-' . $m['key'] . '.png';
+                return [
+                    'min'    => (int) $m['min'],
+                    'titulo' => $m['unlock']['titulo'] ?? ('¡' . ($m['label'] ?? 'Medalla') . ' alcanzada!'),
+                    'texto'  => $m['unlock']['texto'] ?? ($m['texto'] ?? ''),
+                    'img'    => file_exists(public_path($img)) ? asset($img) : '',
+                ];
+            })->sortBy('min')->values()->all();
+    @endphp
 
     <script>
         // Layout fluido (llena toda la pantalla). El contenido del main se escala para
@@ -858,6 +892,34 @@
                     });
                 });
             });
+        })();
+
+        // ===== Pop-up de medalla alcanzada (se anuncia al cruzar el puntaje durante el curso) =====
+        (function () {
+            var modal = document.getElementById('medal-unlock');
+            if (!modal) return;
+            var MED = @json($medallasUnlock);   // ordenadas asc por 'min'
+            var sb = document.getElementById('score-bar');
+            var inicial = sb ? ((parseInt(sb.getAttribute('data-verde'), 10) || 0) - (parseInt(sb.getAttribute('data-rojo'), 10) || 0)) : 0;
+            function idxFor(s) { var i = -1; MED.forEach(function (m, k) { if (s >= m.min) i = k; }); return i; }
+            var anunciada = idxFor(inicial);    // medallas ya logradas al cargar: NO se vuelven a anunciar
+
+            var imgEl = document.getElementById('mu-medal');
+            function abrir(m) {
+                if (m.img) { imgEl.src = m.img; imgEl.style.display = ''; } else { imgEl.style.display = 'none'; }
+                document.getElementById('mu-title').textContent = m.titulo;
+                document.getElementById('mu-text').textContent = m.texto;
+                modal.hidden = false;
+            }
+            function cerrar() { modal.hidden = true; }
+            document.getElementById('mu-continue').addEventListener('click', cerrar);
+            modal.addEventListener('click', function (e) { if (e.target === modal) cerrar(); });
+
+            // Lo llama el cuestionario tras cada "Comprobar" con el Score global actualizado.
+            window.checkMedalUnlock = function (score) {
+                var i = idxFor(score);
+                if (i > anunciada) { anunciada = i; abrir(MED[i]); }
+            };
         })();
 
         // ===== Cuestionario interactivo (puntaje por opción; admite varias correctas) =====
@@ -983,6 +1045,7 @@
                 persistir();                        // guarda al instante (no espera a "Siguiente etapa")
                 if (!correcta) marcarCruzMenu();     // solo pinta la X en el menu; el botón "Reiniciar capítulo"
                                                      // aparece al VOLVER al capítulo (render del servidor), no al fallar
+                if (window.checkMedalUnlock) window.checkMedalUnlock((baseVerde + liveVerde) - (baseRojo + liveRojo));
 
                 if (correcta) {
                     resultado.className = 'resultado ok';
