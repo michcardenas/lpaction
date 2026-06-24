@@ -388,7 +388,7 @@
                     </div>
                 </div>
                 {{-- Acceder --}}
-                <a href="{{ route('register') }}" class="btn-acceder">Acceder</a>
+                <a href="{{ route('login') }}" class="btn-acceder">Acceder</a>
                 {{-- Mobile menu button --}}
                 <button id="mob-open" class="lg:hidden text-white" aria-label="Abrir menú">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -410,7 +410,7 @@
             </a>
             <div style="display:flex; align-items:center; gap:12px;">
                 {{-- Botón Acceder: #05BAEE · radius 4 · padding 12/16 · texto Montserrat Medium 12/150%/ls1%/blanco --}}
-                <a href="{{ route('register') }}" style="font-family:'Montserrat',sans-serif; font-size:12px; font-weight:500; letter-spacing:0.01em; line-height:150%; color:#FFFFFF; background:#05BAEE; padding:12px 16px; border-radius:4px; text-decoration:none;">Acceder</a>
+                <a href="{{ route('login') }}" style="font-family:'Montserrat',sans-serif; font-size:12px; font-weight:500; letter-spacing:0.01em; line-height:150%; color:#FFFFFF; background:#05BAEE; padding:12px 16px; border-radius:4px; text-decoration:none;">Acceder</a>
                 {{-- Cerrar: X glyph 7.5px en frame 18px · blanco (spec) --}}
                 <button id="mob-close" aria-label="Cerrar menú" style="background:none; border:none; cursor:pointer; padding:4px; display:flex; align-items:center; justify-content:center;">
                     <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round"><path d="M5.25 5.25 L12.75 12.75"/><path d="M12.75 5.25 L5.25 12.75"/></svg>

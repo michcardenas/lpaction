@@ -20,6 +20,7 @@ Route::post('/registro', [RegisterController::class, 'store']);
 Route::middleware('auth')->group(function () {
     Route::get('/curso', [CursoController::class, 'index'])->name('curso');
     Route::get('/evaluacion', [CursoController::class, 'evaluacion'])->name('evaluacion');
+    Route::post('/curso/{ingreso}/marcar', [CursoController::class, 'marcar'])->name('curso.marcar');
     Route::post('/curso/{ingreso}/avanzar', [CursoController::class, 'avanzar'])->name('curso.avanzar');
     Route::post('/curso/{ingreso}/reiniciar', [CursoController::class, 'reiniciar'])->name('curso.reiniciar');
     Route::get('/curso/{ingreso}/{etapa?}', [CursoController::class, 'etapa'])->name('curso.etapa');

@@ -1,11 +1,11 @@
 {{-- Cuestionario reutilizable (respuesta única). Recibe $pregunta; usa $ingreso, $esUltimaEtapa del padre. --}}
 @php
-    // Nota DEV: "Repetir etapa" SOLO se desbloquea al re-evaluar (la etapa ya fue completada
-    // —estado perfecta/error— y el usuario volvió). En el primer intento (activa) queda oculto.
-    $estadoEtapa = data_get(collect($etapasEstado ?? [])->firstWhere('key', $etapaActual), 'estado', 'activa');
-    $reevaluando = in_array($estadoEtapa, ['perfecta', 'error']);
+    // "Repetir etapa" SOLO se desbloquea al re-evaluar (la etapa ya fue superada y el usuario volvió);
+    // lo decide el controlador con $reevaluando. En el primer intento (activa) queda oculto, aunque haya error.
+    $reevaluando = $reevaluando ?? false;
+    $preSelCsv   = implode(',', $preSel ?? []);   // opciones ya marcadas (se re-pintan; el rojo permanece)
 @endphp
-<div class="pregunta-card" id="cuestionario" data-xp="{{ $pregunta['xp'] }}" data-reevaluando="{{ $reevaluando ? '1' : '0' }}">
+<div class="pregunta-card" id="cuestionario" data-xp="{{ $pregunta['xp'] }}" data-reevaluando="{{ $reevaluando ? '1' : '0' }}" data-presel="{{ $preSelCsv }}" data-etapa="{{ $etapaActual }}" data-marcar="{{ route('curso.marcar', $ingreso) }}">
     <div class="pregunta-head">
         <p class="pregunta-q">{{ $pregunta['enunciado'] }}</p>
         <p class="pregunta-sub">{{ $pregunta['instruccion'] }}</p>
@@ -38,7 +38,7 @@
 
     {{-- Footer --}}
     <div class="pregunta-foot">
-        <button type="button" class="btn-repetir" hidden>
+        <button type="button" class="btn-repetir" @if(empty($etapaTieneError)) hidden @endif>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 2.6-6.4L3 8"/><path d="M3 3v5h5"/></svg>
             Repetir etapa
         </button>
@@ -47,8 +47,7 @@
         <form method="POST" action="{{ route('curso.avanzar', $ingreso) }}" class="form-siguiente">
             @csrf
             <input type="hidden" name="desde" value="{{ $etapaActual }}">
-            <input type="hidden" name="verde" value="0" id="cuest-verde">
-            <input type="hidden" name="rojo" value="0" id="cuest-rojo">
+            <input type="hidden" name="sel" value="{{ $preSelCsv }}" id="cuest-sel">
             <button type="submit" class="btn-next-q">{{ $esUltimaEtapa ? 'Finalizar' : 'Siguiente etapa' }}</button>
         </form>
     </div>

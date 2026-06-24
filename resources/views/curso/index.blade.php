@@ -38,6 +38,7 @@
         .nav-link.active { color: #05BAEE; }
         .nav-org-txt { font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 13px; color: rgba(255,255,255,0.75); }
         .curso-burger { display: none; }   /* solo visible en móvil */
+        .curso-mobmenu { display: none; }  /* oculto por defecto (en escritorio nunca aparece); en móvil se abre con .open */
 
         /* Globos blancos pequeños y difuminados (detrás de Juan y esquina superior) */
         .curso-blob {

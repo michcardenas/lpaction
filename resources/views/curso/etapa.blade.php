@@ -414,11 +414,11 @@
             .top-name, .top-center, .top-back { display: none !important; }   /* móvil: solo hamburguesa */
             .etapa-burger { display: inline-flex !important; }
             .top-right { flex: 1; display: flex; align-items: center; gap: 12px; justify-content: flex-start; }
-            /* Texto "X / 500 Exp" (Medium 14 · ls 2% · blanco, sin "Score:") */
+            /* Texto "X / 450 Exp" (Medium 14 · ls 2% · blanco, sin "Score:") */
             .top-scope { font-weight: 500 !important; font-size: 14px !important; letter-spacing: 0.02em !important; color: #FFFFFF !important; flex: 0 0 auto; white-space: nowrap; }
             .top-scope b { font-weight: 500 !important; color: #FFFFFF !important; }
             .sc-pre { display: none; }            /* sin "Score:" */
-            .sc-max { display: inline; }           /* sí "/ 500" */
+            .sc-max { display: inline; }           /* sí "/ 450" */
             /* Barra 8px · radius 99 · #D4D4D4 (borde 0.5) */
             .score-bar { flex: 1; height: 8px !important; background: #D4D4D4 !important; border-radius: 99px !important; box-shadow: 0 0 0 0.5px #D4D4D4; }
             /* Corazón = imagen experiencia global 32×32 */
@@ -577,8 +577,8 @@
             </div>
 
             <div class="top-right">
-                <span class="top-scope"><span class="sc-pre">Score: </span><b><span id="xp-val">{{ $exp ?? 0 }}</span><span class="sc-max"> / {{ $maxScore ?? 500 }}</span> Exp</b></span>
-                @php $mx = max(1, $maxScore ?? 500); $gW = max(0, min(100, ($exp ?? 0) / $mx * 100)); $rW = max(0, min(100 - $gW, ($rojoBase ?? 0) / $mx * 100)); @endphp
+                <span class="top-scope"><span class="sc-pre">Score: </span><b><span id="xp-val">{{ $exp ?? 0 }}</span><span class="sc-max"> / {{ $maxScore ?? 450 }}</span> Exp</b></span>
+                @php $mx = max(1, $maxScore ?? 450); $gW = max(0, min(100, ($exp ?? 0) / $mx * 100)); $rW = max(0, min(100 - $gW, ($rojoBase ?? 0) / $mx * 100)); @endphp
                 <span class="bar score-bar" id="score-bar" data-verde="{{ $verdeBase ?? 0 }}" data-rojo="{{ $rojoBase ?? 0 }}" data-max="{{ $mx }}" style="width:120px;"><i id="xp-green" class="green" style="width:{{ $gW }}%"></i><i id="xp-red" class="red" style="width:{{ $rW }}%"></i></span>
                 <span class="top-heart">
                     <svg class="heart-desktop" width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35c-.3 0-.6-.1-.84-.3C7.2 17.66 2.5 13.88 2.5 9.6 2.5 6.5 4.9 4.5 7.4 4.5c1.8 0 3.42.94 4.6 2.42C13.18 5.44 14.8 4.5 16.6 4.5c2.5 0 4.9 2 4.9 5.1 0 4.28-4.7 8.06-8.66 11.45-.24.2-.54.3-.84.3Z"/></svg>
@@ -719,6 +719,7 @@
                     <button type="button" class="reset-cancel" id="reset-cancel">Cancelar</button>
                     <form method="POST" action="{{ route('curso.reiniciar', $ingreso) }}" style="margin:0;">
                         @csrf
+                        <input type="hidden" name="etapa" value="{{ $etapaActual }}">
                         <button type="submit" class="reset-confirm" id="reset-confirm">Reiniciar etapa</button>
                     </form>
                 </div>
@@ -867,7 +868,7 @@
             var scoreBar = document.getElementById('score-bar');
             var green = document.getElementById('xp-green');
             var red   = document.getElementById('xp-red');
-            var maxScore  = scoreBar ? (parseInt(scoreBar.getAttribute('data-max'), 10) || 500) : 500;
+            var maxScore  = scoreBar ? (parseInt(scoreBar.getAttribute('data-max'), 10) || 450) : 450;
             var baseVerde = scoreBar ? (parseInt(scoreBar.getAttribute('data-verde'), 10) || 0) : 0;
             var baseRojo  = scoreBar ? (parseInt(scoreBar.getAttribute('data-rojo'), 10) || 0) : 0;
             var liveVerde = 0, liveRojo = 0;      // aporte de esta etapa (el rojo NO se recupera)
@@ -881,8 +882,43 @@
             var resultado = card.querySelector('.resultado');
             var resIco    = card.querySelector('.resultado-ico');
             var resTxt    = card.querySelector('.resultado-txt');
-            var verdeInput = document.getElementById('cuest-verde');
-            var rojoInput  = document.getElementById('cuest-rojo');
+            var selInput  = document.getElementById('cuest-sel');
+            var totalOpts = card.querySelectorAll('input[name="pregunta"]').length;
+            function sincronizarSel() { if (selInput) selInput.value = Object.keys(marcadas).join(','); }
+
+            var etapaKey  = card.getAttribute('data-etapa') || '';
+            var marcarUrl = card.getAttribute('data-marcar') || '';
+            var csrf      = (document.querySelector('meta[name="csrf-token"]') || {}).content || '';
+
+            // Guarda al instante en el servidor las opciones marcadas (al Comprobar), SIN avanzar:
+            // así el Score y la cruz persisten aunque navegues a otra etapa por el menú izquierdo.
+            function persistir() {
+                if (!marcarUrl) return;
+                fetch(marcarUrl, {
+                    method: 'POST',
+                    keepalive: true,   // sobrevive aunque recargues (F5) justo después de responder
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRF-TOKEN': csrf, 'X-Requested-With': 'XMLHttpRequest' },
+                    body: 'etapa=' + encodeURIComponent(etapaKey) + '&sel=' + encodeURIComponent(Object.keys(marcadas).join(','))
+                }).catch(function () {});
+            }
+
+            // Respaldo: al recargar/salir de la página, vuelca lo marcado por si quedó un guardado en vuelo.
+            window.addEventListener('pagehide', function () {
+                if (!marcarUrl || !Object.keys(marcadas).length || !navigator.sendBeacon) return;
+                try {
+                    navigator.sendBeacon(marcarUrl, new URLSearchParams({ _token: csrf, etapa: etapaKey, sel: Object.keys(marcadas).join(',') }));
+                } catch (e) {}
+            });
+
+            // Pinta la X (cruz roja) en el item del menu de ESTA etapa apenas hay un fallo (sin esperar a avanzar).
+            function marcarCruzMenu() {
+                var item = document.querySelector('.etapa-side .side-item.viendo');
+                if (!item || item.classList.contains('error')) return;
+                item.classList.remove('activa', 'perfecta');
+                item.classList.add('error');
+                var ico = item.querySelector('.ico');
+                if (ico) ico.innerHTML = '<circle cx="12" cy="12" r="9"/><path d="m9 9 6 6M15 9l-6 6"/>';
+            }
 
             function pintarBarra() {
                 var verde = baseVerde + liveVerde, rojo = baseRojo + liveRojo;
@@ -894,10 +930,27 @@
                 if (red) red.style.width = r + '%';
             }
 
-            // "Comprobar" aparece al elegir una opción. "Repetir" solo al re-evaluar Y tras seleccionar algo (Nota DEV)
-            var reevaluando = card.getAttribute('data-reevaluando') === '1';
+            // Re-pinta las opciones ya marcadas en intentos previos (al volver, el rojo permanece visible).
+            // OJO: estas YA están contabilizadas en el Score base (servidor); aquí NO se re-suman al vivo,
+            // solo se deja la marca y se desbloquea "Siguiente" si ya había alguna correcta.
+            (card.getAttribute('data-presel') || '').split(',').filter(Boolean).forEach(function (key) {
+                var input = card.querySelector('input[name="pregunta"][value="' + key + '"]');
+                if (!input || marcadas[key]) return;
+                var opt = input.closest('.opt');
+                var pts = parseInt(opt.getAttribute('data-puntos'), 10) || 0;
+                opt.classList.add(pts > 0 ? 'correct' : 'wrong');
+                marcadas[key] = true;
+                input.disabled = true;
+                if (pts > 0) sigBtn.classList.add('enabled');
+            });
+            pintarBarra();
+            sincronizarSel();
+            if (Object.keys(marcadas).length >= totalOpts) comprobar.disabled = true;
+
+            // "Comprobar" aparece al elegir una opción. "Reiniciar capítulo" lo controla el servidor
+            // (visible solo si el capítulo tiene error); aquí no se muestra por el simple hecho de seleccionar.
             card.querySelectorAll('input[name="pregunta"]').forEach(function (r) {
-                r.addEventListener('change', function () { comprobar.hidden = false; if (reevaluando) repetir.hidden = false; });
+                r.addEventListener('change', function () { comprobar.hidden = false; });
             });
 
             // Chevron de la justificación: colapsa/expande el texto
@@ -926,8 +979,10 @@
                 sel.disabled = true;                       // esa opción ya no se re-marca
                 if (correcta) { liveVerde += pts; } else { liveRojo += xp; }   // el rojo NO se recupera
                 pintarBarra();
-                if (verdeInput) verdeInput.value = liveVerde;
-                if (rojoInput) rojoInput.value = liveRojo;
+                sincronizarSel();
+                persistir();                        // guarda al instante (no espera a "Siguiente etapa")
+                if (!correcta) marcarCruzMenu();     // solo pinta la X en el menu; el botón "Reiniciar capítulo"
+                                                     // aparece al VOLVER al capítulo (render del servidor), no al fallar
 
                 if (correcta) {
                     resultado.className = 'resultado ok';

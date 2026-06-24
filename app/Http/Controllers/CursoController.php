@@ -58,28 +58,43 @@ class CursoController extends Controller
         }
         $etapaActual = $etapas[$viewIndex]['key'];
 
-        // Resultados por etapa: { key: { verde, rojo } }. estado del sidebar = error si rojo>0.
+        // Resultados por etapa: { key: { verde, rojo, sel } }. estado del sidebar = error si rojo>0.
         $resultados = $progreso->etapas ?? [];
 
+        // Opciones ya marcadas en esta etapa (para re-pintarlas al volver: el rojo permanece).
+        $preSel = $resultados[$etapaActual]['sel'] ?? [];
+
+        // ¿Esta etapa tiene un fallo guardado? → se muestra "Reiniciar capítulo" (en perfecta queda bloqueado).
+        $etapaTieneError = (int) ($resultados[$etapaActual]['rojo'] ?? 0) > 0;
+
         // Estados del sidebar: perfecta (check) / error (cruz) / activa (reloj) / bloqueada (candado).
+        // La cruz (error) aparece en cuanto la etapa tiene rojo>0, AUNQUE siga siendo la activa
+        // (el fallo se guarda al "Comprobar", no hace falta avanzar). El rojo es permanente.
         $etapasEstado = collect($etapas)->map(function ($e, $i) use ($etapaIndex, $viewIndex, $resultados) {
+            $tieneError = (int) ($resultados[$e['key']]['rojo'] ?? 0) > 0;
             if ($i > $etapaIndex) {
                 $estado = 'bloqueada';
+            } elseif ($tieneError) {
+                $estado = 'error';
             } elseif ($i === $etapaIndex) {
                 $estado = 'activa';
             } else {
-                $estado = ((int) ($resultados[$e['key']]['rojo'] ?? 0) > 0) ? 'error' : 'perfecta';
+                $estado = 'perfecta';
             }
             return array_merge($e, ['estado' => $estado, 'viendo' => $i === $viewIndex]);
         })->all();
 
+        // "Repetir etapa" solo al VOLVER a una etapa ya superada (no en el primer intento, aunque haya error).
+        $reevaluando = $viewIndex < $etapaIndex;
+
         // Score (contrapeso): verde = puntos de correctas, rojo = penalizaciones (NO se recupera).
-        // EXP = verde - rojo. La base excluye la etapa que se ve (sus puntos se suman en vivo en el JS).
+        // Score = verde - rojo. La base es el TOTAL completo (incluida la etapa que se ve si ya se respondió),
+        // así devolverse a una etapa nunca baja el Score. El JS solo SUMA las opciones nuevas de esta visita.
         $totalVerde = array_sum(array_map(fn ($r) => (int) ($r['verde'] ?? 0), $resultados));
         $totalRojo  = array_sum(array_map(fn ($r) => (int) ($r['rojo']  ?? 0), $resultados));
-        $verdeBase  = $totalVerde - (int) ($resultados[$etapaActual]['verde'] ?? 0);
-        $rojoBase   = $totalRojo  - (int) ($resultados[$etapaActual]['rojo']  ?? 0);
-        $exp        = $verdeBase - $rojoBase;
+        $verdeBase  = $totalVerde;
+        $rojoBase   = $totalRojo;
+        $exp        = $totalVerde - $totalRojo;
 
         // Máximo del score = suma de los puntos de TODAS las opciones correctas del ingreso.
         $maxScore = 0;
@@ -103,7 +118,7 @@ class CursoController extends Controller
 
         return view('curso.etapa', compact(
             'user', 'curso', 'ingreso', 'ingresoData', 'etapaActual', 'etapasEstado', 'esUltimaEtapa', 'avance',
-            'exp', 'verdeBase', 'rojoBase', 'maxScore', 'score', 'medalla', 'mostrarResultado'
+            'exp', 'verdeBase', 'rojoBase', 'maxScore', 'score', 'medalla', 'mostrarResultado', 'preSel', 'reevaluando', 'etapaTieneError'
         ));
     }
 
@@ -113,7 +128,8 @@ class CursoController extends Controller
         $user = Auth::user();
         $progreso = $this->ingresoAbierto($user, $ingreso);
 
-        $etapas = config('curso.etapas');
+        $curso  = config('curso');
+        $etapas = $curso['etapas'];
 
         // Avanza desde la etapa indicada (la que se ve); si no llega, desde la actual.
         $desde = array_search($request->input('desde'), array_column($etapas, 'key'), true);
@@ -121,13 +137,20 @@ class CursoController extends Controller
             $desde = (int) ($progreso->etapa_index ?? 0);
         }
 
-        // Guarda el resultado de la etapa que se deja: perfecta (sin errores) o error (eligió mal),
-        // y los puntos obtenidos. Las etapas sin cuestionario no envían 'resultado' → perfecta/0.
+        // Guarda el resultado de la etapa que se deja. Las opciones marcadas se ACUMULAN (unión)
+        // con las de intentos previos: así el rojo es permanente (mide lo errado) y al volver a una
+        // pregunta y acertar se recuperan puntos (verde), pero la marca roja no desaparece.
+        // El puntaje se calcula en el servidor desde la config (+50 correcta / -50 incorrecta).
         $resultados = $progreso->etapas ?? [];
-        $resultados[$etapas[$desde]['key']] = [
-            'verde' => max(0, (int) $request->input('verde', 0)),
-            'rojo'  => max(0, (int) $request->input('rojo', 0)),
-        ];
+        $stageKey   = $etapas[$desde]['key'];
+        $prevSel    = $resultados[$stageKey]['sel'] ?? [];
+        $sentSel    = array_filter(array_map('trim', explode(',', (string) $request->input('sel', ''))));
+        $union      = array_values(array_unique(array_merge($prevSel, $sentSel)));
+        $resultado  = $this->puntuarEtapa($curso, $stageKey, $union);
+        // Etapas sin cuestionario: no piso lo guardado si no llega selección.
+        if ($resultado['sel'] || isset($resultados[$stageKey])) {
+            $resultados[$stageKey] = $resultado;
+        }
 
         // Última etapa: finaliza el ingreso y va a la evaluación final.
         if ($desde >= count($etapas) - 1) {
@@ -147,22 +170,100 @@ class CursoController extends Controller
         return redirect()->route('curso.etapa', [$ingreso, $etapas[$next]['key']]);
     }
 
-    /** "Reiniciar capítulo": reinicia todo el ingreso y vuelve a la Presentación. */
+    /**
+     * "Comprobar": guarda al instante la(s) opción(es) marcadas de una etapa, SIN avanzar.
+     * Así el Score y la cruz (rojo permanente) persisten aunque el usuario navegue a otra etapa
+     * por el menú sin pulsar "Siguiente etapa". Devuelve los totales para el front (AJAX).
+     */
+    public function marcar(Request $request, $ingreso)
+    {
+        $user = Auth::user();
+        $progreso = $this->ingresoAbierto($user, $ingreso);
+
+        $curso  = config('curso');
+        $etapas = $curso['etapas'];
+
+        $stageKey = (string) $request->input('etapa');
+        $idx = array_search($stageKey, array_column($etapas, 'key'), true);
+        abort_if($idx === false, 404);
+        // No se puede marcar una etapa todavía bloqueada (más allá del progreso alcanzado).
+        abort_if($idx > (int) ($progreso->etapa_index ?? 0), 403);
+
+        $resultados = $progreso->etapas ?? [];
+        $prevSel    = $resultados[$stageKey]['sel'] ?? [];
+        $sentSel    = array_filter(array_map('trim', explode(',', (string) $request->input('sel', ''))));
+        $union      = array_values(array_unique(array_merge($prevSel, $sentSel)));
+        $resultado  = $this->puntuarEtapa($curso, $stageKey, $union);
+
+        if ($resultado['sel'] || isset($resultados[$stageKey])) {
+            $resultados[$stageKey] = $resultado;
+            $progreso->update(['etapas' => $resultados, 'status' => 'in_progress']);
+        }
+
+        $totalVerde = array_sum(array_map(fn ($r) => (int) ($r['verde'] ?? 0), $resultados));
+        $totalRojo  = array_sum(array_map(fn ($r) => (int) ($r['rojo']  ?? 0), $resultados));
+
+        return response()->json([
+            'verde' => $totalVerde,
+            'rojo'  => $totalRojo,
+            'score' => $totalVerde - $totalRojo,
+            'etapaError' => ($resultado['rojo'] ?? 0) > 0,
+        ]);
+    }
+
+    /** "Reiniciar capítulo": borra las respuestas y puntos SOLO de esta etapa; el resto del progreso queda intacto. */
     public function reiniciar(Request $request, $ingreso)
     {
         $user = Auth::user();
         $progreso = $this->ingresoAbierto($user, $ingreso);
 
-        $progreso->update([
-            'etapa_index'  => 0,
-            'status'       => 'in_progress',
-            'percent'      => 0,
-            'completed_at' => null,
-            'etapas'       => null,
-        ]);
+        $etapas   = config('curso.etapas');
+        $etapaKey = (string) $request->input('etapa');
+        $idx = array_search($etapaKey, array_column($etapas, 'key'), true);
+        abort_if($idx === false, 404);
 
-        $etapas = config('curso.etapas');
-        return redirect()->route('curso.etapa', [$ingreso, $etapas[0]['key']]);
+        $resultados = $progreso->etapas ?? [];
+        unset($resultados[$etapaKey]);                 // limpia verde/rojo/sel SOLO de este capítulo
+        $progreso->update(['etapas' => $resultados]);  // etapa_index y el resto del progreso NO se tocan
+
+        return redirect()->route('curso.etapa', [$ingreso, $etapaKey]);
+    }
+
+    /**
+     * Puntúa una etapa a partir de las opciones marcadas (claves) según la config.
+     * Cada opción correcta suma 50 al verde; cada incorrecta suma 50 al rojo (Score = verde - rojo).
+     * Devuelve también el set normalizado de opciones válidas, para persistir la marca.
+     */
+    private function puntuarEtapa(array $curso, string $etapaKey, array $selKeys): array
+    {
+        $map = [
+            'pruebas'          => 'pregunta_pruebas',
+            'riesgo'           => 'pregunta_riesgo',
+            'terapeutico'      => 'pregunta_terapeutico',
+            'monitorizacion'   => 'pregunta_monitorizacion',
+            'monitorizacion-2' => 'pregunta_monitorizacion2',
+        ];
+
+        $pk = $map[$etapaKey] ?? null;
+        if (! $pk || empty($curso[$pk]['opciones'])) {
+            return ['verde' => 0, 'rojo' => 0, 'sel' => []];
+        }
+
+        $ops = collect($curso[$pk]['opciones'])->keyBy('key');
+        $verde = 0;
+        $rojo  = 0;
+        $clean = [];
+        foreach ($selKeys as $k) {
+            if (! isset($ops[$k])) continue;
+            $clean[] = $k;
+            if (! empty($ops[$k]['correcta'])) {
+                $verde += 50;
+            } else {
+                $rojo += 50;
+            }
+        }
+
+        return ['verde' => $verde, 'rojo' => $rojo, 'sel' => array_values($clean)];
     }
 
     /** Devuelve el progreso del ingreso si está desbloqueado; si no, 404. */
