@@ -1,5 +1,11 @@
 {{-- Cuestionario reutilizable (respuesta única). Recibe $pregunta; usa $ingreso, $esUltimaEtapa del padre. --}}
-<div class="pregunta-card" id="cuestionario" data-xp="{{ $pregunta['xp'] }}">
+@php
+    // Nota DEV: "Repetir etapa" SOLO se desbloquea al re-evaluar (la etapa ya fue completada
+    // —estado perfecta/error— y el usuario volvió). En el primer intento (activa) queda oculto.
+    $estadoEtapa = data_get(collect($etapasEstado ?? [])->firstWhere('key', $etapaActual), 'estado', 'activa');
+    $reevaluando = in_array($estadoEtapa, ['perfecta', 'error']);
+@endphp
+<div class="pregunta-card" id="cuestionario" data-xp="{{ $pregunta['xp'] }}" data-reevaluando="{{ $reevaluando ? '1' : '0' }}">
     <div class="pregunta-head">
         <p class="pregunta-q">{{ $pregunta['enunciado'] }}</p>
         <p class="pregunta-sub">{{ $pregunta['instruccion'] }}</p>
@@ -19,6 +25,9 @@
     <div class="justif" hidden>
         <p class="justif-h">Justificación</p>
         <p class="justif-txt"></p>
+        <button type="button" class="justif-toggle" aria-label="Colapsar justificación" aria-expanded="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+        </button>
     </div>
 
     {{-- Barra de resultado (tras comprobar) --}}
@@ -34,7 +43,7 @@
             Repetir etapa
         </button>
         <span class="foot-spacer"></span>
-        <button type="button" class="btn-comprobar">Comprobar</button>
+        <button type="button" class="btn-comprobar" hidden>Comprobar</button>
         <form method="POST" action="{{ route('curso.avanzar', $ingreso) }}" class="form-siguiente">
             @csrf
             <input type="hidden" name="desde" value="{{ $etapaActual }}">

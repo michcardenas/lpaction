@@ -98,6 +98,8 @@
         }
         /* Espacio bajo el último ítem — mismo tono que toda la columna (#26383F) */
         .side-bottom { flex: 1 0 auto; min-height: 70px; background: #26383F; }
+        /* Header "Avance del caso" y botón "Salir del caso": solo en el drawer móvil */
+        .side-head, .side-salir { display: none; }
 
         /* ===== Main ===== */
         .etapa-main { flex: 1; position: relative; min-width: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; }
@@ -233,8 +235,9 @@
         .pregunta-sub { font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 14px; line-height: 150%; letter-spacing: 0.02em; color: rgba(255,255,255,0.60); margin: 4px 0 0; }
         /* opciones en grid 2×2 con separadores */
         .pregunta-opts { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid rgba(255,255,255,0.14); }
-        .opt { display: flex; align-items: center; gap: 16px; padding: 26px 32px; font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 16px; line-height: 150%; letter-spacing: 0.02em; color: #fff; cursor: pointer; transition: background .15s; }
-        .opt:hover { background: rgba(255,255,255,0.03); }
+        .opt { display: flex; align-items: center; gap: 16px; padding: 26px 32px; font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 16px; line-height: 150%; letter-spacing: 0.02em; color: #fff; cursor: pointer; transition: background .2s ease, transform .2s ease, box-shadow .2s ease; }
+        .opt:hover { background: rgba(5,186,238,0.10); transform: translateX(10px); box-shadow: inset 3px 0 0 #05BAEE; }   /* hover: se corre a la derecha + brillo cyan */
+        .opt:has(input:checked) { background: rgba(5,186,238,0.08); }   /* fila seleccionada: tinte cyan sutil */
         .opt:nth-child(odd) { border-right: 1px solid rgba(255,255,255,0.14); }
         .opt:nth-child(-n+2) { border-bottom: 1px solid rgba(255,255,255,0.14); }
         .opt input { display: none; }
@@ -253,6 +256,8 @@
         .btn-comprobar { font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 14px; line-height: 150%; letter-spacing: 0.01em; background: #FFFFFF; color: #454545; border: 0; padding: 11px 30px; border-radius: 5px; cursor: pointer; transition: background .2s; }
         .btn-comprobar:hover { background: #efefef; }
         .btn-comprobar:disabled { background: rgba(185,185,185,0.25); color: #BFBFBF; cursor: default; }
+        .btn-comprobar.comprobado, .btn-comprobar.comprobado:disabled { background: #2E7D9B; color: #fff; }   /* se pinta de azul al comprobar */
+        .btn-comprobar.comprobado:hover { background: #2A7188; }
         .btn-repetir { display: inline-flex; align-items: center; gap: 10px; font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 14px; background: rgba(255,255,255,0.10); border: 0; color: rgba(255,255,255,0.78); padding: 11px 22px; border-radius: 5px; cursor: pointer; transition: background .2s, color .2s; animation: fadeSwap .3s ease; }
         .btn-repetir:hover { background: rgba(255,255,255,0.16); color: #fff; }
 
@@ -267,9 +272,17 @@
         .pregunta-opts .opt.wrong .opt-mark::after { content: '\2715'; }
         .pregunta-opts .opt.correct .opt-mark::after { content: '\2713'; }
 
-        .justif { padding: 22px 32px; border-top: 1px solid rgba(255,255,255,0.14); }
+        .justif { display: flex; flex-direction: column; position: relative; padding: 22px 32px; border-top: 1px solid rgba(255,255,255,0.14); }
         .justif-h { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 15px; color: #fff; margin: 0 0 8px; }
         .justif-txt { font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 14px; line-height: 165%; color: rgba(255,255,255,0.75); margin: 0; }
+        /* Chevron para colapsar/expandir la justificación (abajo-derecha) */
+        .justif-toggle { align-self: flex-end; margin-top: 12px; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.24); border-radius: 8px; color: rgba(255,255,255,0.78); cursor: pointer; transition: background .2s, border-color .2s; }
+        .justif-toggle:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.28); }
+        .justif-toggle svg { display: block; transition: transform .25s ease; }
+        .justif.collapsed .justif-txt { display: none; }
+        .justif.collapsed .justif-h { margin-bottom: 0; }
+        .justif.collapsed .justif-toggle { position: absolute; top: 14px; right: 32px; margin-top: 0; }   /* colapsado: chevron en línea con el título, sin campo vacío */
+        .justif.collapsed .justif-toggle svg { transform: rotate(180deg); }
 
         .resultado { display: flex; align-items: center; gap: 12px; padding: 16px 32px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px; color: #fff; }
         .resultado.bad { background: rgba(150,52,45,0.92); }
@@ -284,10 +297,11 @@
         .reset-title { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 22px; color: #fff; margin: 0 0 14px; }
         .reset-text { font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 14px; line-height: 165%; color: rgba(255,255,255,0.72); margin: 0 0 28px; }
         .reset-text strong { color: #fff; font-weight: 600; }
-        .reset-actions { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-        .reset-cancel { font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 15px; background: none; border: 0; color: rgba(255,255,255,0.78); cursor: pointer; padding: 12px 8px; transition: color .2s; }
+        .reset-actions { display: flex; flex-direction: column-reverse; align-items: stretch; gap: 8px; }   /* apilados: Reiniciar etapa arriba, Cancelar abajo (target) */
+        .reset-actions form { width: 100%; margin: 0; }
+        .reset-cancel { font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 15px; background: none; border: 0; color: rgba(255,255,255,0.78); cursor: pointer; padding: 12px 8px; width: 100%; transition: color .2s; }
         .reset-cancel:hover { color: #fff; }
-        .reset-confirm { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 15px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.20); color: #fff; padding: 13px 26px; border-radius: 8px; cursor: pointer; transition: background .2s, border-color .2s; }
+        .reset-confirm { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 15px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.20); color: #fff; padding: 14px 26px; width: 100%; border-radius: 8px; cursor: pointer; transition: background .2s, border-color .2s; }
         .reset-confirm:hover { background: rgba(255,255,255,0.20); border-color: rgba(255,255,255,0.32); }
         @keyframes resetFade { from { opacity: 0; } to { opacity: 1; } }
         @keyframes resetPop { from { opacity: 0; transform: translateY(14px) scale(.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
@@ -334,6 +348,7 @@
             padding: 12px 24px; border-radius: 0; cursor: pointer; transition: .2s;
         }
         .btn-next:hover { background: rgba(5,186,238,0.15); border-color: #05BAEE; color: #fff; }
+        .biblio-next { position: static; align-self: flex-start; margin-top: 28px; }   /* Siguiente etapa dentro de la vista Bibliografía (etapas con quiz) */
 
         /* ===== Pop-up "Atención" (al darle Siguiente etapa) — desktop + móvil =====
            Spec: 358 · radius 32 · borde 1px #FFFFFF40 · fondo blanco 10% · blur 40 · pad 32/16/16/16 · gap 32 */
@@ -422,6 +437,15 @@
             .etapa-backdrop { display: block; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 99; opacity: 0; pointer-events: none; transition: opacity .28s; }
             .etapa-backdrop.open { opacity: 1; pointer-events: auto; }
 
+            /* ===== Drawer móvil: header "Avance del caso" + barra + ✕ ; y botón "Salir del caso" ===== */
+            .side-head { display: flex; align-items: center; gap: 10px; padding: 16px 18px; border-bottom: 1px solid rgba(255,255,255,0.10); flex-shrink: 0; }
+            .side-close { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; background: none; border: 0; color: #fff; cursor: pointer; padding: 0; }
+            .side-head-lbl { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 14px; color: #fff; white-space: nowrap; }
+            .side-head-bar { flex: 1; height: 6px; min-width: 24px; }
+            .side-head-pct { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 12px; color: #fff; flex-shrink: 0; }
+            .side-salir { display: block; margin: 14px 16px 18px; padding: 13px; text-align: center; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.20); border-radius: 8px; color: #fff; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 14px; text-decoration: none; }
+            .side-salir:hover { background: rgba(255,255,255,0.14); }
+
             /* ===== Contenido: reflow a COLUMNA (rough — luego detalle) ===== */
             .etapa-main { width: 100% !important; display: block !important; overflow: visible !important; align-items: stretch !important; justify-content: flex-start !important; }
             .main-stage { width: 100% !important; height: auto !important; transform: none !important; padding: 20px 16px !important; }
@@ -454,6 +478,19 @@
                 border-radius: 4px !important;
                 -webkit-backdrop-filter: blur(40px); backdrop-filter: blur(40px);
             }
+            .biblio-next { margin-top: 24px !important; }   /* gap antes del botón Siguiente en Bibliografía */
+            /* Etapa de video corto (Puntos clave): el contenido llena el viewport y "Siguiente etapa" se ancla al fondo */
+            .main-stage:has(.video-full) { display: flex !important; flex-direction: column; min-height: calc(100dvh - 66px); }
+            .main-stage:has(.video-full) .btn-next { margin-top: auto !important; }
+            /* Resumen del caso: botones full-width + "Finalizar ingreso" anclado al fondo */
+            .btn-descargar { width: 100% !important; justify-content: center; }
+            .btn-finalizar { width: 100% !important; }
+            .resumen-foot { width: 100%; }
+            .main-stage:has(.resumen-card) { display: flex !important; flex-direction: column; min-height: calc(100dvh - 66px); }
+            .main-stage:has(.resumen-card) #view-contenido { flex: 1 1 auto; display: flex; flex-direction: column; }
+            .main-stage:has(.resumen-card) .riesgo { flex: 1 1 auto; display: flex; flex-direction: column; }
+            .main-stage:has(.resumen-card) .resumen-foot { margin-top: auto !important; }
+            .main-stage:has(.resumen-card) #view-biblio .biblio-next { margin-top: 32px !important; margin-bottom: 8px; }
             /* Tabs (Perfil/Historia/Medicación/Alergias): scroll horizontal, no desbordan la página */
             .tabs { overflow-x: auto !important; scrollbar-width: none; }
             .tabs::-webkit-scrollbar { display: none; height: 0; }
@@ -482,11 +519,27 @@
             #view-biblio .biblio-list { overflow: visible !important; flex: none !important; padding-right: 0 !important; }
             .biblio-item { font-weight: 400 !important; font-size: 14px !important; line-height: 150% !important; }   /* Regular 14/150% (img1) */
             .biblio-h { margin-top: -8px !important; }                                            /* sube el título "Bibliografía" */
+            /* ===== Quiz: opciones a 1 columna (la grilla 2×2 no cabe en móvil) ===== */
+            .pregunta-opts { grid-template-columns: 1fr !important; }
+            .pregunta-opts .opt { border-right: 0 !important; border-bottom: 1px solid rgba(255,255,255,0.14) !important; padding: 16px 20px !important; }
+            .pregunta-opts .opt:last-child { border-bottom: 0 !important; }
+            .pregunta-head { padding: 22px 20px 16px !important; }
+            /* Pie en columna: Comprobar (aparece al seleccionar) arriba, Siguiente, Repetir; todos full-width */
+            .pregunta-foot { flex-direction: row !important; flex-wrap: wrap !important; align-items: stretch !important; padding: 16px 20px !important; gap: 10px !important; }
+            .pregunta-foot .foot-spacer { display: none !important; }
+            .pregunta-foot .btn-comprobar { order: 1; flex: 1 0 100% !important; width: auto !important; padding: 12px !important; font-size: 14px !important; }   /* arriba, full-width */
+            .pregunta-foot .btn-repetir  { order: 2; flex: 1 1 0 !important; width: auto !important; justify-content: center; gap: 6px !important; padding: 12px 8px !important; font-size: 13px !important; white-space: nowrap; }   /* abajo-izq */
+            .pregunta-foot .btn-next-q   { order: 3; flex: 1 1 0 !important; width: auto !important; padding: 12px 8px !important; font-size: 13px !important; white-space: nowrap; }   /* abajo-der */
+            /* === "Frases" iguales: todo el cuerpo de texto al MISMO tamaño (14 / 150%) === */
+            .perfil-card p, .motivo-p, .prueba-p, .pregunta-q, .pregunta-sub,
+            .analitica-intro, .analitica-list, .opt, .video-cap, .biblio-item {
+                font-size: 14px !important; line-height: 150% !important;
+            }
             /* Cajas de tabs: borde 1px #2F728C · pad 4 · gap 8 · blanco 10% · blur 40 */
             .seg-top, .tabs {
                 width: 100% !important; display: flex !important; gap: 8px !important; padding: 4px !important;
                 background: rgba(255,255,255,0.10) !important; border: 1px solid #2F728C !important;
-                border-radius: 8px !important;                          /* cajas un poco redondeadas */
+                border-radius: 0 !important;                            /* cajas cuadradas (img1); los botones internos siguen redondeados */
                 -webkit-backdrop-filter: blur(40px); backdrop-filter: blur(40px);
             }
             .seg-top button, .tabs .tab {
@@ -539,6 +592,16 @@
 
             {{-- Sidebar de etapas --}}
             <aside class="etapa-side">
+                {{-- Header del drawer (solo móvil): ✕ + Avance del caso + barra de progreso --}}
+                <div class="side-head">
+                    <button type="button" class="side-close" aria-label="Cerrar menú"
+                            onclick="document.querySelector('.etapa-side').classList.remove('open');document.querySelector('.etapa-backdrop').classList.remove('open')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                    </button>
+                    <span class="side-head-lbl">Avance del caso</span>
+                    <span class="bar side-head-bar"><i style="width:{{ $avance }}%"></i></span>
+                    <span class="side-head-pct">{{ $avance }}%</span>
+                </div>
                 @foreach ($etapasEstado as $etapa)
                     @php $clickable = in_array($etapa['estado'], ['perfecta', 'error', 'activa']); @endphp
                     <a href="{{ $clickable ? route('curso.etapa', [$ingreso, $etapa['key']]) : '#' }}"
@@ -563,6 +626,8 @@
 
                 {{-- Área azul al final del menú --}}
                 <div class="side-bottom"></div>
+                {{-- Salir del caso (solo móvil; en desktop hay flecha de volver en la barra) --}}
+                <a href="{{ route('curso') }}" class="side-salir">Salir del caso</a>
             </aside>
 
             {{-- Backdrop del drawer (móvil) --}}
@@ -592,6 +657,12 @@
                 {{-- Vista: Bibliografía (cambia por etapa) --}}
                 <div id="view-biblio" class="view" style="display:none;">
                     @includeIf('curso.etapas.' . $etapaActual . '-biblio')
+                    {{-- En etapas con quiz el botón "Siguiente etapa" vive dentro del cuestionario (Contenido, aquí oculto);
+                         agregamos uno en Bibliografía que envía ese mismo form para poder avanzar. --}}
+                    @if (in_array($etapaActual, ['pruebas', 'riesgo', 'terapeutico', 'monitorizacion', 'monitorizacion-2', 'resumen']))
+                        <button type="button" class="btn-next biblio-next"
+                                onclick="var f=document.querySelector('#view-contenido form'); if(f){ f.submit(); }">{{ $esUltimaEtapa ? 'Finalizar ingreso' : 'Siguiente etapa' }}</button>
+                    @endif
                 </div>
 
                 {{-- Paciente (solo en Presentación) --}}
@@ -642,13 +713,13 @@
                 <span class="reset-ico">
                     <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
                 </span>
-                <h3 class="reset-title" id="reset-title">Reiniciar capítulo</h3>
+                <h3 class="reset-title" id="reset-title">Reiniciar etapa</h3>
                 <p class="reset-text">Vas a repetir este capítulo. Si continúas, se eliminarán tus respuestas y los puntos obtenidos solo en esta sección. El resto de tu progreso no se verá afectado.<br><strong>¿Quieres reiniciar este capítulo?</strong></p>
                 <div class="reset-actions">
                     <button type="button" class="reset-cancel" id="reset-cancel">Cancelar</button>
                     <form method="POST" action="{{ route('curso.reiniciar', $ingreso) }}" style="margin:0;">
                         @csrf
-                        <button type="submit" class="reset-confirm" id="reset-confirm">Reiniciar capítulo</button>
+                        <button type="submit" class="reset-confirm" id="reset-confirm">Reiniciar etapa</button>
                     </form>
                 </div>
             </div>
@@ -823,16 +894,25 @@
                 if (red) red.style.width = r + '%';
             }
 
-            // "Repetir" aparece al elegir una opción
+            // "Comprobar" aparece al elegir una opción. "Repetir" solo al re-evaluar Y tras seleccionar algo (Nota DEV)
+            var reevaluando = card.getAttribute('data-reevaluando') === '1';
             card.querySelectorAll('input[name="pregunta"]').forEach(function (r) {
-                r.addEventListener('change', function () { repetir.hidden = false; });
+                r.addEventListener('change', function () { comprobar.hidden = false; if (reevaluando) repetir.hidden = false; });
+            });
+
+            // Chevron de la justificación: colapsa/expande el texto
+            var justToggle = card.querySelector('.justif-toggle');
+            if (justToggle) justToggle.addEventListener('click', function () {
+                var col = justif.classList.toggle('collapsed');
+                justToggle.setAttribute('aria-expanded', col ? 'false' : 'true');
             });
 
             comprobar.addEventListener('click', function () {
                 var sel = card.querySelector('input[name="pregunta"]:checked');
                 if (!sel) return;                       // requiere una opción
+                comprobar.classList.add('comprobado');  // se pinta de azul al comprobar
                 var key = sel.value;
-                if (marcadas[key]) { repetir.hidden = false; return; }   // ya puntuada: no recuenta
+                if (marcadas[key]) { return; }   // ya puntuada: no recuenta
                 var opt = sel.closest('.opt');
                 var pts = parseInt(opt.getAttribute('data-puntos'), 10) || 0;
                 var correcta = pts > 0;                 // correcta = puntos positivos
@@ -861,7 +941,6 @@
                     // incorrecta: ya sumó al rojo; el sidebar quedará con cruz (rojo>0)
                 }
                 resultado.hidden = false;
-                repetir.hidden = false;
                 if (Object.keys(marcadas).length >= card.querySelectorAll('input[name="pregunta"]').length) comprobar.disabled = true;
             });
 
