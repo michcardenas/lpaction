@@ -926,7 +926,7 @@
                 $decisiones = [
                     'Identificar cuándo medir Lp(a) en práctica real',
                     'Interpretar resultados (mg/dL vs. nmol/L) en contexto clínico',
-                    'Reconocer riesgo cardiovascular residual no explicado',
+                    'Reconocer riesgo residual no explicado',
                     'Ajustar el manejo en pacientes con eventos recurrentes',
                     'Integrar la Lp(a) en la estratificación del riesgo',
                     'Anticipar el impacto de terapias dirigidas',
