@@ -689,7 +689,8 @@
                 <form method="POST" action="{{ route('curso.avanzar', $ingreso) }}" id="form-avanzar" style="display:contents;">
                     @csrf
                     <input type="hidden" name="desde" value="{{ $etapaActual }}">
-                    <button type="button" class="btn-next" onclick="document.getElementById('etapa-popup').removeAttribute('hidden')">{{ $esUltimaEtapa ? 'Finalizar ingreso' : 'Siguiente etapa' }}</button>
+                    {{-- El pop-up "Atención (varias correctas)" SOLO aparece al salir de la Presentación; en las demás etapas sin pregunta avanza directo. --}}
+                    <button type="button" class="btn-next" onclick="@if($etapaActual === 'presentacion')document.getElementById('etapa-popup').removeAttribute('hidden')@else document.getElementById('form-avanzar').submit()@endif">{{ $esUltimaEtapa ? 'Finalizar ingreso' : 'Siguiente etapa' }}</button>
                 </form>
                 @endunless
 
