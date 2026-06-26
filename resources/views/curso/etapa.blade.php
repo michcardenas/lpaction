@@ -263,6 +263,8 @@
         .btn-comprobar.comprobado:hover { background: #2A7188; }
         .btn-repetir { display: inline-flex; align-items: center; gap: 10px; font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 14px; background: rgba(255,255,255,0.10); border: 0; color: rgba(255,255,255,0.78); padding: 11px 22px; border-radius: 5px; cursor: pointer; transition: background .2s, color .2s; animation: fadeSwap .3s ease; }
         .btn-repetir:hover { background: rgba(255,255,255,0.16); color: #fff; }
+        .btn-repetir:disabled { opacity: .4; cursor: not-allowed; pointer-events: none; }
+        .btn-repetir:disabled:hover { background: rgba(255,255,255,0.10); color: rgba(255,255,255,0.78); }
 
         /* Estados tras Comprobar — brillo verde/rojo en una esquina (la letra queda blanca) */
         .opt.correct { background: radial-gradient(circle at bottom right, rgba(56,79,29,0.45) 0%, rgba(56,79,29,0) 50%); }
@@ -723,7 +725,7 @@
                     <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
                 </span>
                 <h3 class="reset-title" id="reset-title">Repetir etapa</h3>
-                <p class="reset-text">Vas a repetir este capítulo. Tus respuestas y los puntos ya obtenidos se conservan (el rojo no se recupera); solo volverás a abrirlo para repasarlo o seguir respondiendo.<br><strong>¿Quieres repetir este capítulo?</strong></p>
+                <p class="reset-text">Vas a repetir esta pregunta: las opciones se reinician para responderla de nuevo y el verde vuelve a cero (lo ganas otra vez al acertar). El rojo que ya tenías <strong>se mantiene</strong> y no se recupera.<br><strong>¿Quieres repetir esta pregunta?</strong></p>
                 <div class="reset-actions">
                     <button type="button" class="reset-cancel" id="reset-cancel">Cancelar</button>
                     <form method="POST" action="{{ route('curso.reiniciar', $ingreso) }}" style="margin:0;">
@@ -1037,7 +1039,12 @@
             // "Comprobar" aparece al elegir una opción. "Reiniciar capítulo" lo controla el servidor
             // (visible solo si el capítulo tiene error); aquí no se muestra por el simple hecho de seleccionar.
             card.querySelectorAll('input[name="pregunta"]').forEach(function (r) {
-                r.addEventListener('change', function () { comprobar.hidden = false; });
+                r.addEventListener('change', function () {
+                    comprobar.hidden = false;                     // reaparece "Comprobar" al elegir otra opción
+                    comprobar.classList.remove('comprobado');     // vuelve a su estado normal
+                    if (justif)    justif.hidden = true;          // se oculta la justificación de la opción anterior
+                    if (resultado) resultado.hidden = true;       // y su línea de resultado (✓/✕)
+                });
             });
 
             // Chevron de la justificación: colapsa/expande el texto
@@ -1084,6 +1091,7 @@
                     // incorrecta: ya sumó al rojo; el sidebar quedará con cruz (rojo>0)
                 }
                 resultado.hidden = false;
+                comprobar.hidden = true;       // tras comprobar, el botón desaparece hasta elegir otra opción
                 if (Object.keys(marcadas).length >= card.querySelectorAll('input[name="pregunta"]').length) comprobar.disabled = true;
             });
 

@@ -144,9 +144,10 @@ class CursoController extends Controller
         $resultados = $progreso->etapas ?? [];
         $stageKey   = $etapas[$desde]['key'];
         $prevSel    = $resultados[$stageKey]['sel'] ?? [];
+        $rojoFloor  = (int) ($resultados[$stageKey]['rfloor'] ?? 0);   // rojo permanente de repeticiones previas
         $sentSel    = array_filter(array_map('trim', explode(',', (string) $request->input('sel', ''))));
         $union      = array_values(array_unique(array_merge($prevSel, $sentSel)));
-        $resultado  = $this->puntuarEtapa($curso, $stageKey, $union);
+        $resultado  = $this->puntuarEtapa($curso, $stageKey, $union, $rojoFloor);
         // Etapas sin cuestionario: no piso lo guardado si no llega selección.
         if ($resultado['sel'] || isset($resultados[$stageKey])) {
             $resultados[$stageKey] = $resultado;
@@ -191,9 +192,10 @@ class CursoController extends Controller
 
         $resultados = $progreso->etapas ?? [];
         $prevSel    = $resultados[$stageKey]['sel'] ?? [];
+        $rojoFloor  = (int) ($resultados[$stageKey]['rfloor'] ?? 0);   // rojo permanente de repeticiones previas
         $sentSel    = array_filter(array_map('trim', explode(',', (string) $request->input('sel', ''))));
         $union      = array_values(array_unique(array_merge($prevSel, $sentSel)));
-        $resultado  = $this->puntuarEtapa($curso, $stageKey, $union);
+        $resultado  = $this->puntuarEtapa($curso, $stageKey, $union, $rojoFloor);
 
         if ($resultado['sel'] || isset($resultados[$stageKey])) {
             $resultados[$stageKey] = $resultado;
@@ -212,9 +214,9 @@ class CursoController extends Controller
     }
 
     /**
-     * "Repetir etapa": reabre el capítulo para repasarlo o seguir respondiendo.
-     * NO borra nada: el verde y el rojo ya acumulados se conservan (el rojo no se
-     * recupera) y el score acumulado no cambia. Solo se vuelve a la etapa.
+     * "Repetir etapa": reinicia la PREGUNTA para responderla de nuevo (opciones limpias)
+     * y el verde vuelve a 0 (se re-gana). El rojo ya hecho NO se recupera: se vuelve un
+     * "piso" permanente (rfloor) sobre el que se suman los nuevos fallos.
      */
     public function reiniciar(Request $request, $ingreso)
     {
@@ -226,7 +228,18 @@ class CursoController extends Controller
         $idx = array_search($etapaKey, array_column($etapas, 'key'), true);
         abort_if($idx === false, 404);
 
-        // Sin cambios en los puntos: solo se reabre la etapa (no se quita nada de lo ya hecho).
+        $resultados = $progreso->etapas ?? [];
+        if (isset($resultados[$etapaKey])) {
+            $rojoPermanente = (int) ($resultados[$etapaKey]['rojo'] ?? 0);   // todo el rojo acumulado queda fijo
+            $resultados[$etapaKey] = [
+                'verde'  => 0,                 // se re-gana respondiendo bien
+                'rojo'   => $rojoPermanente,   // el rojo no se recupera
+                'sel'    => [],                // pregunta fresca: opciones limpias
+                'rfloor' => $rojoPermanente,   // piso permanente sobre el que se suman nuevos fallos
+            ];
+            $progreso->update(['etapas' => $resultados]);
+        }
+
         return redirect()->route('curso.etapa', [$ingreso, $etapaKey]);
     }
 
@@ -235,7 +248,7 @@ class CursoController extends Controller
      * Cada opción correcta suma 50 al verde; cada incorrecta suma 50 al rojo (Score = verde - rojo).
      * Devuelve también el set normalizado de opciones válidas, para persistir la marca.
      */
-    private function puntuarEtapa(array $curso, string $etapaKey, array $selKeys): array
+    private function puntuarEtapa(array $curso, string $etapaKey, array $selKeys, int $rojoFloor = 0): array
     {
         $map = [
             'pruebas'          => 'pregunta_pruebas',
@@ -247,7 +260,7 @@ class CursoController extends Controller
 
         $pk = $map[$etapaKey] ?? null;
         if (! $pk || empty($curso[$pk]['opciones'])) {
-            return ['verde' => 0, 'rojo' => 0, 'sel' => []];
+            return ['verde' => 0, 'rojo' => $rojoFloor, 'sel' => [], 'rfloor' => $rojoFloor];
         }
 
         $ops = collect($curso[$pk]['opciones'])->keyBy('key');
@@ -264,7 +277,8 @@ class CursoController extends Controller
             }
         }
 
-        return ['verde' => $verde, 'rojo' => $rojo, 'sel' => array_values($clean)];
+        // El rojo de intentos previos (rfloor) es PERMANENTE: se suma al de este intento.
+        return ['verde' => $verde, 'rojo' => $rojoFloor + $rojo, 'sel' => array_values($clean), 'rfloor' => $rojoFloor];
     }
 
     /** Devuelve el progreso del ingreso si está desbloqueado; si no, 404. */
