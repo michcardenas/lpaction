@@ -25,20 +25,14 @@ class RegisterController extends Controller
             'name'             => ['required', 'string', 'max:255'],
             'last_name'        => ['required', 'string', 'max:255'],
             'document_id'      => ['required', 'string', 'max:50'],
-            'country'          => ['required', 'string', 'max:100'],
-            'province'         => ['required', 'string', 'max:100'],
-            'city'             => ['required', 'string', 'max:100'],
             'email'            => ['required', 'email', 'max:255', 'confirmed', 'unique:users,email'],
             'password'         => ['required', 'confirmed', Password::min(8)],
             // 2. Datos profesionales
             'specialty'        => ['required', 'string', 'max:150'],
-            'hospital'         => ['required', 'string', 'max:255'],
-            'center_type'      => ['required', 'in:privado,publico,ambos'],
             // 3. Perfil profesional
             'experience_level' => ['required', 'in:0-7,8-15,16+'],
-            // Consentimientos
+            // Consentimiento
             'accepted_privacy' => ['accepted'],
-            'accepted_novartis' => ['nullable'],
         ], [
             'accepted_privacy.accepted' => 'Debes aceptar la política de privacidad y el aviso legal.',
             'email.confirmed'           => 'Los correos electrónicos no coinciden.',
@@ -49,17 +43,12 @@ class RegisterController extends Controller
             'name'              => $data['name'],
             'last_name'         => $data['last_name'],
             'document_id'       => $data['document_id'],
-            'country'           => $data['country'],
-            'province'          => $data['province'],
-            'city'              => $data['city'],
             'email'             => $data['email'],
             'password'          => $data['password'], // se hashea por el cast del modelo
             'specialty'         => $data['specialty'],
-            'hospital'          => $data['hospital'],
-            'center_type'       => $data['center_type'],
             'experience_level'  => $data['experience_level'],
             'accepted_privacy'  => true,
-            'accepted_novartis' => $request->boolean('accepted_novartis'),
+            'accepted_novartis' => false,
         ]);
 
         // Progreso inicial del curso: ingreso 1 disponible, resto bloqueado.

@@ -526,7 +526,7 @@
         <div class="intro-band-inner relative mx-auto flex items-center" style="max-width:1332px;">
             <div class="reveal w-full" style="border-left:1px solid #FFFFFF; padding:8px 16px;">
                 <p class="intro-band-p" style="font-family:'Montserrat',sans-serif; font-weight:600; font-size:16px; line-height:150%; letter-spacing:0; color:#FFFFFF; text-shadow:0 1px 3px rgba(0,0,0,.35);">
-                    Este curso online acreditado te sitúa ante el recorrido clínico de Juan para identificar cuándo la Lp(a) cambia la interpretación del riesgo residual y su pronóstico.
+                    Este curso online acreditado te sitúa ante el recorrido clínico de Juan para identificar cuándo la Lp(a) modifica la interpretación del riesgo residual y condiciona su pronóstico.
                 </p>
             </div>
         </div>
@@ -602,7 +602,7 @@
                     </h2>
 
                     <div style="font-family:'Montserrat',sans-serif; font-weight:400; font-size:13px; line-height:150%; letter-spacing:0; color:#FFFFFF; width:358px; max-width:100%;">
-                        <p class="mb-4">A lo largo de tres ingresos hospitalarios, seguirás la evolución de Juan en distintos momentos clave de su trayectoria cardiovascular.</p>
+                        <p class="mb-4">A lo largo de tres ingresos hospitalarios, seguirás la evolución de Juan en distintos momentos clave.</p>
                         <p>En cada contacto clínico con el paciente tendrás la oportunidad de tomar decisiones que impacten en su pronóstico.</p>
                     </div>
                 </div>
@@ -669,7 +669,7 @@
                         <div class="relative">
                             <img src="{{ asset('images/juan.png') }}" alt="Juan, paciente del caso clínico"
                                  class="h-[520px] w-auto object-contain">
-                            <span class="absolute" style="left:16px; transform:none; bottom:35%; color:#05BAEE; font-family:'Montserrat',sans-serif; font-weight:700; font-size:24px; line-height:34px; letter-spacing:0; width:66px; text-align:left; display:inline-block;">Juan</span>
+                            <span class="absolute" style="left:16px; transform:none; bottom:4%; color:#05BAEE; font-family:'Montserrat',sans-serif; font-weight:700; font-size:44px; line-height:1; letter-spacing:0; text-align:left; display:inline-block;">Juan</span>
                         </div>
                     </div>
 
@@ -926,7 +926,7 @@
                 $decisiones = [
                     'Identificar cuándo medir Lp(a) en práctica real',
                     'Interpretar resultados (mg/dL vs. nmol/L) en contexto clínico',
-                    'Reconocer riesgo residual no explicado',
+                    'Reconocer riesgo vascular residual no explicado',
                     'Ajustar el manejo en pacientes con eventos recurrentes',
                     'Integrar la Lp(a) en la estratificación del riesgo',
                     'Anticipar el impacto de terapias dirigidas',

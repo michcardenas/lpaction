@@ -19,6 +19,9 @@ Route::post('/registro', [RegisterController::class, 'store']);
 // Curso (requiere sesión iniciada)
 Route::middleware('auth')->group(function () {
     Route::get('/curso', [CursoController::class, 'index'])->name('curso');
+    Route::view('/tutoria', 'tutoria')->name('tutoria');
+    Route::view('/autores', 'autores')->name('autores');
+    Route::view('/perfil', 'perfil')->name('perfil');
     Route::get('/evaluacion', [CursoController::class, 'evaluacion'])->name('evaluacion');
     Route::post('/curso/{ingreso}/marcar', [CursoController::class, 'marcar'])->name('curso.marcar');
     Route::post('/curso/{ingreso}/avanzar', [CursoController::class, 'avanzar'])->name('curso.avanzar');

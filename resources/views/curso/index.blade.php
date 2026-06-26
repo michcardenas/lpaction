@@ -149,6 +149,63 @@
         .footer-link { font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 13px; color: #FFFFFF; transition: color .2s; }
         .footer-link:hover { color: #05BAEE; }
 
+        /* ===== Dropdown "Perfil" ===== */
+        .perfil-menu { position: relative; }
+        .perfil-btn.open { color: #05BAEE; }
+        .perfil-btn svg { transition: transform .2s ease; }
+        .perfil-btn.open svg { transform: rotate(180deg); }
+        .perfil-dd {
+            position: absolute; top: calc(100% + 10px); left: 0; z-index: 60;
+            min-width: 190px; padding: 10px;
+            background: #e7ebed; border-radius: 16px;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.30);
+        }
+        .perfil-dd-item {
+            display: block; width: 100%; text-align: left;
+            padding: 12px 18px; border-radius: 10px;
+            font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 15px;
+            color: #1f2933; background: transparent; border: none; cursor: pointer;
+            transition: background .15s ease, color .15s ease;
+        }
+        .perfil-dd-item:hover { background: rgba(0,0,0,0.06); color: #05BAEE; }
+
+        /* ===== Modal "¿Te vas ya?" (cerrar sesión) ===== */
+        .lg-overlay {
+            position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center;
+            background: rgba(26,38,44,0.55); padding: 20px;
+        }
+        .lg-overlay[hidden] { display: none; }
+        .lg-card {
+            width: 100%; max-width: 500px; padding: 48px 40px 40px;
+            display: flex; flex-direction: column; align-items: center; text-align: center;
+            border-radius: 28px;
+            background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.40);
+            -webkit-backdrop-filter: blur(40px); backdrop-filter: blur(40px);
+            box-shadow: 0 30px 90px rgba(0,0,0,0.28);
+        }
+        .lg-icon {
+            width: 86px; height: 86px; border-radius: 999px;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.30);
+            color: rgba(255,255,255,0.85); margin-bottom: 26px;
+        }
+        .lg-icon svg { width: 38px; height: 38px; }
+        .lg-title { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 26px; color: #fff; margin: 0 0 14px; }
+        .lg-text { font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 15px; line-height: 150%; color: rgba(255,255,255,0.80); margin: 0 auto 36px; max-width: 360px; }
+        .lg-actions { display: flex; align-items: center; justify-content: center; gap: 48px; }
+        .lg-btn { background: transparent; border: none; cursor: pointer; font-family: 'Montserrat', sans-serif; font-size: 15px; color: #fff; padding: 8px 12px; transition: color .2s ease; }
+        .lg-salir { font-weight: 500; color: rgba(255,255,255,0.85); }
+        .lg-stay { font-weight: 600; color: #fff; }
+        .lg-btn:hover { color: #05BAEE; }
+
+        /* ===== Loader "¡Hasta pronto!" (reusa el patrón del login) ===== */
+        .reg-loader-overlay { position: fixed; inset: 0; z-index: 210; display: flex; align-items: center; justify-content: center; background: rgba(26,38,44,0.55); }
+        .reg-loader-overlay[hidden] { display: none; }
+        .reg-loader-card { width: 500px; max-width: calc(100% - 40px); padding: 56px 32px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 40px; border-radius: 28px; background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.40); -webkit-backdrop-filter: blur(40px); backdrop-filter: blur(40px); box-shadow: 0 30px 90px rgba(0,0,0,0.28); text-align: center; }
+        .reg-spinner { width: 150px; height: 150px; animation: reg-spin 1.1s linear infinite; }
+        @keyframes reg-spin { to { transform: rotate(360deg); } }
+        .reg-loader-title { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 24px; color: #fff; margin: 0; }
+
         /* ===================================================================== */
         /* =====================  MÓVIL  (≤767px)  ============================= */
         /* Layout de una sola columna · sección 390 · padding 16 · gap 32 · #26383F */
@@ -319,6 +376,13 @@
             /* ===== Footer ===== */
             .curso-footer .flex.items-center.gap-8 { gap: 16px !important; flex-wrap: wrap; justify-content: center; }
             .footer-txt, .footer-link { font-size: 12px !important; }
+
+            /* Modal cerrar sesión: botones apilados (Seguir aquí arriba, Salir abajo) */
+            .lg-actions { flex-direction: column-reverse; gap: 16px; width: 100%; }
+            .lg-btn { width: 100%; padding: 12px; }
+            .lg-card { max-width: 358px; padding: 36px 24px 28px; }
+            .reg-loader-card { width: 358px; }
+            .reg-spinner { width: 139px; height: 139px; }
         }
     </style>
 </head>
@@ -333,12 +397,18 @@
                 </a>
                 <nav class="hidden md:flex items-center" style="gap:8px;">
                     <a href="{{ route('curso') }}" class="nav-link active">Inicio</a>
-                    <a href="#" class="nav-link">Tutoría</a>
-                    <a href="#" class="nav-link">Autores</a>
-                    <button type="button" class="nav-link">
-                        Perfil
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-                    </button>
+                    <a href="{{ route('tutoria') }}" class="nav-link">Tutoría</a>
+                    <a href="{{ route('autores') }}" class="nav-link">Autores</a>
+                    <div class="perfil-menu">
+                        <button type="button" class="nav-link perfil-btn" onclick="togglePerfil(event)">
+                            Perfil
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                        </button>
+                        <div class="perfil-dd" hidden>
+                            <a href="{{ route('perfil') }}" class="perfil-dd-item">Mi perfil</a>
+                            <button type="button" class="perfil-dd-item" onclick="openLogout()">Cerrar sesión</button>
+                        </div>
+                    </div>
                 </nav>
             </div>
             <div class="curso-nav-right hidden md:flex items-center" style="gap:10px;">
@@ -366,11 +436,11 @@
             </div>
             <nav class="cm-links">
                 <a href="{{ route('curso') }}" class="cm-link">Inicio</a>
-                <a href="#" class="cm-link">Tutoría</a>
-                <a href="#" class="cm-link">Autores</a>
+                <a href="{{ route('tutoria') }}" class="cm-link">Tutoría</a>
+                <a href="{{ route('autores') }}" class="cm-link">Autores</a>
                 <div class="cm-divider"></div>
-                <a href="#" class="cm-link">Mi perfil</a>
-                <a href="#" class="cm-link" onclick="event.preventDefault();document.getElementById('cm-logout').submit();">Cerrar sesión</a>
+                <a href="{{ route('perfil') }}" class="cm-link">Mi perfil</a>
+                <a href="#" class="cm-link" onclick="event.preventDefault();openLogout();">Cerrar sesión</a>
             </nav>
             <div class="cm-org">
                 <span class="cm-org-txt">Organizado por:</span>
@@ -439,7 +509,7 @@
                             <div class="ing-pct">{{ str_pad($percent, 2, '0', STR_PAD_LEFT) }} %</div>
                             <div class="ing-cta">
                                 @if ($abierto)
-                                    <a href="{{ route('curso.etapa', $ing['key']) }}" class="btn-iniciar">Iniciar</a>
+                                    <a href="{{ route('curso.etapa', $ing['key']) }}" class="btn-iniciar">{{ $percent > 0 ? 'Continuar' : 'Iniciar' }}</a>
                                 @else
                                     <span class="btn-locked">
                                         Iniciar
@@ -451,9 +521,15 @@
                     @endforeach
 
                     {{-- Detalle del curso --}}
+                    @php
+                        // El curso está "En curso" si algún ingreso ya se inició (in_progress) o se completó.
+                        $cursoIniciado = collect($curso['ingresos'])->contains(function ($ing) use ($progress) {
+                            return in_array(optional($progress->get($ing['key']))->status, ['in_progress', 'completed']);
+                        });
+                    @endphp
                     <div class="detalle-head">
                         <div class="detalle-label">Detalle del curso</div>
-                        <div class="detalle-estado">No iniciado</div>
+                        <div class="detalle-estado">{{ $cursoIniciado ? 'En curso' : 'No iniciado' }}</div>
                         <div class="detalle-hasta">Disponible hasta: {{ $curso['disponible_hasta'] }}</div>
                     </div>
                     <div class="finales-grid">
@@ -485,6 +561,31 @@
         </div>
     </footer>
 
+    {{-- ===== Modal "¿Te vas ya?" + loader "¡Hasta pronto!" (cerrar sesión) ===== --}}
+    <div id="logout-modal" class="lg-overlay" hidden>
+        <div class="lg-card">
+            <div class="lg-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+            </div>
+            <h3 class="lg-title">¿Te vas ya?</h3>
+            <p class="lg-text">Guardamos tu avance para que continúes donde lo dejaste.</p>
+            <div class="lg-actions">
+                <button type="button" class="lg-btn lg-salir" onclick="doLogout()">Salir</button>
+                <button type="button" class="lg-btn lg-stay" onclick="closeLogout()">Seguir aquí</button>
+            </div>
+        </div>
+    </div>
+    <div id="logout-loader" class="reg-loader-overlay" hidden>
+        <div class="reg-loader-card">
+            <svg class="reg-spinner" viewBox="0 0 50 50" aria-hidden="true">
+                <circle cx="25" cy="25" r="20" fill="none" stroke="rgba(255,255,255,0.22)" stroke-width="4"/>
+                <circle cx="25" cy="25" r="20" fill="none" stroke="#05BAEE" stroke-width="4" stroke-linecap="round" stroke-dasharray="32 100"/>
+            </svg>
+            <div class="reg-loader-text"><h3 class="reg-loader-title">¡Hasta pronto!</h3></div>
+        </div>
+    </div>
+    <form id="logout-form" method="POST" action="{{ route('logout') }}" style="display:none">@csrf</form>
+
     <script>
         // Escala uniforme del curso → mismo aspecto en cualquier PC
         (function () {
@@ -507,6 +608,38 @@
             else document.addEventListener('DOMContentLoaded', scaleCurso);
             if (document.fonts && document.fonts.ready) document.fonts.ready.then(scaleCurso);
         })();
+
+        // ===== Cerrar sesión: dropdown → modal → loader → logout =====
+        function togglePerfil(e) {
+            e.stopPropagation();
+            var menu = e.currentTarget.closest('.perfil-menu');
+            var dd = menu.querySelector('.perfil-dd');
+            var open = dd.hidden;
+            dd.hidden = !open;
+            menu.querySelector('.perfil-btn').classList.toggle('open', open);
+        }
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.perfil-menu')) {
+                document.querySelectorAll('.perfil-dd').forEach(function (d) { d.hidden = true; });
+                document.querySelectorAll('.perfil-btn').forEach(function (b) { b.classList.remove('open'); });
+            }
+        });
+        function openLogout() {
+            document.querySelectorAll('.perfil-dd').forEach(function (d) { d.hidden = true; });
+            document.querySelectorAll('.perfil-btn').forEach(function (b) { b.classList.remove('open'); });
+            var mm = document.getElementById('curso-mobmenu'); if (mm) mm.classList.remove('open');
+            document.getElementById('logout-modal').hidden = false;
+            document.body.style.overflow = 'hidden';
+        }
+        function closeLogout() {
+            document.getElementById('logout-modal').hidden = true;
+            document.body.style.overflow = '';
+        }
+        function doLogout() {
+            document.getElementById('logout-modal').hidden = true;
+            document.getElementById('logout-loader').hidden = false;
+            setTimeout(function () { document.getElementById('logout-form').submit(); }, 1500);
+        }
     </script>
 </body>
 </html>

@@ -277,26 +277,6 @@
                         <input name="document_id" value="{{ old('document_id') }}" placeholder="Ej: 12345678A" class="login-input w-full px-4 py-2">
                         @error('document_id')<p class="field-error">{{ $message }}</p>@enderror
                     </div>
-                    <div>
-                        <label class="login-label block mb-1">País <span class="req">*</span></label>
-                        <select name="country" class="login-input w-full px-4 py-2 appearance-none">
-                            <option value="" {{ old('country') ? '' : 'selected' }} disabled>Selecciona tu país</option>
-                            @foreach (['España','Andorra','Portugal','Francia','Italia','México','Colombia','Argentina','Chile'] as $c)
-                                <option value="{{ $c }}" {{ old('country') === $c ? 'selected' : '' }}>{{ $c }}</option>
-                            @endforeach
-                        </select>
-                        @error('country')<p class="field-error">{{ $message }}</p>@enderror
-                    </div>
-                    <div>
-                        <label class="login-label block mb-1">Provincia <span class="req">*</span></label>
-                        <input name="province" value="{{ old('province') }}" placeholder="Ej: Madrid" class="login-input w-full px-4 py-2">
-                        @error('province')<p class="field-error">{{ $message }}</p>@enderror
-                    </div>
-                    <div>
-                        <label class="login-label block mb-1">Población <span class="req">*</span></label>
-                        <input name="city" value="{{ old('city') }}" placeholder="Ej: Alcobendas" class="login-input w-full px-4 py-2">
-                        @error('city')<p class="field-error">{{ $message }}</p>@enderror
-                    </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-x-4 gap-y-3">
                     <div>
@@ -333,23 +313,7 @@
                         </select>
                         @error('specialty')<p class="field-error">{{ $message }}</p>@enderror
                     </div>
-                    <div>
-                        <label class="login-label block mb-1">Hospital <span class="req">*</span></label>
-                        <input name="hospital" value="{{ old('hospital') }}" placeholder="Empieza a escribir el nombre" class="login-input w-full px-4 py-2">
-                        @error('hospital')<p class="field-error">{{ $message }}</p>@enderror
-                    </div>
                 </div>
-                <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mt-3">
-                    <span class="login-label">Tipo de centro <span class="req">*</span></span>
-                    @foreach (['privado' => 'Centro Privado', 'publico' => 'Centro público', 'ambos' => 'Ambos'] as $val => $lbl)
-                        <label class="center-opt inline-flex items-center gap-2.5 px-4 py-2.5">
-                            <input type="radio" name="center_type" value="{{ $val }}" class="sr-only" {{ old('center_type') === $val ? 'checked' : '' }}>
-                            <span class="center-dot"></span>
-                            <span class="text-[14px]">{{ $lbl }}</span>
-                        </label>
-                    @endforeach
-                </div>
-                @error('center_type')<p class="field-error">{{ $message }}</p>@enderror
 
                 {{-- 3. Perfil profesional --}}
                 <h2 class="sec-title mt-4 mb-1.5">3. Perfil profesional</h2>
@@ -380,12 +344,6 @@
                     <span class="text-[14px] text-[#3a4a52]">He leído y acepto política de privacidad y aviso legal</span>
                 </label>
                 @error('accepted_privacy')<p class="field-error">{{ $message }}</p>@enderror
-
-                <label class="flex items-start gap-3 mt-2.5 cursor-pointer">
-                    <input type="checkbox" name="accepted_novartis" value="1" {{ old('accepted_novartis') ? 'checked' : '' }}
-                           class="w-[18px] h-[18px] mt-0.5 rounded-[4px] border border-[#c3ced3] accent-[#05BAEE] cursor-pointer shrink-0">
-                    <span class="text-[13px] text-[#3a4a52] leading-snug">Acepto que mis datos y los datos generados en esta página web sean facilitados a Novartis Farmacéutica, S.A., para el envío de correos electrónicos individuales. El contenido de los correos electrónicos podrá ser sobre productos y/o servicios, y/o actividades y/o eventos y/o noticias prestados, organizados y/o relativos a Novartis.</span>
-                </label>
 
                 {{-- Acciones --}}
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-5">
