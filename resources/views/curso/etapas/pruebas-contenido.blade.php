@@ -44,14 +44,14 @@
                         ['file' => 'cateterismo-1', 'cap' => 'Vídeo 1. Coronariografía. Arteria coronaria derecha con oclusión en segmento medio.'],
                         ['file' => 'cateterismo-2', 'cap' => 'Vídeo 2. Coronariografía. Estenosis significativa en descendente anterior.'],
                     ],
-                    'nota' => 'Tras su llegada a Urgencias, el paciente es trasladado inmediatamente al área de Hemodinámica para la realización de una coronariografía urgente. <span style="opacity:.5">(Resto del texto pendiente.)</span>',
+                    'nota' => null,
                 ],
                 [
                     'titulo' => 'Ecocardiograma',
                     'videos' => [
-                        ['file' => 'cateterismo-3', 'cap' => 'Plano de 4 cámaras. Fracción de eyección del ventrículo izquierdo conservada.'],
+                        ['file' => 'cateterismo-3', 'cap' => 'Video 3. Ecocardiograma (plano 4 cámaras). Fracción de eyección del ventrículo izquierdo conservada.'],
                     ],
-                    'nota' => null,
+                    'nota' => 'Tras su llegada a Urgencias, el paciente es trasladado inmediatamente al área de Hemodinámica para la realización de una angioplastia primaria. En el cateterismo cardíaco los hallazgos son los siguientes: oclusión coronaria derecha y lesión moderada (50%) en descendente anterior. Fracción de eyección del ventrículo izquierdo (FEVI): 55%. Se procede a angioplastia coronaria transluminal percutánea (ACTP) e implante de 2 stents farmacoactivos (DES) en coronaria derecha con éxito y sin complicaciones. Flujo final TIMI 3 (flujo coronario normal).',
                 ],
             ];
         @endphp

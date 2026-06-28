@@ -4,12 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script>
-        /* En celulares fijamos el viewport a 390 → el diseño móvil escala como una imagen */
+        /* Bloqueo de viewport por dispositivo (escala el diseño "como una imagen"):
+           teléfono→móvil 390 · tablet→web 1440 (igual que en web, sin desborde) · desktop sin cambios. */
         (function () {
             try {
-                var mn = Math.min(screen.width, screen.height);
-                if (mn && mn < 768) {
-                    document.querySelector('meta[name="viewport"]').setAttribute('content', 'width=390');
+                var vp = document.querySelector('meta[name="viewport"]');
+                var shortSide = Math.min(screen.width || 9999, screen.height || 9999);
+                var longSide  = Math.max(screen.width || 0, screen.height || 0);
+                var coarse = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+                if (shortSide < 768) {
+                    vp.setAttribute('content', 'width=390');
+                } else if (coarse && shortSide <= 1024 && longSide <= 1400) {
+                    vp.setAttribute('content', 'width=1440');
                 }
             } catch (e) {}
         })();
@@ -61,11 +67,11 @@
 
         /* ===== Juan ===== */
         .curso-row { position: relative; display: flex; justify-content: flex-end; margin-top: 140px; }
-        .juan-col { position: absolute; left: 0; bottom: -28px; width: 297px; z-index: 2; }
-        .juan-img { height: 690px; width: auto; max-width: none; display: block; margin-left: -105px; filter: drop-shadow(0 22px 38px rgba(0,0,0,0.45)); }
+        .juan-col { position: absolute; left: 0; bottom: -80px; width: 297px; z-index: 2; }
+        .juan-img { height: 742px; width: auto; max-width: none; display: block; margin-left: -99px; filter: drop-shadow(0 22px 38px rgba(0,0,0,0.45)); }
         .juan-img-mobile { display: none; }   /* solo se usa en móvil */
         .juan-cards {
-            position: absolute; left: -40px; bottom: 100px;
+            position: absolute; left: -13px; bottom: 122px;
             width: 285px;
             padding: 8px 0;                       /* padding-top/bottom 8px [Figma] */
             border-radius: 12px; overflow: hidden;
@@ -205,6 +211,89 @@
         .reg-spinner { width: 150px; height: 150px; animation: reg-spin 1.1s linear infinite; }
         @keyframes reg-spin { to { transform: rotate(360deg); } }
         .reg-loader-title { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 24px; color: #fff; margin: 0; }
+
+        /* ===================================================================== */
+        /* ===  PULIDO WEB + TABLET (≥768px) — esquinas rectas + destellos glass = */
+        /* ===================================================================== */
+        @media (min-width: 768px) {
+            /* === Cuadros y botones SIN border-radius (estética pixel-perfect) === */
+            .curso-panel,
+            .juan-cards,
+            .final-card,
+            .btn-iniciar,
+            .btn-locked {
+                border-radius: 0 !important;
+            }
+
+            /* === Card principal de ingresos: highlight glass interno === */
+            .curso-panel {
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0.04) 100%) !important;
+                box-shadow:
+                    inset 0 1px 0 rgba(255,255,255,0.18),         /* destello línea superior */
+                    inset 0 0 0 1px rgba(255,255,255,0.06),       /* borde interior sutil */
+                    0 24px 60px rgba(0,0,0,0.35);                  /* sombra exterior profunda */
+                border: 1px solid rgba(255,255,255,0.16) !important;
+            }
+            /* Destello radial sutil en la esquina sup-izq del panel */
+            .curso-panel::before {
+                content: '';
+                position: absolute;
+                inset: 0;
+                pointer-events: none;
+                background: radial-gradient(80% 60% at 8% 0%, rgba(5,186,238,0.07) 0%, transparent 55%);
+            }
+            .curso-panel > * { position: relative; }
+
+            /* === Card de datos de Juan: highlight más fuerte (es el cuadro más visible) === */
+            .juan-cards {
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.05) 100%) !important;
+                box-shadow:
+                    inset 0 1px 0 rgba(255,255,255,0.25),         /* destello brillante arriba */
+                    inset 0 -1px 0 rgba(255,255,255,0.04),
+                    0 18px 40px rgba(0,0,0,0.30);
+                border: 1px solid rgba(255,255,255,0.20) !important;
+            }
+
+            /* === Cards Evaluación / Diploma: glass con destello === */
+            .final-card {
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%) !important;
+                box-shadow:
+                    inset 0 1px 0 rgba(255,255,255,0.14),         /* destello sup */
+                    inset 0 0 0 1px rgba(255,255,255,0.04);
+                border: 1px solid rgba(255,255,255,0.14) !important;
+                -webkit-backdrop-filter: blur(10px);
+                backdrop-filter: blur(10px);
+            }
+
+            /* === Botón "Iniciar" activo: glow azul + destello blanco interior === */
+            .btn-iniciar {
+                background: linear-gradient(180deg, #1FC6F1 0%, #05BAEE 100%) !important;
+                box-shadow:
+                    inset 0 1px 0 rgba(255,255,255,0.35),         /* línea brillante arriba */
+                    inset 0 -1px 0 rgba(0,0,0,0.12),               /* hundido sutil abajo */
+                    0 6px 18px rgba(5,186,238,0.30),               /* glow azul */
+                    0 2px 4px rgba(0,0,0,0.20);
+            }
+            .btn-iniciar:hover {
+                background: linear-gradient(180deg, #28cdf6 0%, #04a3d1 100%) !important;
+                box-shadow:
+                    inset 0 1px 0 rgba(255,255,255,0.45),
+                    0 8px 22px rgba(5,186,238,0.40),
+                    0 2px 6px rgba(0,0,0,0.25);
+            }
+
+            /* === Botón locked: destello sutil para coherencia === */
+            .btn-locked {
+                background: linear-gradient(180deg, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0.04) 100%) !important;
+                box-shadow:
+                    inset 0 1px 0 rgba(255,255,255,0.10),
+                    inset 0 0 0 1px rgba(255,255,255,0.04);
+                border: 1px solid rgba(255,255,255,0.14) !important;
+            }
+        }
 
         /* ===================================================================== */
         /* =====================  MÓVIL  (≤767px)  ============================= */

@@ -3,18 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {{-- En celulares: bloquea el diseño a 390px y deja que el navegador lo escale → se ve idéntico
-         (como una imagen) en cualquier ancho de teléfono, sin romperse. Tablets quedan para después. --}}
+    {{-- Bloqueo de viewport por dispositivo, para que el navegador escale el diseño "como una imagen":
+         - Teléfono (<768): diseño móvil bloqueado a 390.
+         - Tablet (táctil, lado corto ≤1024): muestra el diseño WEB completo bloqueado a 1440 y lo escala
+           para caber → se ve igual que en web, sin desbordarse ni romperse.
+         - Desktop: sin cambios (device-width). --}}
     <script>
         (function () {
             var vp = document.querySelector('meta[name="viewport"]');
             if (!vp) return;
             function apply() {
-                var phone = Math.min(screen.width || 9999, screen.height || 9999) < 768;
-                vp.setAttribute('content', phone ? 'width=390' : 'width=device-width, initial-scale=1.0');
+                var shortSide = Math.min(screen.width || 9999, screen.height || 9999);
+                var longSide  = Math.max(screen.width || 0, screen.height || 0);
+                var coarse = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+                if (shortSide < 768) {
+                    vp.setAttribute('content', 'width=390');
+                } else if (coarse && shortSide <= 1024 && longSide <= 1400) {
+                    vp.setAttribute('content', 'width=1440');
+                } else {
+                    vp.setAttribute('content', 'width=device-width, initial-scale=1.0');
+                }
             }
             apply();
             window.addEventListener('orientationchange', apply);
+            window.addEventListener('resize', apply);
         })();
     </script>
     <title>Registro — Lp(a)ction</title>

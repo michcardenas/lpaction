@@ -3,18 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {{-- En celulares: bloquea el diseño a 390px y deja que el navegador lo escale → se ve idéntico
-         (como una imagen) en cualquier ancho de teléfono, sin romperse. Tablets quedan para después. --}}
+    {{-- Bloqueo de viewport por dispositivo, para que el navegador escale el diseño "como una imagen":
+         - Teléfono (<768): diseño móvil bloqueado a 390.
+         - Tablet (táctil, lado corto ≤1024): muestra el diseño WEB completo bloqueado a 1440 y lo escala
+           para caber → se ve igual que en web, sin desbordarse ni romperse.
+         - Desktop: sin cambios (device-width). --}}
     <script>
         (function () {
             var vp = document.querySelector('meta[name="viewport"]');
             if (!vp) return;
             function apply() {
-                var phone = Math.min(screen.width || 9999, screen.height || 9999) < 768;
-                vp.setAttribute('content', phone ? 'width=390' : 'width=device-width, initial-scale=1.0');
+                var shortSide = Math.min(screen.width || 9999, screen.height || 9999);
+                var longSide  = Math.max(screen.width || 0, screen.height || 0);
+                var coarse = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+                if (shortSide < 768) {
+                    vp.setAttribute('content', 'width=390');
+                } else if (coarse && shortSide <= 1024 && longSide <= 1400) {
+                    vp.setAttribute('content', 'width=1440');
+                } else {
+                    vp.setAttribute('content', 'width=device-width, initial-scale=1.0');
+                }
             }
             apply();
             window.addEventListener('orientationchange', apply);
+            window.addEventListener('resize', apply);
         })();
     </script>
     <title>Lp(a)ction — ¿Qué cambia en tu práctica cuando la Lp(a) está elevada?</title>
@@ -29,6 +41,29 @@
         /* ── Header / Nav (exacto al Figma) ──────────────────────── */
         .header-bar {
             background: linear-gradient(90deg, #060606 0%, #181818 50%, #060606 100%);
+        }
+        /* ── Header sticky en WEB y TABLET (≥1024px): empieza SÓLIDO arriba y se vuelve
+              GLASS translúcido al hacer scroll (clase .scrolled). Móvil queda intacto. */
+        @media (min-width: 1024px) {
+            .header-bar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 9000;
+                transition: background .35s ease, backdrop-filter .35s ease, border-bottom-color .35s ease, box-shadow .35s ease;
+                border-bottom: 1px solid transparent;
+            }
+            /* Estado scrolleado: glass */
+            .header-bar.scrolled {
+                background: rgba(15,15,15,0.55) !important;
+                -webkit-backdrop-filter: blur(14px) saturate(140%);
+                backdrop-filter: blur(14px) saturate(140%);
+                border-bottom-color: rgba(255,255,255,0.08);
+                box-shadow: 0 4px 24px rgba(0,0,0,0.20);
+            }
+            /* Que los anchors (#caso, #metodologia, …) no queden tapados por el header fixed */
+            html { scroll-padding-top: 80px; }
         }
         .nav-link {
             font-family: 'Montserrat', sans-serif;
@@ -129,7 +164,7 @@
             /* Tarjeta anclada abajo, alineada con el final de "Juan" (18px desde abajo) */
             .caso-card {
                 position: absolute;
-                right: -58px;
+                right: 0;
                 bottom: 18px;
                 top: auto;
                 transform: none;
@@ -222,7 +257,7 @@
             white-space: nowrap;
         }
         .hero-pad-top      { padding-top: calc(var(--u) * 40); }
-        .hero-pad-bottom   { padding-bottom: calc(var(--u) * 36); }
+        .hero-pad-bottom   { padding-bottom: calc(var(--u) * 12); }
         .hero-eyebrow-mb   { margin-bottom: calc(var(--u) * 14); }
         .hero-title-gap    { margin-top: calc(var(--u) * 6); }
         .hero-bar-text {
@@ -532,6 +567,15 @@
         </div>
     </section>
     <style>
+        /* Banda intro desktop: alto de diseño 160px con el texto centrado verticalmente
+           (antes no había estilo desktop → la banda se encogía al alto del texto = apretada). */
+        @media (min-width: 768px) {
+            .intro-band-inner {
+                min-height: 160px;
+                padding-top: 16px;
+                padding-bottom: 16px;
+            }
+        }
         @media (max-width: 767px) {
             /* Caso section: padding 16px para que texto quede a 358px en 390px */
             #caso .relative.px-6 { padding-left: 16px !important; padding-right: 16px !important; }
@@ -665,19 +709,20 @@
                     </div>
 
                     {{-- Desktop: Juan figure --}}
-                    <div class="hidden lg:flex relative z-10 justify-start pl-[4%]">
+                    <div class="hidden lg:flex relative z-30 justify-start" style="margin-left:-130px;">
                         <div class="relative">
                             <img src="{{ asset('images/juan.png') }}" alt="Juan, paciente del caso clínico"
                                  class="h-[520px] w-auto object-contain">
-                            <span class="absolute" style="left:16px; transform:none; bottom:4%; color:#05BAEE; font-family:'Montserrat',sans-serif; font-weight:700; font-size:44px; line-height:1; letter-spacing:0; text-align:left; display:inline-block;">Juan</span>
                         </div>
                     </div>
+                    {{-- Desktop: palabra "Juan" — independiente de la figura, fija bajo sus pies --}}
+                    <span class="hidden lg:block absolute z-30" style="left:36%; bottom:4%; color:#05BAEE; font-family:'Montserrat',sans-serif; font-weight:700; font-size:36px; line-height:1; letter-spacing:0;">Juan</span>
 
                     {{-- Desktop: Data card --}}
                     <div class="caso-card hidden lg:flex relative z-20 overflow-hidden"
-                         style="flex-direction:column; border-radius:12px; background:rgba(0,0,0,0.18); -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px);">
+                         style="flex-direction:column; width:288px; border-radius:0; background:rgb(255 255 255 / 16%); border:1px solid rgba(255,255,255,0.14); -webkit-backdrop-filter:blur(20px); backdrop-filter:blur(20px); box-shadow:0 10px 34px rgba(0,0,0,0.20);">
                         {{-- Edad --}}
-                        <div class="flex items-center justify-between card-row" style="background:rgba(255,255,255,0.08); padding:9px 12px; height:36px; box-sizing:border-box;">
+                        <div class="flex items-center justify-between card-row" style="padding:14px 18px; border-bottom:1px solid rgba(255,255,255,0.10);">
                             <span class="flex items-center gap-3 text-slate-300 card-txt">
                                 <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.5" y="6" width="19" height="13" rx="2"/><path d="M7 6V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1"/></svg>
                                 Edad
@@ -685,7 +730,7 @@
                             <span class="text-white card-txt font-semibold">52</span>
                         </div>
                         {{-- Peso --}}
-                        <div class="flex items-center justify-between card-row" style="background:rgba(255,255,255,0.08); padding:9px 12px; height:36px; box-sizing:border-box;">
+                        <div class="flex items-center justify-between card-row" style="padding:14px 18px; border-bottom:1px solid rgba(255,255,255,0.10);">
                             <span class="flex items-center gap-3 text-slate-300 card-txt">
                                 <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="3"/><rect x="7" y="6" width="10" height="6" rx="1.5"/><line x1="8" y1="16" x2="16" y2="16"/></svg>
                                 Peso
@@ -693,7 +738,7 @@
                             <span class="text-white card-txt font-semibold">82 kg</span>
                         </div>
                         {{-- Índice paquetes-año --}}
-                        <div class="flex items-center justify-between card-row" style="background:rgba(255,255,255,0.08); padding:9px 12px; height:36px; box-sizing:border-box;">
+                        <div class="flex items-center justify-between card-row" style="padding:14px 18px; border-bottom:1px solid rgba(255,255,255,0.10);">
                             <span class="flex items-center gap-3 text-slate-300 card-txt">
                                 <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="11" width="15" height="5" rx="1"/><path d="M13 11v5M6 11v5"/><path d="M20 5.5c1 .6 1 1.6.6 2.4M17 4.5c1.2.7 1.2 2 .7 3"/><path d="M19 11v5h3v-5z"/></svg>
                                 Índice paquetes-año
@@ -701,7 +746,7 @@
                             <span class="text-white card-txt font-semibold">42</span>
                         </div>
                         {{-- Estilo de vida --}}
-                        <div class="card-row" style="background:rgba(255,255,255,0.08); padding:9px 12px;">
+                        <div class="card-row" style="padding:14px 18px;">
                             <span class="flex items-center gap-3 text-slate-300 card-txt mb-1">
                                 <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20.5 8.5c0-2.2-1.8-4-4-4-1.6 0-3 .9-3.7 2.3C12.1 5.4 10.7 4.5 9 4.5c-2.2 0-4 1.8-4 4 0 4.5 7.5 9 7.5 9s8-4.5 8-9Z"/><polyline points="7,12 10,9 13,13 16,10"/></svg>
                                 Estilo de vida
@@ -825,8 +870,8 @@
 
     {{-- ── Section: Qué decisiones podrás mejorar ─────────────────── --}}
     <style>
-        /* Chulito verde por defecto (desktop, aún sin Figma); blanco en móvil (spec) */
-        .dec-check path { stroke: #6fb33f; }
+        /* Chulito blanco (web/tablet y móvil, como en el Figma) */
+        .dec-check path { stroke: #FFFFFF; }
         @media (max-width: 767px) {
             /* Frame de la sección (spec Figma): 390×668 · padding 64/16 · fondo teal+overlay */
             #decisiones .max-w-7xl {
@@ -1182,6 +1227,85 @@
                 color: rgba(255,255,255,0.40) !important;
             }
         }
+
+        /* ── Comité científico — hover (solo web y tablet, ≥768px) ─────────────────
+           Reglas:
+           · Icono base: círculo con borde 1px blanco/40, estetoscopio blanco/70.
+           · Card base: fondo gris translúcido permanente (glass).
+           · Hover en cualquier card → fondo se ilumina más + aparece pastilla de rol.
+           · Hover en .is-coord → círculo se llena de blanco, estetoscopio pasa a azul de marca.
+           · Hover en .is-autor → el icono NO se ilumina. Solo aparece la pastilla y el fondo se ilumina. */
+        @media (min-width: 768px) {
+            /* Estado BASE: gris glass permanente para que las cards no se vean negras */
+            #comite .comite-card {
+                background: rgb(255 255 255 / 25%) !important;
+                transition: background-color .35s ease !important;
+            }
+            /* Estado HOVER: fondo claramente más iluminado */
+            #comite .comite-card:hover {
+                background: rgb(255 255 255 / 38%) !important;
+            }
+            #comite .comite-card-top {
+                display: inline-flex;
+                align-items: center;
+                gap: 10px;
+            }
+            #comite .comite-icon {
+                width: 36px;
+                height: 36px;
+                border-radius: 999px;
+                border: 1px solid rgba(255,255,255,0.40);
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                background: transparent;
+                transition: background-color .3s ease, border-color .3s ease;
+                flex-shrink: 0;
+            }
+            #comite .comite-icon-svg {
+                color: rgba(255,255,255,0.85);
+                transition: color .3s ease;
+            }
+            #comite .comite-label {
+                display: inline-flex;
+                align-items: center;
+                padding: 6px 12px;
+                border-radius: 8px;
+                background: rgba(255,255,255,0.08);
+                border: 1px solid rgba(255,255,255,0.40);
+                color: #FFFFFF;
+                font-family: 'Montserrat', sans-serif;
+                font-weight: 400;
+                font-size: 13px;
+                line-height: 150%;
+                letter-spacing: 0;
+                white-space: nowrap;
+                opacity: 0;
+                transform: translateX(-6px);
+                transition: opacity .3s ease, transform .3s ease;
+                pointer-events: none;
+            }
+            #comite .comite-card:hover .comite-label {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            /* Solo coordinadores: el círculo del icono se ilumina en hover */
+            #comite .comite-card.is-coord:hover .comite-icon {
+                background: #FFFFFF;
+                border-color: #FFFFFF;
+            }
+            #comite .comite-card.is-coord:hover .comite-icon-svg {
+                color: #05BAEE;
+            }
+            /* Autores: el círculo NO cambia (sobreescribe cualquier herencia) */
+            #comite .comite-card.is-autor:hover .comite-icon {
+                background: transparent;
+                border-color: rgba(255,255,255,0.40);
+            }
+            #comite .comite-card.is-autor:hover .comite-icon-svg {
+                color: rgba(255,255,255,0.85);
+            }
+        }
     </style>
     <section id="comite" class="bg-black py-20 lg:py-28">
         <div class="comite-inner max-w-7xl mx-auto px-6 lg:px-12">
@@ -1214,26 +1338,29 @@
 
             <div class="reveal-stagger comite-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 border-t border-l border-white/15">
                 @foreach ($members as $m)
-                    <div class="comite-card group relative border-r border-b border-white/15 p-7 lg:p-8 min-h-[200px] cursor-pointer
-                                overflow-hidden transition-colors duration-300 hover:bg-[#22d3ee]/[0.035]">
-
-                        {{-- Hover radial glow --}}
-                        <div class="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                             style="background:radial-gradient(circle at 28% 0%, rgba(34,211,238,.10), transparent 65%);"></div>
-                        {{-- Hover inset highlight border --}}
-                        <div class="pointer-events-none absolute inset-0 ring-1 ring-inset ring-[#22d3ee]/0 group-hover:ring-[#22d3ee]/50 transition-all duration-300"></div>
+                    @php
+                        $isCoord = str_contains(strtolower($m['role']), 'coordinador');
+                        $esMujer = str_starts_with($m['name'], 'Dra.');
+                        if ($isCoord) {
+                            $roleDisplay = $esMujer ? 'Coordinadora y autora' : 'Coordinador y autor';
+                        } else {
+                            $roleDisplay = $esMujer ? 'Autora' : 'Autor';
+                        }
+                        $roleClass = $isCoord ? 'is-coord' : 'is-autor';
+                    @endphp
+                    <div class="comite-card {{ $roleClass }} group relative border-r border-b border-white/15 p-7 lg:p-8 min-h-[200px] cursor-pointer overflow-hidden">
 
                         <div class="comite-card-inner relative">
                             {{-- Icon + role pill --}}
                             <div class="comite-card-top">
                                 <span class="comite-icon">
-                                    <svg class="w-5 h-5 text-white/70 group-hover:text-[#22d3ee] transition-colors duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                                    <svg class="comite-icon-svg w-5 h-5 transition-colors duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
                                         <path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6 6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.3.3 0 1 0 .2.3"/>
                                         <path d="M8 15v1a6 6 0 0 0 12 0v-4"/>
                                         <circle cx="20" cy="10" r="2"/>
                                     </svg>
                                 </span>
-                                <span class="comite-label">{{ $m['role'] }}</span>
+                                <span class="comite-label">{{ $roleDisplay }}</span>
                             </div>
 
                             <div class="comite-card-text">
@@ -1265,6 +1392,67 @@
         .ft-links { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:0 6px; }
         .ft-link { font-family:'Montserrat',sans-serif; font-weight:400; font-size:12px; line-height:150%; color:rgba(255,255,255,0.70); text-decoration:none; padding:16px 2px; }
         .ft-link:hover { color:#fff; }
+
+        /* ── Footer en WEB y TABLET (≥1024px): layout horizontal ──
+           Novartis a la izquierda · Lp(a)ction a la derecha · row inferior (divisor + legal + links) ocupa todo el ancho.
+           El móvil (<1024px) conserva su layout apilado original. */
+        @media (min-width: 1024px) {
+            footer {
+                flex-direction: row !important;
+                align-items: flex-start !important;
+                justify-content: space-between !important;
+                flex-wrap: wrap !important;
+                padding: 48px 64px !important;
+                gap: 32px 48px !important;
+                max-width: 1440px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            /* Bloque Novartis (1er hijo del footer) — sale a la IZQUIERDA por el space-between,
+               pero su contenido interno (logo + "Patrocinado por") queda centrado en columna */
+            footer > div:nth-of-type(1) {
+                align-items: center !important;
+                flex-shrink: 0;
+            }
+            footer > div:nth-of-type(1) .ft-caption { text-align: center; }
+            /* Bloque Lp(a)ction (2do hijo) — sale a la DERECHA por el space-between,
+               y su contenido interno también centrado en columna */
+            footer > div:nth-of-type(2) {
+                align-items: center !important;
+                flex-shrink: 0;
+            }
+            footer > div:nth-of-type(2) .ft-caption { text-align: center; }
+            /* Row inferior: ocupa todo el ancho. Grid 2 col: legal-izq + links-der, divisor arriba. */
+            footer .ft-bottom {
+                order: 3;
+                flex-basis: 100%;
+                width: 100% !important;
+                display: grid !important;
+                grid-template-columns: 1fr auto;
+                column-gap: 40px;
+                row-gap: 20px;
+                align-items: center;
+            }
+            footer .ft-bottom > .ft-divider {
+                grid-column: 1 / -1;
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+            footer .ft-bottom > .ft-separator { display: none; }
+            footer .ft-bottom > .ft-legal {
+                grid-column: 1;
+                text-align: left !important;
+                width: auto !important;
+                max-width: none !important;
+                margin: 0 !important;
+            }
+            footer .ft-bottom > .ft-links {
+                grid-column: 2;
+                justify-self: end;
+                gap: 0 20px !important;
+                flex-wrap: nowrap !important;
+            }
+        }
     </style>
     <footer style="background:#000; padding:32px 16px; display:flex; flex-direction:column; align-items:center; gap:32px;">
         {{-- Novartis + Patrocinado por --}}
@@ -1341,7 +1529,7 @@
         })();
     </script>
 
-    {{-- Botón flotante scroll-to-top (solo móvil, aparece al bajar) --}}
+    {{-- Botón flotante scroll-to-top (móvil: aparece al bajar · web/tablet: siempre visible) --}}
     <style>
         #scroll-fab {
             display: none;
@@ -1359,6 +1547,17 @@
             align-items: center;
             justify-content: center;
             box-sizing: border-box;
+        }
+        /* Web y tablet: más chiquito y separado del borde, para no chocar con el contenido */
+        @media (min-width: 1024px) {
+            #scroll-fab {
+                width: 52px;
+                height: 52px;
+                padding: 12px;
+                bottom: 32px;
+                right: 32px;
+            }
+            #scroll-fab svg { width: 28px; height: 28px; }
         }
         #scroll-fab::before {
             content: '';
@@ -1384,9 +1583,30 @@
             var fab = document.getElementById('scroll-fab');
             if (!fab) return;
             function onScroll() {
-                var show = window.innerWidth < 1024 && window.scrollY > 300;
+                /* Móvil (<1024): aparece tras bajar 300px.
+                   Web y tablet (≥1024): siempre visible. */
+                var show = window.innerWidth >= 1024 ? true : window.scrollY > 300;
                 fab.style.display = show ? 'flex' : 'none';
             }
+            onScroll();
+            window.addEventListener('scroll', onScroll, { passive: true });
+            window.addEventListener('resize', onScroll);
+        })();
+    </script>
+
+    {{-- Header: sólido al tope · glass al scrollear (solo en web/tablet, ≥1024px) --}}
+    <script>
+        (function () {
+            var header = document.querySelector('.header-bar');
+            if (!header) return;
+            function onScroll() {
+                if (window.innerWidth < 1024) {
+                    header.classList.remove('scrolled');
+                    return;
+                }
+                header.classList.toggle('scrolled', window.scrollY > 10);
+            }
+            onScroll();
             window.addEventListener('scroll', onScroll, { passive: true });
             window.addEventListener('resize', onScroll);
         })();

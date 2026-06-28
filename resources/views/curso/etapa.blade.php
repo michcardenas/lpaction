@@ -4,10 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script>
-        /* En celulares fijamos el viewport a 390 → el diseño móvil escala como una imagen */
+        /* Bloqueo de viewport por dispositivo (escala el diseño "como una imagen"):
+           teléfono→móvil 390 · tablet→web 1440 (igual que en web, sin desborde) · desktop sin cambios. */
         (function () {
-            try { var mn = Math.min(screen.width, screen.height);
-                if (mn && mn < 768) document.querySelector('meta[name="viewport"]').setAttribute('content', 'width=390'); } catch (e) {}
+            try {
+                var vp = document.querySelector('meta[name="viewport"]');
+                var shortSide = Math.min(screen.width || 9999, screen.height || 9999);
+                var longSide  = Math.max(screen.width || 0, screen.height || 0);
+                var coarse = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+                if (shortSide < 768) vp.setAttribute('content', 'width=390');
+                else if (coarse && shortSide <= 1024 && longSide <= 1400) vp.setAttribute('content', 'width=1440');
+            } catch (e) {}
         })();
     </script>
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -207,7 +214,7 @@
         .resumen-txt { font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 15px; line-height: 160%; color: #c8d3d7; margin: 0 auto 24px; max-width: 420px; }
         .btn-descargar { display: inline-flex; align-items: center; gap: 10px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 15px; background: #05BAEE; color: #fff; border: 0; padding: 12px 28px; border-radius: 6px; cursor: pointer; text-decoration: none; transition: background .2s; }
         .btn-descargar:hover { background: #04a3d1; }
-        .resumen-foot { display: flex; justify-content: center; margin-top: 34px; }
+        .resumen-foot { display: flex; justify-content: center; margin-top: 63px; }
         .btn-finalizar { font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 15px; background: rgba(185,185,185,0.25); color: #BFBFBF; border: 0; padding: 13px 38px; border-radius: 6px; cursor: pointer; transition: background .2s, color .2s; }
         .btn-finalizar:hover { background: rgba(185,185,185,0.40); color: #fff; }
 
@@ -558,6 +565,316 @@
             }
             .seg-top button { flex: 1 !important; }
             .seg-top button.on, .tabs .tab.on { color: #454545 !important; }
+        }
+
+        /* =====================================================================  */
+        /* ===  PULIDO WEB + TABLET (≥768px) — destellos glass + sidebar activo === */
+        /* =====================================================================  */
+        @media (min-width: 768px) {
+            /* === FIX bug imagen doble: .etapa-juan img tiene specificidad (0,1,1) y vence a
+                   .etapa-juan-m {display:none} (0,1,0) → la imagen mobile aparecía en desktop/tablet.
+                   Forzamos ocultarla con !important. */
+            .etapa-juan-m { display: none !important; }
+
+            /* === Layout: content-col 640px + correr a la derecha (más aire después del sidebar) === */
+            .content-col { width: 640px !important; margin-left: 28px; }
+
+            /* === Destellos de luz de fondo en el stage (decorativos, no clickables) === */
+            .main-stage { isolation: isolate; }
+            .main-stage::before,
+            .main-stage::after {
+                content: '';
+                position: absolute;
+                pointer-events: none;
+                z-index: 0;
+                filter: blur(40px);
+                opacity: 0.85;
+            }
+            /* Destello 1 — arriba derecha (zona Contenido/Bibliografía + cabeza de Juan) */
+            .main-stage::before {
+                top: -60px; right: -60px;
+                width: 520px; height: 360px;
+                background: radial-gradient(closest-side, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0) 80%);
+            }
+            /* Destello 2 — abajo izquierda (zona Motivo de consulta) */
+            .main-stage::after {
+                bottom: -40px; left: -40px;
+                width: 480px; height: 320px;
+                background: radial-gradient(closest-side, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 80%);
+            }
+
+            /* === Top bar: barras más DELGADAS y track más sutil === */
+            .bar {
+                height: 6px !important;
+                background: rgba(255,255,255,0.22) !important;
+            }
+            .bar > i { box-shadow: 0 0 6px rgba(5,186,238,0.40); }
+
+            /* === Sidebar: item activo "Presentación" AZUL con acento lateral === */
+            .side-item.viendo {
+                background:
+                    radial-gradient(120% 60% at 0% 0%, rgba(5,186,238,0.22) 0%, rgba(5,186,238,0) 55%),
+                    linear-gradient(180deg, rgba(5,186,238,0.18) 0%, rgba(5,186,238,0.06) 100%) !important;
+                color: #FFFFFF !important;
+                border-left: 3px solid #05BAEE !important;
+                padding-left: 29px !important;             /* 32 - 3 para compensar borde */
+                box-shadow: inset 0 1px 0 rgba(255,255,255,0.18);
+            }
+            .side-item.viendo .ico { color: #05BAEE !important; }
+
+            /* === PERFIL-CARD: destello glass moderno === */
+            .perfil-card {
+                background:
+                    radial-gradient(120% 60% at 0% 0%, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 55%),
+                    rgba(255,255,255,0.10) !important;
+                border: 1px solid rgba(255,255,255,0.18) !important;
+                box-shadow: inset 0 1px 0 rgba(255,255,255,0.32);
+                -webkit-backdrop-filter: blur(20px);
+                backdrop-filter: blur(20px);
+            }
+
+            /* === Cards de PRUEBAS (ECG / Cat / Analítica): destello superior === */
+            .ecg-block, .cat-block, .analitica-block {
+                background:
+                    radial-gradient(110% 55% at 0% 0%, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 55%),
+                    rgba(255,255,255,0.10) !important;
+                box-shadow: inset 0 1px 0 rgba(255,255,255,0.30);
+                -webkit-backdrop-filter: blur(20px);
+                backdrop-filter: blur(20px);
+            }
+
+            /* === PREGUNTA-CARD (cuestionario): glass moderno === */
+            .pregunta-card {
+                background:
+                    radial-gradient(85% 40% at 18% 0%, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 55%),
+                    radial-gradient(60% 35% at 85% 0%, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0) 50%),
+                    rgba(20,32,38,0.85) !important;
+                box-shadow: inset 0 1px 0 rgba(255,255,255,0.30);
+                -webkit-backdrop-filter: blur(40px);
+                backdrop-filter: blur(40px);
+            }
+
+            /* === Tabs y SEG (toggle Contenido/Bibliografía + tabs Perfil/Historia/Med/Alergias) === */
+            .seg {
+                background: linear-gradient(180deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.05) 100%) !important;
+                box-shadow: inset 0 1px 0 rgba(255,255,255,0.28);
+                -webkit-backdrop-filter: blur(20px);
+                backdrop-filter: blur(20px);
+            }
+            .tabs {
+                background: linear-gradient(180deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.04) 100%) !important;
+                box-shadow: inset 0 1px 0 rgba(255,255,255,0.25);
+                -webkit-backdrop-filter: blur(20px);
+                backdrop-filter: blur(20px);
+            }
+            /* El botón activo (Contenido / Perfil del paciente) ya queda blanco; le añado destello */
+            .seg button.on, .tabs .tab.on {
+                box-shadow: inset 0 1px 0 rgba(255,255,255,0.85), 0 2px 6px rgba(0,0,0,0.15);
+            }
+
+            /* === BTN-NEXT (Siguiente etapa): destello glass + blur === */
+            .btn-next {
+                background: linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.05) 100%) !important;
+                box-shadow: inset 0 1px 0 rgba(255,255,255,0.30);
+                -webkit-backdrop-filter: blur(20px);
+                backdrop-filter: blur(20px);
+            }
+            .btn-next:hover {
+                background: #05BAEE !important;
+                border-color: #05BAEE !important;
+                color: #FFFFFF !important;
+                box-shadow:
+                    inset 0 1px 0 rgba(255,255,255,0.45),
+                    0 6px 22px rgba(5,186,238,0.50);
+            }
+
+            /* ================================================================ */
+            /* === Pulido FINAL de botones restantes: quiz/modales/lightbox === */
+            /* ================================================================ */
+
+            /* 1) Radius 0 universal en todos los botones que aún tenían radio */
+            .btn-next-q, .btn-comprobar, .btn-comprobar.comprobado, .btn-comprobar:disabled,
+            .btn-repetir, .vid-btn, .btn-descargar, .btn-finalizar,
+            .ep-btn, .reset-confirm, .rp-btn, .rp-btn.cyan, .lb-btn, .lb-close {
+                border-radius: 0 !important;
+            }
+
+            /* 2) Destello glass NEUTRO (botones translúcidos) */
+            .btn-next-q.enabled, .btn-repetir, .btn-finalizar, .ep-btn,
+            .reset-confirm, .rp-btn, .lb-btn, .lb-close, .vid-btn, .ecg-icon {
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.04) 100%),
+                    rgba(255,255,255,0.06) !important;
+                box-shadow:
+                    inset 0 1px 0 rgba(255,255,255,0.30),
+                    inset 0 -1px 0 rgba(0,0,0,0.18) !important;
+                -webkit-backdrop-filter: blur(20px);
+                backdrop-filter: blur(20px);
+            }
+            /* btn-next-q deshabilitado conserva su gris original */
+            .btn-next-q:not(.enabled) {
+                background: rgba(185,185,185,0.25) !important;
+                box-shadow: none !important;
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important;
+            }
+
+            /* ep-btn (Entendido del pop-up Atención) — borde cyan + destello glass */
+            .ep-btn {
+                box-shadow:
+                    inset 0 0 0 1px #05BAEE,
+                    inset 0 1px 0 rgba(255,255,255,0.40),
+                    inset 0 -1px 0 rgba(0,0,0,0.18) !important;
+            }
+            .ep-btn:hover, .ep-btn:active, .ep-btn:focus {
+                background: #05BAEE !important;
+                box-shadow:
+                    inset 0 0 0 1px #05BAEE,
+                    inset 0 1px 0 rgba(255,255,255,0.55),
+                    0 6px 22px rgba(5,186,238,0.55) !important;
+            }
+
+            /* btn-next-q.enabled (Siguiente etapa del quiz al acertar) — borde cyan + glow */
+            .btn-next-q.enabled { border: 1px solid #05BAEE !important; }
+            .btn-next-q.enabled:hover {
+                background:
+                    linear-gradient(180deg, rgba(5,186,238,0.22) 0%, rgba(5,186,238,0.08) 100%),
+                    rgba(5,186,238,0.10) !important;
+                box-shadow:
+                    inset 0 1px 0 rgba(255,255,255,0.40),
+                    0 6px 22px rgba(5,186,238,0.45) !important;
+            }
+
+            /* 3) Botones CLAROS (Comprobar blanco) */
+            .btn-comprobar {
+                background: linear-gradient(180deg, #ffffff 0%, #e8eef0 100%) !important;
+                box-shadow:
+                    inset 0 1px 0 rgba(255,255,255,0.95),
+                    inset 0 -1px 0 rgba(0,0,0,0.12),
+                    0 2px 8px rgba(0,0,0,0.18) !important;
+            }
+            .btn-comprobar:hover {
+                background: linear-gradient(180deg, #ffffff 0%, #dde4e7 100%) !important;
+            }
+            .btn-comprobar:disabled {
+                background: rgba(185,185,185,0.25) !important;
+                box-shadow: none !important;
+            }
+            .btn-comprobar.comprobado,
+            .btn-comprobar.comprobado:disabled {
+                background: linear-gradient(180deg, #2E7D9B 0%, #245F77 100%) !important;
+                color: #fff !important;
+                box-shadow:
+                    inset 0 1px 0 rgba(255,255,255,0.30),
+                    inset 0 -1px 0 rgba(0,0,0,0.25),
+                    0 4px 14px rgba(5,186,238,0.30) !important;
+            }
+            .btn-comprobar.comprobado:hover {
+                background: linear-gradient(180deg, #34899B 0%, #2A7188 100%) !important;
+            }
+
+            /* 4) Botones CYAN sólidos (Descargar resumen + rp-btn.cyan) — glow azul */
+            .btn-descargar, .rp-btn.cyan {
+                background: linear-gradient(180deg, #1bc8f5 0%, #0497c2 100%) !important;
+                border: 1px solid #05BAEE !important;
+                box-shadow:
+                    inset 0 1px 0 rgba(255,255,255,0.45),
+                    inset 0 -1px 0 rgba(0,0,0,0.22),
+                    0 6px 22px rgba(5,186,238,0.45) !important;
+                color: #fff !important;
+            }
+            .btn-descargar:hover, .rp-btn.cyan:hover {
+                background: linear-gradient(180deg, #2dd0f7 0%, #04a3d1 100%) !important;
+                box-shadow:
+                    inset 0 1px 0 rgba(255,255,255,0.55),
+                    inset 0 -1px 0 rgba(0,0,0,0.22),
+                    0 8px 28px rgba(5,186,238,0.60) !important;
+            }
+
+            /* 5) Hover destello reforzado en variantes glass neutras */
+            .btn-repetir:hover, .rp-btn:hover, .lb-btn:hover,
+            .reset-confirm:hover, .btn-finalizar:hover {
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.08) 100%),
+                    rgba(255,255,255,0.10) !important;
+                box-shadow:
+                    inset 0 1px 0 rgba(255,255,255,0.45),
+                    inset 0 -1px 0 rgba(0,0,0,0.18) !important;
+            }
+
+            /* 6) Iconos del ECG (ampliar / descargar) — gris semi-opaco para contrastar
+                  con el fondo BLANCO del ECG (el glass blanco translúcido era invisible). */
+            .ecg-icon {
+                background: rgba(60,80,90,0.78) !important;
+                border: 1px solid rgba(255,255,255,0.30) !important;
+                color: rgba(255,255,255,0.90) !important;
+                box-shadow:
+                    inset 0 1px 0 rgba(255,255,255,0.22),
+                    inset 0 -1px 0 rgba(0,0,0,0.20) !important;
+                -webkit-backdrop-filter: blur(8px) !important;
+                backdrop-filter: blur(8px) !important;
+            }
+            .ecg-icon:hover {
+                background: rgba(80,105,118,0.88) !important;
+                color: #FFFFFF !important;
+                box-shadow:
+                    inset 0 1px 0 rgba(255,255,255,0.35),
+                    inset 0 -1px 0 rgba(0,0,0,0.22) !important;
+            }
+
+            /* Hover universal en tabs y seg buttons INACTIVOS: glass claro para feedback visual.
+               Los activos (.on) mantienen su fondo blanco sólido. */
+            .tab:not(.on),
+            .seg button:not(.on) {
+                transition: background .25s ease, color .25s ease !important;
+            }
+            .tab:not(.on):hover,
+            .seg button:not(.on):hover {
+                background: linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%) !important;
+                color: #FFFFFF !important;
+                box-shadow: inset 0 1px 0 rgba(255,255,255,0.30) !important;
+            }
+
+            /* === Excepción: el ECG SÍ tiene border-radius (spec del cliente, no entra en la regla "todo recto") === */
+            .ecg-frame { border-radius: 12px !important; max-height: 280px !important; }
+            .ecg-frame img { max-height: 280px !important; object-fit: cover !important; object-position: center top !important; }
+
+            /* === Excepción: "Descargar caso" + "Finalizar ingreso" del resumen
+                  — mismas dimensiones: radio pequeñito + largo + delgado (spec cliente img1) === */
+            .btn-descargar,
+            .btn-finalizar {
+                border-radius: 5px !important;
+                padding: 9px 44px !important;
+                font-size: 14px !important;
+                min-width: 227px !important;
+                box-sizing: border-box !important;
+                justify-content: center !important;
+            }
+
+            /* 8) Brillito en opciones del quiz: destello CIRCULAR difuminado y SUAVE.
+                  Se mueve poco (queda dentro del botón) y la transición es lenta y elegante. */
+            .opt::before {
+                top: -50% !important;
+                bottom: -50% !important;
+                left: 0 !important;
+                width: 320px !important;
+                background: radial-gradient(ellipse at center, rgba(255,255,255,0.20) 0%, rgba(255,255,255,0) 60%) !important;
+                transform: translateX(-30%) !important;
+                transition: transform 1.2s cubic-bezier(.22,.61,.36,1) !important;
+            }
+            .opt:hover::before { transform: translateX(50%) !important; }
+            /* Tras comprobar (correcta/wrong): el brillito se va, el fondo lo reemplaza */
+            .opt.correct::before, .opt.wrong::before { display: none !important; }
+
+            /* 7) Controles de video (.vid-btn) hover */
+            .vid-btn:hover {
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.06) 100%),
+                    rgba(15,18,20,0.65) !important;
+                box-shadow:
+                    inset 0 1px 0 rgba(255,255,255,0.45),
+                    inset 0 -1px 0 rgba(0,0,0,0.22) !important;
+            }
         }
     </style>
 </head>

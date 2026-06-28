@@ -4,12 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script>
-        /* En celulares fijamos el viewport a 390 → el diseño móvil escala como una imagen */
+        /* Bloqueo de viewport por dispositivo (escala el diseño "como una imagen"):
+           teléfono→móvil 390 · tablet→web 1440 (igual que en web, sin desborde) · desktop sin cambios. */
         (function () {
             try {
-                var mn = Math.min(screen.width, screen.height);
-                if (mn && mn < 768) {
-                    document.querySelector('meta[name="viewport"]').setAttribute('content', 'width=390');
+                var vp = document.querySelector('meta[name="viewport"]');
+                var shortSide = Math.min(screen.width || 9999, screen.height || 9999);
+                var longSide  = Math.max(screen.width || 0, screen.height || 0);
+                var coarse = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+                if (shortSide < 768) {
+                    vp.setAttribute('content', 'width=390');
+                } else if (coarse && shortSide <= 1024 && longSide <= 1400) {
+                    vp.setAttribute('content', 'width=1440');
                 }
             } catch (e) {}
         })();
