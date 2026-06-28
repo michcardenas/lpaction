@@ -905,7 +905,7 @@
 
             <div class="top-right">
                 <span class="top-scope"><span class="sc-pre">Score: </span><b><span id="xp-val">{{ $exp ?? 0 }}</span><span class="sc-max"> / {{ $maxScore ?? 450 }}</span> Exp</b></span>
-                @php $mx = max(1, $maxScore ?? 450); $gW = max(0, min(100, ($verdeBase ?? 0) / $mx * 100)); $rW = max(0, min(100 - $gW, ($rojoBase ?? 0) / $mx * 100)); @endphp
+                @php $mx = max(1, $maxScore ?? 450); $gW = max(0, min(100, ($exp ?? 0) / $mx * 100)); $rW = max(0, min(100 - $gW, ($rojoBase ?? 0) / $mx * 100)); @endphp
                 <span class="bar score-bar" id="score-bar" data-verde="{{ $verdeBase ?? 0 }}" data-rojo="{{ $rojoBase ?? 0 }}" data-max="{{ $mx }}" style="width:120px;"><i id="xp-green" class="green" style="width:{{ $gW }}%"></i><i id="xp-red" class="red" style="width:{{ $rW }}%"></i></span>
                 <span class="top-heart">
                     <svg class="heart-desktop" width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35c-.3 0-.6-.1-.84-.3C7.2 17.66 2.5 13.88 2.5 9.6 2.5 6.5 4.9 4.5 7.4 4.5c1.8 0 3.42.94 4.6 2.42C13.18 5.44 14.8 4.5 16.6 4.5c2.5 0 4.9 2 4.9 5.1 0 4.28-4.7 8.06-8.66 11.45-.24.2-.54.3-.84.3Z"/></svg>
@@ -1296,6 +1296,12 @@
             var totalOpts = card.querySelectorAll('input[name="pregunta"]').length;
             function sincronizarSel() { if (selInput) selInput.value = Object.keys(marcadas).join(','); }
 
+            // Modo revisión: al VOLVER a un capítulo ya hecho (reevaluando) que tiene opciones marcadas,
+            // solo se pueden revisar las cursadas (ver su justificación); Comprobar queda bloqueado.
+            var reevaluando  = card.getAttribute('data-reevaluando') === '1';
+            var preselArr    = (card.getAttribute('data-presel') || '').split(',').filter(Boolean);
+            var modoRevision = reevaluando && preselArr.length > 0;
+
             var etapaKey  = card.getAttribute('data-etapa') || '';
             var marcarUrl = card.getAttribute('data-marcar') || '';
             var csrf      = (document.querySelector('meta[name="csrf-token"]') || {}).content || '';
@@ -1330,8 +1336,8 @@
                 var verde = baseVerde + liveVerde, rojo = baseRojo + liveRojo;
                 var exp = verde - rojo;                         // EXP = verde - rojo (el rojo nunca baja)
                 if (xpVal) xpVal.textContent = exp;
-                var g = Math.max(0, Math.min(100, verde / maxScore * 100));        // verde = puntos correctos acumulados (SOLO crece; NO se achica al fallar)
-                var r = Math.max(0, Math.min(100 - g, rojo / maxScore * 100));     // rojo = penalizaciones acumuladas, encima del verde (SOLO crece)
+                var g = Math.max(0, Math.min(100, exp / maxScore * 100));          // CONTRAPESO: verde mostrado = verde - rojo (al fallar, el verde se achica)
+                var r = Math.max(0, Math.min(100 - g, rojo / maxScore * 100));     // rojo = penalizaciones; "come" al verde (contrapeso)
                 if (green) green.style.width = g + '%';
                 if (red) red.style.width = r + '%';
             }
@@ -1339,7 +1345,7 @@
             // Re-pinta las opciones ya marcadas en intentos previos (al volver, el rojo permanece visible).
             // OJO: estas YA están contabilizadas en el Score base (servidor); aquí NO se re-suman al vivo,
             // solo se deja la marca y se desbloquea "Siguiente" si ya había alguna correcta.
-            (card.getAttribute('data-presel') || '').split(',').filter(Boolean).forEach(function (key) {
+            preselArr.forEach(function (key) {
                 var input = card.querySelector('input[name="pregunta"][value="' + key + '"]');
                 if (!input || marcadas[key]) return;
                 var opt = input.closest('.opt');
@@ -1353,10 +1359,36 @@
             sincronizarSel();
             if (Object.keys(marcadas).length >= totalOpts) comprobar.disabled = true;
 
+            // ===== Modo revisión: al VOLVER a un capítulo ya hecho, solo se revisan las opciones cursadas =====
+            if (modoRevision) {
+                if (comprobar) { comprobar.hidden = true; comprobar.disabled = true; }   // Comprobar bloqueado
+                sigBtn.classList.add('enabled');                                          // etapa ya superada: puede avanzar
+                card.querySelectorAll('.opt').forEach(function (opt) {
+                    var inp = opt.querySelector('input[name="pregunta"]');
+                    var k   = inp ? inp.value : null;
+                    if (k && marcadas[k]) {
+                        // opción CURSADA → clicable para ver su justificación (sin re-puntuar)
+                        opt.style.cursor = 'pointer';
+                        opt.addEventListener('click', function (e) {
+                            e.preventDefault();
+                            justifTxt.textContent = opt.getAttribute('data-justif') || '';
+                            justif.hidden = false;
+                            if (resultado) resultado.hidden = true;
+                        });
+                    } else {
+                        // opción NO cursada → no se puede revisar
+                        if (inp) inp.disabled = true;
+                        opt.style.pointerEvents = 'none';
+                        opt.style.opacity = '0.5';
+                    }
+                });
+            }
+
             // "Comprobar" aparece al elegir una opción. "Reiniciar capítulo" lo controla el servidor
             // (visible solo si el capítulo tiene error); aquí no se muestra por el simple hecho de seleccionar.
             card.querySelectorAll('input[name="pregunta"]').forEach(function (r) {
                 r.addEventListener('change', function () {
+                    if (modoRevision) return;                     // en revisión no se re-puntúa
                     comprobar.hidden = false;                     // reaparece "Comprobar" al elegir otra opción
                     comprobar.classList.remove('comprobado');     // vuelve a su estado normal
                     if (justif)    justif.hidden = true;          // se oculta la justificación de la opción anterior
@@ -1372,6 +1404,7 @@
             });
 
             comprobar.addEventListener('click', function () {
+                if (modoRevision) return;               // en revisión, Comprobar bloqueado
                 var sel = card.querySelector('input[name="pregunta"]:checked');
                 if (!sel) return;                       // requiere una opción
                 comprobar.classList.add('comprobado');  // se pinta de azul al comprobar
