@@ -153,12 +153,19 @@ class CursoController extends Controller
             $resultados[$stageKey] = $resultado;
         }
 
-        // Última etapa: finaliza el ingreso y va a la evaluación final.
+        // ÚLTIMA PREGUNTA (Monitorización 2): "Finalizar caso" MUESTRA la medalla; todavía NO avanza.
+        // El avance real lo confirma el modal (plata/oro) re-enviando con confirmar=1.
+        if ($stageKey === 'monitorizacion-2' && ! $request->boolean('confirmar')) {
+            $progreso->update(['etapas' => $resultados, 'status' => 'in_progress']);
+            return redirect()->route('curso.etapa', [$ingreso, 'monitorizacion-2', 'resultado' => 1]);
+        }
+
+        // Última etapa ("Finalizar ingreso"): el ingreso queda completado/bloqueado.
         if ($desde >= count($etapas) - 1) {
             $progreso->update([
                 'status' => 'completed', 'percent' => 100, 'completed_at' => now(), 'etapas' => $resultados,
             ]);
-            return redirect()->route('curso.etapa', [$ingreso, $etapas[count($etapas) - 1]['key'], 'resultado' => 1]);
+            return redirect()->route('curso');   // la medalla va en la última pregunta, no aquí
         }
 
         $next = min($desde + 1, count($etapas) - 1);

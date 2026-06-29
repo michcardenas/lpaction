@@ -83,8 +83,8 @@ return [
                 'texto'  => 'Has demostrado un manejo adecuado del caso. Algunas decisiones podrían optimizarse para mejorar el nivel de concordancia clínica.',
             ],
             'botones' => [
-                ['texto' => 'Finalizar caso', 'estilo' => 'ghost', 'accion' => 'finalizar'],
-                ['texto' => 'Mejorar puntuación', 'estilo' => 'cyan', 'accion' => 'mejorar'],
+                ['texto' => 'Finalizar caso', 'estilo' => 'cyan', 'accion' => 'continuar'],
+                ['texto' => 'Mejorar puntuación', 'estilo' => 'ghost', 'accion' => 'mejorar'],
             ],
         ],
         [
@@ -96,8 +96,8 @@ return [
                 'texto'  => 'Excelente. Has completado el caso con un manejo óptimo y alta concordancia con los criterios clínicos del recorrido.',
             ],
             'botones' => [
-                ['texto' => 'Finalizar caso', 'estilo' => 'ghost', 'accion' => 'finalizar'],
-                ['texto' => 'Mejorar puntuación', 'estilo' => 'cyan', 'accion' => 'mejorar'],
+                ['texto' => 'Finalizar caso', 'estilo' => 'cyan', 'accion' => 'continuar'],
+                ['texto' => 'Mejorar puntuación', 'estilo' => 'ghost', 'accion' => 'mejorar'],
             ],
         ],
     ],

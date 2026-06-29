@@ -50,7 +50,7 @@
             @csrf
             <input type="hidden" name="desde" value="{{ $etapaActual }}">
             <input type="hidden" name="sel" value="{{ $preSelCsv }}" id="cuest-sel">
-            <button type="submit" class="btn-next-q">{{ $esUltimaEtapa ? 'Finalizar' : 'Siguiente etapa' }}</button>
+            <button type="submit" class="btn-next-q">{{ $etapaActual === 'monitorizacion-2' ? 'Finalizar caso' : ($esUltimaEtapa ? 'Finalizar' : 'Siguiente etapa') }}</button>
         </form>
     </div>
 </div>

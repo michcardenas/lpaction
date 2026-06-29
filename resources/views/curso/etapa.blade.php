@@ -1093,12 +1093,23 @@
                     <p class="rp-text">{{ $medalla['texto'] }}</p>
                     <div class="rp-actions">
                         @foreach ($medalla['botones'] as $b)
-                            @php
-                                $href = ($b['accion'] ?? '') === 'mejorar'
-                                    ? route('curso.etapa', [$ingreso, 'resumen'])   // cierra el modal y vuelve a la etapa a repasar
-                                    : route('curso');                                // temario / finalizar → portal
-                            @endphp
-                            <a class="rp-btn {{ ($b['estilo'] ?? '') === 'cyan' ? 'cyan' : '' }}" href="{{ $href }}">{{ $b['texto'] }}</a>
+                            @php $accion = $b['accion'] ?? ''; @endphp
+                            @if ($accion === 'continuar')
+                                {{-- plata/oro: AVANZA a las etapas finales (con temporizador de 10 s) --}}
+                                <form method="POST" action="{{ route('curso.avanzar', $ingreso) }}" style="display:contents;">
+                                    @csrf
+                                    <input type="hidden" name="desde" value="{{ $etapaActual }}">
+                                    <input type="hidden" name="confirmar" value="1">
+                                    <button type="submit" class="rp-btn cyan rp-continuar" data-espera="10">{{ $b['texto'] }}</button>
+                                </form>
+                            @else
+                                @php
+                                    $href = $accion === 'mejorar'
+                                        ? route('curso.etapa', [$ingreso, $etapaActual])   // cierra el modal y vuelve a la etapa a repasar
+                                        : route('curso');                                   // temario (sin/bronce) → portal a repetir
+                                @endphp
+                                <a class="rp-btn {{ ($b['estilo'] ?? '') === 'cyan' ? 'cyan' : '' }}" href="{{ $href }}">{{ $b['texto'] }}</a>
+                            @endif
                         @endforeach
                     </div>
                 </div>
@@ -1113,6 +1124,21 @@
                 </div>
             </div>
         </div>
+        {{-- Temporizador de 10 s del botón "Finalizar caso" (avanzar) en el modal de medalla --}}
+        <script>
+        (function(){
+            var btn = document.querySelector('.rp-continuar');
+            if (!btn) return;
+            var seg = parseInt(btn.getAttribute('data-espera'), 10) || 10;
+            var base = btn.textContent;
+            btn.disabled = true; btn.style.opacity = '0.5'; btn.style.cursor = 'not-allowed';
+            (function tick(){
+                if (seg <= 0) { btn.textContent = base; btn.disabled = false; btn.style.opacity = ''; btn.style.cursor = ''; return; }
+                btn.textContent = base + '  (' + seg + ')';
+                seg--; setTimeout(tick, 1000);
+            })();
+        })();
+        </script>
         @endif
 
         {{-- Pop-up "¡Medalla alcanzada!" durante el curso (mismo estilo que el final, centrado y sin Juan) --}}
@@ -1284,6 +1310,25 @@
             var liveVerde = 0, liveRojo = 0;      // aporte de esta etapa (el rojo NO se recupera)
             var marcadas = {};                    // opciones ya puntuadas (key -> true), no recontar
 
+            // Sonidos de respuesta (precargados, ligeros): correcta vs incorrecta al Comprobar.
+            var sndOk  = new Audio('{{ asset('sounds/respuesta-correcta.mp3') }}');
+            var sndBad = new Audio('{{ asset('sounds/respuesta-incorrecta.mp3') }}');
+            sndOk.preload = 'auto'; sndBad.preload = 'auto';
+            try { sndOk.load(); sndBad.load(); } catch (e) {}
+            function sonarResp(correcta) {
+                var a = correcta ? sndOk : sndBad;
+                try { a.pause(); a.currentTime = 0; var p = a.play(); if (p && p.catch) p.catch(function () {}); } catch (e) {}
+            }
+
+            // Citas bibliográficas -> superíndice. Solo el número pegado a una palabra al final de la frase.
+            // NO toca medidas (≥50%, 4 g/día, 1-3 meses) ni nombres de gen (PCSK9 se maneja aparte).
+            function formatCitas(t) {
+                t = (t || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                t = t.replace(/(PCSK)9(\d+(?:[-,]\d+)*)/g, '$19<sup>$2</sup>');                 // gen PCSK9 + cita: solo la cita
+                t = t.replace(/([^\s0-9>])(\d+(?:[-,]\d+)*)(?=[.,;]|$)/g, '$1<sup>$2</sup>');     // cita al final de frase
+                return t;
+            }
+
             var comprobar = card.querySelector('.btn-comprobar');
             var repetir   = card.querySelector('.btn-repetir');
             var sigBtn    = card.querySelector('.btn-next-q');
@@ -1371,7 +1416,7 @@
                         opt.style.cursor = 'pointer';
                         opt.addEventListener('click', function (e) {
                             e.preventDefault();
-                            justifTxt.textContent = opt.getAttribute('data-justif') || '';
+                            justifTxt.innerHTML = formatCitas(opt.getAttribute('data-justif') || '');
                             justif.hidden = false;
                             if (resultado) resultado.hidden = true;
                         });
@@ -1414,9 +1459,10 @@
                 var pts = parseInt(opt.getAttribute('data-puntos'), 10) || 0;
                 var correcta = pts > 0;                 // correcta = puntos positivos
                 var xp = Math.abs(pts);
+                sonarResp(correcta);                    // suena: correcta / incorrecta
 
                 opt.classList.add(correcta ? 'correct' : 'wrong');   // queda marcada
-                justifTxt.textContent = opt.getAttribute('data-justif') || '';
+                justifTxt.innerHTML = formatCitas(opt.getAttribute('data-justif') || '');
                 justif.hidden = false;
 
                 marcadas[key] = true;
