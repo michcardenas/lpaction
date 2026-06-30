@@ -336,6 +336,8 @@
         .result-panel { position: relative; width: 100%; max-width: 860px; min-height: 420px; border-radius: 22px; overflow: hidden; background: linear-gradient(135deg, #2a3c43 0%, #182830 100%); border: 1px solid rgba(255,255,255,0.12); box-shadow: 0 40px 100px rgba(0,0,0,0.5); display: flex; align-items: stretch; animation: resetPop .32s cubic-bezier(.22,.61,.36,1) both; }
         .rp-left { flex: 1; padding: 54px 48px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; z-index: 2; }
         .rp-medal { width: 74px; height: 74px; object-fit: contain; margin-bottom: 26px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.45)); }
+        .rp-medal.rp-lottie { width: 170px; height: 170px; margin-bottom: 6px; filter: none; }
+        .rp-medal.rp-lottie svg { width: 100% !important; height: 100% !important; }
         .rp-title { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 26px; line-height: 1.1; margin: 0 0 16px; color: #fff; }
         .rp-text { font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 15px; line-height: 165%; color: #c8d3d7; margin: 0 0 32px; max-width: 440px; }
         .rp-actions { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; }
@@ -1077,11 +1079,15 @@
         <div class="result-modal" id="result-modal">
             <div class="result-panel">
                 @php
-                    $medImg  = 'images/medalla-' . $medalla['key'] . '.png';   // corazón de la medalla
+                    $medLottie = 'medallas/medalla-' . $medalla['key'] . '.json';  // animación oficial (Lottie) bronce/plata/oro
+                    $medImg  = 'images/medalla-' . $medalla['key'] . '.png';   // corazón de la medalla (respaldo)
                     $juanImg = 'images/juan-' . $medalla['key'] . '.png';       // Juan según la medalla/expresión
                 @endphp
                 <div class="rp-left">
-                    @if (file_exists(public_path($medImg)))
+                    @if (file_exists(public_path($medLottie)))
+                        {{-- Medalla ANIMADA oficial (Lottie) --}}
+                        <div class="rp-medal rp-lottie" data-lottie="{{ asset($medLottie) }}" role="img" aria-label="{{ $medalla['label'] }}"></div>
+                    @elseif (file_exists(public_path($medImg)))
                         <img class="rp-medal" src="{{ asset($medImg) }}" alt="{{ $medalla['label'] }}">
                     @else
                         {{-- Respaldo: corazón vectorial del color del nivel hasta que se suba la imagen --}}
@@ -1137,6 +1143,19 @@
                 btn.textContent = base + '  (' + seg + ')';
                 seg--; setTimeout(tick, 1000);
             })();
+        })();
+        </script>
+        {{-- Medalla ANIMADA (Lottie) + sonido oficial al mostrarse el resultado --}}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+        <script>
+        (function(){
+            var el = document.querySelector('.rp-lottie');
+            if (!el || !el.getAttribute('data-lottie')) return;
+            if (window.lottie) {
+                try { window.lottie.loadAnimation({ container: el, renderer: 'svg', loop: true, autoplay: true, path: el.getAttribute('data-lottie') }); } catch (e) {}
+            }
+            // Sonido oficial de medalla (solo con medalla: bronce/plata/oro)
+            try { var s = new Audio('{{ asset('sounds/medalla-oficial.mp3') }}'); var p = s.play(); if (p && p.catch) p.catch(function(){}); } catch (e) {}
         })();
         </script>
         @endif
