@@ -5,7 +5,7 @@
     {{-- Tabs de pruebas --}}
     <div class="tabs">
         <button type="button" class="tab on" data-tab="ecg">Electrocardiograma (ECG)</button>
-        <button type="button" class="tab" data-tab="cateterismo">Cateterismo cardíaco</button>
+        <button type="button" class="tab" data-tab="cateterismo">Pruebas de imagen</button>
         <button type="button" class="tab" data-tab="analitica">Analítica sanguínea</button>
     </div>
 
