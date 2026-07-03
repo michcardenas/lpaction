@@ -317,13 +317,23 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-3">
                     <div>
                         <label class="login-label block mb-1">Especialidad <span class="req">*</span></label>
-                        <select name="specialty" class="login-input w-full px-4 py-2 appearance-none">
+                        <select name="specialty" id="specialty-select" class="login-input w-full px-4 py-2 appearance-none">
                             <option value="" {{ old('specialty') ? '' : 'selected' }} disabled>Selecciona tu especialidad</option>
                             @foreach (['Cardiología','Medicina Interna','Medicina Familiar y Comunitaria','Endocrinología','Nefrología','Neurología','Medicina Intensiva','Otra'] as $s)
                                 <option value="{{ $s }}" {{ old('specialty') === $s ? 'selected' : '' }}>{{ $s }}</option>
                             @endforeach
                         </select>
                         @error('specialty')<p class="field-error">{{ $message }}</p>@enderror
+
+                        {{-- Campo libre: solo visible si eligen "Otra". La especialidad "Otra" NO tiene acreditación oficial. --}}
+                        <div id="specialty-other-wrap" class="mt-3" @unless(old('specialty') === 'Otra') hidden @endunless>
+                            <label class="login-label block mb-1">Escribe tu especialidad <span class="req">*</span></label>
+                            <input name="specialty_other" id="specialty-other" value="{{ old('specialty_other') }}"
+                                   placeholder="Escribe aquí tu especialidad" class="login-input w-full px-4 py-2"
+                                   @if(old('specialty') === 'Otra') required @endif>
+                            <p class="text-[12px] mt-1" style="color:#b06a1e;">⚠ La especialidad «Otra» no tiene acreditación oficial.</p>
+                            @error('specialty_other')<p class="field-error">{{ $message }}</p>@enderror
+                        </div>
                     </div>
                 </div>
 
@@ -498,6 +508,26 @@
                     HTMLFormElement.prototype.submit.call(form);
                 }, DELAY_TO_STATE2 + STATE2_HOLD);
             }
+        })();
+
+        // ===== Especialidad "Otra": revela un campo libre para escribir la especialidad =====
+        (function () {
+            var sel  = document.getElementById('specialty-select');
+            var wrap = document.getElementById('specialty-other-wrap');
+            var inp  = document.getElementById('specialty-other');
+            if (!sel || !wrap || !inp) return;
+            function sync() {
+                var otra = sel.value === 'Otra';
+                wrap.hidden = !otra;
+                if (otra) {
+                    inp.setAttribute('required', 'required');
+                } else {
+                    inp.removeAttribute('required');
+                    inp.value = '';
+                }
+            }
+            sel.addEventListener('change', sync);
+            sync();
         })();
     </script>
 </body>

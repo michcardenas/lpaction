@@ -29,15 +29,23 @@ class RegisterController extends Controller
             'password'         => ['required', 'confirmed', Password::min(8)],
             // 2. Datos profesionales
             'specialty'        => ['required', 'string', 'max:150'],
+            // Si eligen "Otra", deben escribir su especialidad (esta NO tiene acreditación oficial).
+            'specialty_other'  => ['nullable', 'required_if:specialty,Otra', 'string', 'max:150'],
             // 3. Perfil profesional
             'experience_level' => ['required', 'in:0-7,8-15,16+'],
             // Consentimiento
             'accepted_privacy' => ['accepted'],
         ], [
-            'accepted_privacy.accepted' => 'Debes aceptar la política de privacidad y el aviso legal.',
-            'email.confirmed'           => 'Los correos electrónicos no coinciden.',
-            'password.confirmed'        => 'Las contraseñas no coinciden.',
+            'accepted_privacy.accepted'   => 'Debes aceptar la política de privacidad y el aviso legal.',
+            'email.confirmed'             => 'Los correos electrónicos no coinciden.',
+            'password.confirmed'          => 'Las contraseñas no coinciden.',
+            'specialty_other.required_if' => 'Escribe tu especialidad.',
         ]);
+
+        // Si la especialidad es "Otra", guardamos la que el usuario escribió (sin acreditación oficial).
+        $specialty = $data['specialty'] === 'Otra'
+            ? trim($data['specialty_other'])
+            : $data['specialty'];
 
         $user = User::create([
             'name'              => $data['name'],
@@ -45,7 +53,7 @@ class RegisterController extends Controller
             'document_id'       => $data['document_id'],
             'email'             => $data['email'],
             'password'          => $data['password'], // se hashea por el cast del modelo
-            'specialty'         => $data['specialty'],
+            'specialty'         => $specialty,
             'experience_level'  => $data['experience_level'],
             'accepted_privacy'  => true,
             'accepted_novartis' => false,
