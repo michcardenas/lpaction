@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CursoController;
+use App\Http\Controllers\PerfilController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -21,7 +22,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/curso', [CursoController::class, 'index'])->name('curso');
     Route::view('/tutoria', 'tutoria')->name('tutoria');
     Route::view('/autores', 'autores')->name('autores');
-    Route::view('/perfil', 'perfil')->name('perfil');
+    Route::get('/perfil', [PerfilController::class, 'show'])->name('perfil');
+    Route::put('/perfil/password', [PerfilController::class, 'updatePassword'])->name('perfil.password');
     Route::get('/evaluacion', [CursoController::class, 'evaluacion'])->name('evaluacion');
     Route::post('/curso/{ingreso}/marcar', [CursoController::class, 'marcar'])->name('curso.marcar');
     Route::post('/curso/{ingreso}/avanzar', [CursoController::class, 'avanzar'])->name('curso.avanzar');

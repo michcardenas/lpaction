@@ -361,6 +361,13 @@
             <h1 class="tut-title">Mi cuenta</h1>
             <div class="tut-title-underline"></div>
 
+            {{-- Aviso de contraseña actualizada --}}
+            @if (session('perfil_status'))
+                <div style="margin-top:24px; padding:14px 18px; border-radius:10px; background:rgba(52,199,123,0.14); border:1px solid rgba(52,199,123,0.45); color:#7ee2a8; font-family:'Montserrat',sans-serif; font-size:14px; font-weight:500;">
+                    ✓ {{ session('perfil_status') }}
+                </div>
+            @endif
+
             {{-- Datos de ejemplo: el enlace a los datos del usuario autenticado queda pendiente de definir --}}
             <div class="mc-cards">
 
@@ -370,31 +377,31 @@
                     <div class="mc-grid">
                         <div class="mc-field">
                             <span class="mc-label">Nombre</span>
-                            <div class="mc-value">Pedro</div>
+                            <div class="mc-value">{{ $user->name ?: '—' }}</div>
                         </div>
                         <div class="mc-field">
                             <span class="mc-label">Apellido</span>
-                            <div class="mc-value">García Clemente</div>
+                            <div class="mc-value">{{ $user->last_name ?: '—' }}</div>
                         </div>
                         <div class="mc-field">
                             <span class="mc-label">Documento de identificación (DNI/NIE)</span>
-                            <div class="mc-value">12345677T</div>
+                            <div class="mc-value">{{ $user->document_id ?: '—' }}</div>
                         </div>
                         <div class="mc-field">
                             <span class="mc-label">Correo electrónico</span>
-                            <div class="mc-value">correo@tucorreo.es</div>
+                            <div class="mc-value">{{ $user->email ?: '—' }}</div>
                         </div>
                         <div class="mc-field">
                             <span class="mc-label">Población</span>
-                            <div class="mc-value">Santiago de Compostela</div>
+                            <div class="mc-value">{{ $user->city ?: '—' }}</div>
                         </div>
                         <div class="mc-field">
                             <span class="mc-label">País</span>
-                            <div class="mc-value">España</div>
+                            <div class="mc-value">{{ $user->country ?: '—' }}</div>
                         </div>
                         <div class="mc-field">
                             <span class="mc-label">Provincia</span>
-                            <div class="mc-value">Santiago de Compostela</div>
+                            <div class="mc-value">{{ $user->province ?: '—' }}</div>
                         </div>
                         {{-- Contraseña: vista (valor + lápiz) ↔ formulario de cambio --}}
                         <div class="mc-field mc-field--full" id="mc-pass">
@@ -407,30 +414,35 @@
                                     </button>
                                 </div>
                             </div>
-                            {{-- Formulario de cambio (oculto hasta el lápiz). Guardado pendiente de configuración del cliente. --}}
-                            <div class="mc-pass-form" hidden>
-                                <div class="mc-pass-grid">
-                                    @foreach ([
-                                        ['lbl' => 'Contraseña actual', 'ph' => 'Contraseña actual'],
-                                        ['lbl' => 'Contraseña nueva', 'ph' => 'Mínimo 8 caracteres'],
-                                        ['lbl' => 'Repite la nueva contraseña', 'ph' => 'Repite la nueva contraseña'],
-                                    ] as $f)
-                                        <div class="mc-field">
-                                            <span class="mc-flabel">{{ $f['lbl'] }} <span class="mc-req">*</span></span>
-                                            <div class="mc-input-wrap">
-                                                <input type="password" class="mc-input" placeholder="{{ $f['ph'] }}">
-                                                <button type="button" class="mc-eye" onclick="mcEye(this)" aria-label="Mostrar u ocultar contraseña">
-                                                    <svg class="eye-show" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-                                                    <svg class="eye-hide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c6.5 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3.5 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
-                                                </button>
+                            {{-- Formulario de cambio (oculto hasta el lápiz). --}}
+                            <div class="mc-pass-form" @unless($errors->any()) hidden @endunless>
+                                <form method="POST" action="{{ route('perfil.password') }}" id="mc-pass-form-el">
+                                    @csrf
+                                    @method('PUT')
+                                    <div class="mc-pass-grid">
+                                        @foreach ([
+                                            ['name' => 'current_password',      'lbl' => 'Contraseña actual',         'ph' => 'Contraseña actual'],
+                                            ['name' => 'password',              'lbl' => 'Contraseña nueva',          'ph' => 'Mínimo 8 caracteres'],
+                                            ['name' => 'password_confirmation', 'lbl' => 'Repite la nueva contraseña', 'ph' => 'Repite la nueva contraseña'],
+                                        ] as $f)
+                                            <div class="mc-field">
+                                                <span class="mc-flabel">{{ $f['lbl'] }} <span class="mc-req">*</span></span>
+                                                <div class="mc-input-wrap">
+                                                    <input type="password" name="{{ $f['name'] }}" class="mc-input" placeholder="{{ $f['ph'] }}" required autocomplete="off">
+                                                    <button type="button" class="mc-eye" onclick="mcEye(this)" aria-label="Mostrar u ocultar contraseña">
+                                                        <svg class="eye-show" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                                                        <svg class="eye-hide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c6.5 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3.5 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
+                                                    </button>
+                                                </div>
+                                                @error($f['name'])<p style="color:#ff6b6f; font-size:12.5px; margin-top:6px;">{{ $message }}</p>@enderror
                                             </div>
-                                        </div>
-                                    @endforeach
-                                </div>
-                                <div class="mc-pass-actions">
-                                    <button type="button" class="mc-save">Guardar</button>
-                                    <button type="button" class="mc-cancel" onclick="mcPassEdit(false)">Cancelar</button>
-                                </div>
+                                        @endforeach
+                                    </div>
+                                    <div class="mc-pass-actions">
+                                        <button type="submit" class="mc-save">Guardar</button>
+                                        <button type="button" class="mc-cancel" onclick="mcPassEdit(false)">Cancelar</button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -442,15 +454,15 @@
                     <div class="mc-stack">
                         <div class="mc-field">
                             <span class="mc-label">Especialidad</span>
-                            <div class="mc-value">Unidad de Riesgo Cardiovascular</div>
+                            <div class="mc-value">{{ $user->specialty ?: '—' }}</div>
                         </div>
                         <div class="mc-field">
                             <span class="mc-label">Hospital</span>
-                            <div class="mc-value">Hospital Universitario de Santiago de Compostela</div>
+                            <div class="mc-value">{{ $user->hospital ?: '—' }}</div>
                         </div>
                         <div class="mc-field">
                             <span class="mc-label">Tipo de centro</span>
-                            <div class="mc-value">Centro privado / Centro Público / Centro privado y público</div>
+                            <div class="mc-value">{{ $user->center_type ?: '—' }}</div>
                         </div>
                     </div>
                 </section>
@@ -547,6 +559,31 @@
             document.getElementById('logout-loader').hidden = false;
             setTimeout(function () { document.getElementById('logout-form').submit(); }, 1500);
         }
+
+        // ===== Cambio de contraseña: valida en cliente que la nueva y su repetición coincidan =====
+        (function () {
+            var form = document.getElementById('mc-pass-form-el');
+            if (!form) return;
+            var npw = form.querySelector('[name="password"]');
+            var cpw = form.querySelector('[name="password_confirmation"]');
+            function clearMatch() { if (cpw) cpw.setCustomValidity(''); }
+            if (npw) npw.addEventListener('input', clearMatch);
+            if (cpw) cpw.addEventListener('input', clearMatch);
+            form.addEventListener('submit', function (e) {
+                if (cpw) cpw.setCustomValidity('');
+                if (npw && cpw && npw.value !== cpw.value) {
+                    e.preventDefault();
+                    cpw.setCustomValidity('Las contraseñas nuevas no coinciden.');
+                    cpw.reportValidity();
+                }
+            });
+        })();
+
+        // Si el servidor devolvió errores de validación, abre el formulario y hazlo visible
+        @if ($errors->any())
+            if (typeof mcPassEdit === 'function') mcPassEdit(true);
+            (function () { var b = document.getElementById('mc-pass'); if (b) b.scrollIntoView({ block: 'center' }); })();
+        @endif
     </script>
 
 </body>
