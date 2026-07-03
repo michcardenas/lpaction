@@ -221,9 +221,10 @@ class CursoController extends Controller
     }
 
     /**
-     * "Repetir etapa": reinicia la PREGUNTA para responderla de nuevo (opciones limpias)
-     * y el verde vuelve a 0 (se re-gana). El rojo ya hecho NO se recupera: se vuelve un
-     * "piso" permanente (rfloor) sobre el que se suman los nuevos fallos.
+     * "Repetir etapa": reinicia por COMPLETO la puntuación del capítulo (verde = 0 y rojo = 0)
+     * y deja la pregunta limpia para responderla de nuevo. Si luego se responde perfecto, la
+     * etapa vuelve a quedar en verde (check) y el Score global se recalcula. (Decisión del
+     * cliente jul-2026: repetir reinicia la puntuación; se eliminó el "piso" de rojo permanente.)
      */
     public function reiniciar(Request $request, $ingreso)
     {
@@ -237,13 +238,10 @@ class CursoController extends Controller
 
         $resultados = $progreso->etapas ?? [];
         if (isset($resultados[$etapaKey])) {
-            $rojoPermanente = (int) ($resultados[$etapaKey]['rojo'] ?? 0);   // todo el rojo acumulado queda fijo
-            $resultados[$etapaKey] = [
-                'verde'  => 0,                 // se re-gana respondiendo bien
-                'rojo'   => $rojoPermanente,   // el rojo no se recupera
-                'sel'    => [],                // pregunta fresca: opciones limpias
-                'rfloor' => $rojoPermanente,   // piso permanente sobre el que se suman nuevos fallos
-            ];
+            // Reinicio TOTAL del capítulo: verde y rojo a 0, pregunta limpia (sin "piso" de rojo).
+            // Así, al re-responder, las opciones vuelven a puntuar; si se responde perfecto, la
+            // etapa queda en verde (check) y el botón "Repetir" se bloquea de nuevo.
+            $resultados[$etapaKey] = ['verde' => 0, 'rojo' => 0, 'sel' => []];
             $progreso->update(['etapas' => $resultados]);
         }
 
