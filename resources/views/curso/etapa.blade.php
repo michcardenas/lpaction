@@ -1331,7 +1331,7 @@
 
             // Sonidos de respuesta (precargados, ligeros): correcta vs incorrecta al Comprobar.
             var sndOk  = new Audio('{{ asset('sounds/respuesta-correcta.mp3') }}');
-            var sndBad = new Audio('{{ asset('sounds/respuesta-incorrecta.mp3') }}');
+            var sndBad = new Audio('{{ asset('sounds/respuesta-incorrecta.wav') }}');
             sndOk.preload = 'auto'; sndBad.preload = 'auto';
             try { sndOk.load(); sndBad.load(); } catch (e) {}
             function sonarResp(correcta) {
@@ -1415,6 +1415,7 @@
                 var opt = input.closest('.opt');
                 var pts = parseInt(opt.getAttribute('data-puntos'), 10) || 0;
                 opt.classList.add(pts > 0 ? 'correct' : 'wrong');
+                opt.style.cursor = 'pointer';                          // ya cursada: clicable para ver su justificación
                 marcadas[key] = true;
                 input.disabled = true;
                 if (pts > 0) sigBtn.classList.add('enabled');
@@ -1423,7 +1424,22 @@
             sincronizarSel();
             if (Object.keys(marcadas).length >= totalOpts) comprobar.disabled = true;
 
-            // ===== Modo revisión: al VOLVER a un capítulo ya hecho, solo se revisan las opciones cursadas =====
+            // ===== Revisión de opciones ya cursadas: clic en una opción YA respondida → ver su justificación =====
+            // Aplica SIEMPRE: tras Comprobar en la etapa activa Y al VOLVER a un capítulo ya hecho (modo revisión).
+            card.querySelectorAll('.opt').forEach(function (opt) {
+                var inp = opt.querySelector('input[name="pregunta"]');
+                var k   = inp ? inp.value : null;
+                opt.addEventListener('click', function (e) {
+                    if (k && marcadas[k]) {                 // opción ya cursada → mostrar su justificación (no re-puntúa)
+                        e.preventDefault();
+                        justifTxt.innerHTML = formatCitas(opt.getAttribute('data-justif') || '');
+                        justif.hidden = false;
+                        if (resultado) resultado.hidden = true;
+                    }
+                });
+            });
+
+            // Modo revisión (al VOLVER a un capítulo ya hecho): Comprobar bloqueado y las NO cursadas se atenúan.
             if (modoRevision) {
                 if (comprobar) { comprobar.hidden = true; comprobar.disabled = true; }   // Comprobar bloqueado
                 sigBtn.classList.add('enabled');                                          // etapa ya superada: puede avanzar
@@ -1431,17 +1447,9 @@
                     var inp = opt.querySelector('input[name="pregunta"]');
                     var k   = inp ? inp.value : null;
                     if (k && marcadas[k]) {
-                        // opción CURSADA → clicable para ver su justificación (sin re-puntuar)
-                        opt.style.cursor = 'pointer';
-                        opt.addEventListener('click', function (e) {
-                            e.preventDefault();
-                            justifTxt.innerHTML = formatCitas(opt.getAttribute('data-justif') || '');
-                            justif.hidden = false;
-                            if (resultado) resultado.hidden = true;
-                        });
+                        opt.style.cursor = 'pointer';                                      // cursada → revisable
                     } else {
-                        // opción NO cursada → no se puede revisar
-                        if (inp) inp.disabled = true;
+                        if (inp) inp.disabled = true;                                      // NO cursada → no revisable
                         opt.style.pointerEvents = 'none';
                         opt.style.opacity = '0.5';
                     }
@@ -1481,6 +1489,7 @@
                 sonarResp(correcta);                    // suena: correcta / incorrecta
 
                 opt.classList.add(correcta ? 'correct' : 'wrong');   // queda marcada
+                opt.style.cursor = 'pointer';                          // ya cursada: clicable para releer su justificación
                 justifTxt.innerHTML = formatCitas(opt.getAttribute('data-justif') || '');
                 justif.hidden = false;
 
@@ -1515,7 +1524,7 @@
             var mCancel = document.getElementById('reset-cancel');
             function cerrarModal() { if (modal) modal.hidden = true; }
 
-            // "Repetir etapa" abre el modal; confirmar reinicia TODO el modulo desde Presentacion (POST a curso.reiniciar)
+            // "Repetir etapa" abre el modal; confirmar reinicia SOLO esta etapa (POST a curso.reiniciar con la etapa)
             repetir.addEventListener('click', function () { if (modal) modal.hidden = false; });
             if (mCancel) mCancel.addEventListener('click', cerrarModal);
             if (modal) modal.addEventListener('click', function (e) { if (e.target === modal) cerrarModal(); });
