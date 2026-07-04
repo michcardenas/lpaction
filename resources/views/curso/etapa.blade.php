@@ -1106,7 +1106,7 @@
                                     @csrf
                                     <input type="hidden" name="desde" value="{{ $etapaActual }}">
                                     <input type="hidden" name="confirmar" value="1">
-                                    <button type="submit" class="rp-btn cyan rp-continuar" data-espera="10">{{ $b['texto'] }}</button>
+                                    <button type="submit" class="rp-btn cyan rp-continuar" data-espera="{{ ($medalla['key'] ?? '') === 'oro' ? 0 : 10 }}">{{ $b['texto'] }}</button>
                                 </form>
                             @else
                                 @php
@@ -1135,7 +1135,8 @@
         (function(){
             var btn = document.querySelector('.rp-continuar');
             if (!btn) return;
-            var seg = parseInt(btn.getAttribute('data-espera'), 10) || 10;
+            var seg = parseInt(btn.getAttribute('data-espera'), 10);
+            if (isNaN(seg) || seg <= 0) return;   // sin temporizador (medalla de ORO): el botón queda activo desde el inicio
             var base = btn.textContent;
             btn.disabled = true; btn.style.opacity = '0.5'; btn.style.cursor = 'not-allowed';
             (function tick(){

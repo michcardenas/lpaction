@@ -87,6 +87,11 @@ class CursoController extends Controller
         // "Repetir etapa" solo al VOLVER a una etapa ya superada (no en el primer intento, aunque haya error).
         $reevaluando = $viewIndex < $etapaIndex;
 
+        // Caso FINALIZADO: pulsar "Finalizar caso" (plata/oro) es el ÚNICO modo de pasar de la última
+        // pregunta (monitorizacion-2). Una vez pasada, queda TODO bloqueado: no se puede repetir ninguna etapa.
+        $idxUltimaPregunta = array_search('monitorizacion-2', array_column($etapas, 'key'), true);
+        $casoFinalizado = $idxUltimaPregunta !== false && $etapaIndex > $idxUltimaPregunta;
+
         // Score (contrapeso): verde = puntos de correctas, rojo = penalizaciones (NO se recupera).
         // Score = verde - rojo. La base es el TOTAL completo (incluida la etapa que se ve si ya se respondió),
         // así devolverse a una etapa nunca baja el Score. El JS solo SUMA las opciones nuevas de esta visita.
@@ -118,7 +123,7 @@ class CursoController extends Controller
 
         return view('curso.etapa', compact(
             'user', 'curso', 'ingreso', 'ingresoData', 'etapaActual', 'etapasEstado', 'esUltimaEtapa', 'avance',
-            'exp', 'verdeBase', 'rojoBase', 'maxScore', 'score', 'medalla', 'mostrarResultado', 'preSel', 'reevaluando', 'etapaTieneError'
+            'exp', 'verdeBase', 'rojoBase', 'maxScore', 'score', 'medalla', 'mostrarResultado', 'preSel', 'reevaluando', 'etapaTieneError', 'casoFinalizado'
         ));
     }
 
