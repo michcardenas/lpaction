@@ -275,10 +275,14 @@ class CursoController extends Controller
         foreach ($selKeys as $k) {
             if (! isset($ops[$k])) continue;
             $clean[] = $k;
-            if (! empty($ops[$k]['correcta'])) {
-                $verde += 50;
-            } else {
-                $rojo += 50;
+            // Puntuación REAL por opción (definida en config/curso.php, según el documento del cliente):
+            // las correctas suman su valor POSITIVO al verde; las incorrectas suman al rojo el valor
+            // ABSOLUTO de su penalización. (Antes se hardcodeaba ±50 para todo — eso era incorrecto.)
+            $pts = (int) ($ops[$k]['puntos'] ?? 0);
+            if ($pts > 0) {
+                $verde += $pts;
+            } elseif ($pts < 0) {
+                $rojo += -$pts;
             }
         }
 
