@@ -316,7 +316,7 @@
         .reset-confirm { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 15px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.20); color: #fff; padding: 14px 26px; width: 100%; border-radius: 8px; cursor: pointer; transition: background .2s, border-color .2s; }
         .reset-confirm:hover { background: rgba(255,255,255,0.20); border-color: rgba(255,255,255,0.32); }
         @keyframes resetFade { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes resetPop { from { opacity: 0; transform: translateY(14px) scale(.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes resetPop { from { opacity: 0; transform: translateY(14px) scale(calc(var(--rp-scale, 1) * .97)); } to { opacity: 1; transform: translateY(0) scale(var(--rp-scale, 1)); } }
 
         /* Lightbox de imágenes (ampliar ECG / cateterismo + descargar). Fuera del stage escalado. */
         .img-lightbox { position: fixed; inset: 0; z-index: 10000; display: flex; flex-direction: column; background: rgba(6,10,12,0.93); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); animation: resetFade .2s ease both; }
@@ -339,14 +339,14 @@
         .rp-medal.rp-lottie { width: 170px; height: 170px; margin-bottom: 6px; filter: none; }
         .rp-medal.rp-lottie svg { width: 100% !important; height: 100% !important; }
         .rp-title { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 26px; line-height: 1.1; margin: 0 0 16px; color: #fff; }
-        .rp-text { font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 15px; line-height: 165%; color: #c8d3d7; margin: 0 0 32px; max-width: 440px; }
+        .rp-text { font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 18px; line-height: 175%; letter-spacing: 0.02em; text-align: center; color: #c8d3d7; margin: 0 0 32px; max-width: 440px; }
         .rp-actions { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; }
-        .rp-btn { display: inline-block; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 15px; color: #cfe6ef; text-decoration: none; padding: 13px 30px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.28); background: rgba(255,255,255,0.04); transition: background .2s, border-color .2s; }
+        .rp-btn { display: inline-block; font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 14px; line-height: 150%; letter-spacing: 0.01em; color: #cfe6ef; text-decoration: none; padding: 13px 30px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.28); background: rgba(255,255,255,0.04); transition: background .2s, border-color .2s; }
         .rp-btn:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.45); }
         .rp-btn.cyan { background: #05BAEE; border-color: #05BAEE; color: #fff; }
         .rp-btn.cyan:hover { background: #04a3d1; border-color: #04a3d1; }
         .rp-right { flex: 0 0 300px; position: relative; }
-        .rp-right .rp-juan { position: absolute; right: 0; bottom: 0; height: 106%; width: auto; max-width: none; object-fit: contain; object-position: bottom right; }
+        .rp-right .rp-juan { position: absolute; right: 0; bottom: 0; height: 106%; width: auto; max-width: none; object-fit: contain; object-position: bottom right; z-index: 2; }
         .rp-rings { position: absolute; right: 22px; bottom: 4px; opacity: .45; z-index: 1; }
         @media (max-width: 720px) { .result-panel { flex-direction: column; min-height: 0; } .rp-left { padding: 38px 24px 24px; } .rp-right { flex: 0 0 230px; } }
 
@@ -1044,7 +1044,7 @@
                     <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
                 </span>
                 <h3 class="reset-title" id="reset-title">Repetir etapa</h3>
-                <p class="reset-text">Vas a repetir esta pregunta: las opciones se reinician para responderla de nuevo y el verde vuelve a cero (lo ganas otra vez al acertar). El rojo que ya tenías <strong>se mantiene</strong> y no se recupera.<br><strong>¿Quieres repetir esta pregunta?</strong></p>
+                <p class="reset-text">Vas a repetir esta pregunta: la puntuación de este capítulo <strong>se reinicia por completo</strong> y las opciones quedan limpias para responderlas de nuevo. Si respondes correctamente, vuelves a ganar los puntos y el capítulo queda en verde.<br><strong>¿Quieres repetir esta pregunta?</strong></p>
                 <div class="reset-actions">
                     <button type="button" class="reset-cancel" id="reset-cancel">Cancelar</button>
                     <form method="POST" action="{{ route('curso.reiniciar', $ingreso) }}" style="margin:0;">
@@ -1164,6 +1164,8 @@
         <div class="result-modal" id="medal-unlock" hidden>
             <div class="result-panel">
                 <div class="rp-left">
+                    {{-- Efecto animado (Lottie) por medalla; imagen estática de respaldo si falla --}}
+                    <div class="rp-medal rp-lottie" id="mu-lottie" style="display:none"></div>
                     <img class="rp-medal" id="mu-medal" src="" alt="Medalla">
                     <h2 class="rp-title" id="mu-title"></h2>
                     <p class="rp-text" id="mu-text"></p>
@@ -1173,6 +1175,8 @@
                 </div>
             </div>
         </div>
+        {{-- Librería Lottie para el efecto animado del pop-up de medalla durante el curso --}}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
 
     </div>{{-- /etapa-page --}}
 
@@ -1182,12 +1186,14 @@
             ->filter(fn ($m) => (int) ($m['min'] ?? 0) > 0)
             ->map(function ($m) {
                 $img = 'images/medalla-' . $m['key'] . '.png';
-                $snd = 'sounds/' . ($m['key'] === 'oro' ? 'medalla-oro.mp3' : 'medalla-win.mp3');
+                $lot = 'medallas/medalla-' . $m['key'] . '.json';   // efecto animado (Lottie) oficial por medalla
+                $snd = 'sounds/medalla-oficial.mp3';                 // sonido oficial de medalla (mismo para todas)
                 return [
                     'min'    => (int) $m['min'],
                     'titulo' => $m['unlock']['titulo'] ?? ('¡' . ($m['label'] ?? 'Medalla') . ' alcanzada!'),
                     'texto'  => $m['unlock']['texto'] ?? ($m['texto'] ?? ''),
                     'img'    => file_exists(public_path($img)) ? asset($img) : '',
+                    'lottie' => file_exists(public_path($lot)) ? asset($lot) : '',
                     'sound'  => file_exists(public_path($snd)) ? asset($snd) : '',
                 ];
             })->sortBy('min')->values()->all();
@@ -1225,6 +1231,29 @@
                 var t = e.target.closest('.tabs .tab');
                 if (t && window.innerWidth < 768) t.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
             });
+        })();
+
+        // ===== El pop-up de resultado/medalla escala uniforme (igual en cualquier PC), como el resto del curso.
+        //       Se aplica vía la variable --rp-scale que usa el keyframe resetPop (así no pisa la animación). =====
+        (function () {
+            function scaleResultPanels() {
+                var panels = document.querySelectorAll('.result-panel');
+                if (!panels.length) return;
+                if (window.innerWidth < 720) {          // móvil: el modal usa su layout responsive propio
+                    panels.forEach(function (p) { p.style.removeProperty('--rp-scale'); });
+                    return;
+                }
+                // Misma filosofía que .main-stage: escala proporcional a la pantalla (diseño de ref. 1440x820).
+                var s = Math.min(window.innerWidth / 1440, window.innerHeight / 820);
+                s = Math.min(Math.max(s, 0.5), 1.6);
+                panels.forEach(function (p) { p.style.setProperty('--rp-scale', s.toFixed(4)); });
+            }
+            window.__scaleResultPanels = scaleResultPanels;   // por si el pop-up de medalla se abre dinámicamente
+            window.addEventListener('resize', scaleResultPanels);
+            window.addEventListener('load', scaleResultPanels);
+            if (document.readyState !== 'loading') scaleResultPanels();
+            else document.addEventListener('DOMContentLoaded', scaleResultPanels);
+            if (document.fonts && document.fonts.ready) document.fonts.ready.then(scaleResultPanels);
         })();
 
         // ===== Toggle Contenido / Bibliografía =====
@@ -1297,14 +1326,32 @@
             var anunciada = idxFor(inicial);    // medallas ya logradas al cargar: NO se vuelven a anunciar
 
             var imgEl = document.getElementById('mu-medal');
+            var lotEl = document.getElementById('mu-lottie');
+            var lotAnim = null;
             function abrir(m) {
-                if (m.img) { imgEl.src = m.img; imgEl.style.display = ''; } else { imgEl.style.display = 'none'; }
+                // Efecto animado (Lottie) por medalla; si no hay Lottie, cae a la imagen estática.
+                if (lotAnim) { try { lotAnim.destroy(); } catch (e) {} lotAnim = null; }
+                if (m.lottie && window.lottie) {
+                    imgEl.style.display = 'none';
+                    lotEl.style.display = '';
+                    try {
+                        lotAnim = window.lottie.loadAnimation({ container: lotEl, renderer: 'svg', loop: true, autoplay: true, path: m.lottie });
+                    } catch (e) {
+                        lotEl.style.display = 'none';
+                        if (m.img) { imgEl.src = m.img; imgEl.style.display = ''; }
+                    }
+                } else if (m.img) {
+                    lotEl.style.display = 'none';
+                    imgEl.src = m.img; imgEl.style.display = '';
+                } else {
+                    lotEl.style.display = 'none'; imgEl.style.display = 'none';
+                }
                 document.getElementById('mu-title').textContent = m.titulo;
                 document.getElementById('mu-text').textContent = m.texto;
                 modal.hidden = false;
                 sonar(m);
             }
-            function cerrar() { modal.hidden = true; }
+            function cerrar() { modal.hidden = true; if (lotAnim) { try { lotAnim.destroy(); } catch (e) {} lotAnim = null; } }
             document.getElementById('mu-continue').addEventListener('click', cerrar);
             modal.addEventListener('click', function (e) { if (e.target === modal) cerrar(); });
 
