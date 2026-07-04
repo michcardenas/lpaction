@@ -1409,11 +1409,16 @@
                 align-items: flex-start !important;
                 justify-content: space-between !important;
                 flex-wrap: wrap !important;
-                padding: 48px 64px !important;
+                /* Fondo negro a TODO el ancho (sin huecos a los lados); el contenido queda centrado
+                   (máx ~1312px, como el resto de la página) mediante padding lateral responsive. */
+                width: 100% !important;
+                max-width: none !important;
+                margin: 0 !important;
+                padding-top: 48px !important;
+                padding-bottom: 48px !important;
+                padding-left: max(64px, calc((100% - 1312px) / 2)) !important;
+                padding-right: max(64px, calc((100% - 1312px) / 2)) !important;
                 gap: 32px 48px !important;
-                max-width: 1440px;
-                margin-left: auto;
-                margin-right: auto;
             }
             /* Bloque Novartis (1er hijo del footer) — sale a la IZQUIERDA por el space-between,
                pero su contenido interno (logo + "Patrocinado por") queda centrado en columna */
