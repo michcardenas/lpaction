@@ -224,6 +224,13 @@
             display: flex;
             align-items: center;
         }
+        /* El header es position:fixed en ≥1024px → el hero debe EMPEZAR bajo él (4rem = alto del
+           header h-16), si no el header "se come" el titular. El content box sigue midiendo
+           100vh − 4rem (coincide con --u), así el hero se ve idéntico pero ya no queda tapado.
+           En móvil/tablet el header va en flujo, así que este offset no aplica. */
+        @media (min-width: 1024px) {
+            .hero { min-height: 100vh; padding-top: 4rem; }
+        }
         .hero-inner {
             width: 100%;
             height: calc(var(--u) * 760);
