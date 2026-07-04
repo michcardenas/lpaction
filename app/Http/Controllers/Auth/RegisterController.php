@@ -39,6 +39,7 @@ class RegisterController extends Controller
             'accepted_privacy.accepted'   => 'Debes aceptar la política de privacidad y el aviso legal.',
             'email.confirmed'             => 'Los correos electrónicos no coinciden.',
             'password.confirmed'          => 'Las contraseñas no coinciden.',
+            'password.min'                => 'La contraseña debe tener al menos 8 caracteres.',
             'specialty_other.required_if' => 'Escribe tu especialidad.',
         ]);
 
