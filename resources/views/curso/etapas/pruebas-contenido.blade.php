@@ -51,7 +51,7 @@
                     'videos' => [
                         ['file' => 'cateterismo-3', 'cap' => 'Video 3. Ecocardiograma (plano 4 cámaras). Fracción de eyección del ventrículo izquierdo conservada.'],
                     ],
-                    'nota' => 'Tras su llegada a Urgencias, el paciente es trasladado inmediatamente al área de Hemodinámica para la realización de una angioplastia primaria. En el cateterismo cardíaco los hallazgos son los siguientes: oclusión coronaria derecha y lesión moderada (50%) en descendente anterior. Fracción de eyección del ventrículo izquierdo (FEVI): 55%. Se procede a angioplastia coronaria transluminal percutánea (ACTP) e implante de 2 stents farmacoactivos (DES) en coronaria derecha con éxito y sin complicaciones. Flujo final TIMI 3 (flujo coronario normal).',
+                    'nota' => 'Tras su llegada a Urgencias, el paciente es trasladado inmediatamente al área de Hemodinámica para la realización de una angioplastia primaria. En el cateterismo cardíaco los hallazgos son los siguientes: oclusión coronaria derecha y lesión moderada (50%) en descendente anterior. Fracción de eyección del ventrículo izquierdo (FEVI): 55%. Se procede a angioplastia coronaria transluminal percutánea (ACTP) e implante de 2 stents farmacoactivos (DES) en coronaria derecha con éxito y sin complicaciones. Flujo final TIMI 3 (flujo coronario normal).</p><p class="prueba-p">En evaluación ecocardiográfica tras angioplastia, se objetiva fracción de eyección del ventrículo izquierdo (FEVI) conservada del 55%, con hipocinesia inferior.',
                 ],
             ];
         @endphp

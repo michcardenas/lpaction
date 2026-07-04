@@ -2,7 +2,8 @@
 <div class="riesgo">
     <h1 class="h-caso">Monitorización y seguimiento</h1>
 
-    <h2 class="h-sec riesgo-h">El paciente realiza el programa de rehabilitación cardiaca con buena adherencia y presenta una mejoría de los parámetros antropométricos</h2>
+    {{-- Es TEXTO, no título --}}
+    <p class="prueba-p riesgo-p" style="margin: 0 0 16px;">El paciente realiza el programa de rehabilitación cardiaca con buena adherencia y presenta una mejoría de los parámetros antropométricos.</p>
     <p class="analitica-intro">Su situación 10 semanas después del evento isquémico es:</p>
     <ul class="analitica-list">
         <li><b>Peso:</b> inicial: 82 kg; final: 77 kg.</li>
