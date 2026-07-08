@@ -296,12 +296,12 @@
             pointer-events: none;
         }
         .hero-mol img { width: 100%; height: auto; object-fit: contain; display: block; }
-        @media (max-width: 767px) {
-            /* ── Resetear sistema de escala desktop ──────────────────── */
+        @media (max-width: 1023px) {
+            /* ── Resetear sistema de escala desktop (aplica mobile + tablet) ─ */
             .hero {
                 --u: 1px;
                 min-height: auto;
-                display: block;          /* sale del flex centrador desktop */
+                display: block;
             }
             .hero-inner {
                 height: auto !important;
@@ -311,43 +311,42 @@
                 display: flex;
                 flex-direction: column;
             }
-            /* Ocultar el spacer desktop que empuja el bar al fondo */
             .hero-inner > .flex-1 { display: none !important; }
 
-            /* ── Tipografía fija (spec Figma) ───────────────────────── */
+            /* ── Tipografía fluida (escala entre mobile y tablet) ────── */
             .hero-eyebrow  {
                 font-family: 'Montserrat', sans-serif;
                 font-weight: 500;
-                font-size: 20px;
+                font-size: clamp(16px, 2.4vw, 22px);
                 line-height: 150%;
                 letter-spacing: 0.02em;
                 text-align: center;
                 color: #913029;
-                width: 358px;
-                max-width: 100%;
+                max-width: 640px;
                 margin-left: auto;
                 margin-right: auto;
             }
-            .hero-title-1  { font-family: 'Montserrat', sans-serif; font-weight: 300; font-size: 32px; line-height: 120%; letter-spacing: 0; text-align: center; }
-            .hero-title-2  { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 32px; line-height: 120%; letter-spacing: 0; text-align: center; white-space: normal; }
+            .hero-title-1  { font-family: 'Montserrat', sans-serif; font-weight: 300; font-size: clamp(26px, 5vw, 44px); line-height: 120%; letter-spacing: 0; text-align: center; }
+            .hero-title-2  { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(26px, 5vw, 44px); line-height: 120%; letter-spacing: 0; text-align: center; white-space: normal; }
 
             /* ── Espaciados compactos ────────────────────────────────── */
-            .hero-pad-top    { padding-top: 5vw; padding-bottom: 0; position: relative; z-index: 5; }
+            .hero-pad-top    { padding-top: 4vw; padding-bottom: 3vw; position: relative; z-index: 15; }
             .hero-pad-bottom { padding-top: 0; padding-bottom: 5vw; margin-top: -12px; }
             .hero-eyebrow-mb { margin-bottom: 2vw; }
             .hero-title-gap  { margin-top: 1vw; }
 
-            /* ── Molécula: spec Figma exacto ────────────────────────── */
+            /* ── Molécula: escala fluida al viewport ────────────────── */
             .hero-mol {
                 position: relative;
-                left: -8px;
-                top: 10px;
+                left: 0;
+                top: 0;
                 transform: none;
-                width: 373px;
-                height: 335px;
-                max-width: calc(100% + 8px);
-                margin-top: -36px;
-                z-index: 10;
+                width: min(560px, 78vw);
+                height: auto;
+                aspect-ratio: 373 / 335;
+                max-width: 100%;
+                margin: 8px auto 0;
+                z-index: 5;
                 flex-shrink: 0;
             }
             .hero-mol img {
@@ -357,13 +356,13 @@
                 filter: drop-shadow(0px 4px 4px rgba(0,0,0,0.50));
             }
 
-            /* ── Bar inferior (spec Figma exacto) ───────────────────── */
+            /* ── Bar inferior ───────────────────────────────────────── */
             .hero-bar {
-                width: 358px;
-                max-width: calc(100% - 10vw);
-                min-height: 149px;
-                padding: 8px;
-                gap: 2px;
+                width: 100%;
+                max-width: 640px;
+                min-height: auto;
+                padding: 12px;
+                gap: 8px;
                 border-radius: 8px;
                 border: 1px solid rgba(191,191,191,0.30);
                 background: rgba(255,255,255,0.10);
@@ -375,7 +374,7 @@
                 margin-right: auto;
             }
             .hero-bar-text {
-                font-size: 13px;
+                font-size: clamp(13px, 1.8vw, 15px);
                 line-height: 150%;
                 width: 100%;
                 min-height: auto;
@@ -390,6 +389,22 @@
                 gap: 12px;
                 margin-top: 0;
             }
+        }
+
+        /* ── Tablet layout row: título a la izquierda + molécula a la derecha ── */
+        @media (min-width: 768px) and (max-width: 1023px) {
+            .hero-bar {
+                flex-direction: row !important;
+                align-items: center !important;
+                gap: 20px;
+                padding: 16px 20px;
+            }
+            .hero-bar-cta {
+                width: auto;
+                white-space: nowrap;
+                padding: 12px 24px;
+            }
+            .hero-mol { width: min(520px, 62vw); }
         }
     </style>
 </head>
@@ -1481,7 +1496,7 @@
             <span style="display:none;font-family:'Montserrat',sans-serif;font-size:26px;font-weight:700;color:#fff;">Lp<span style="color:#05BAEE;">(a)</span>ction</span>
             <div class="ft-partner">
                 <span class="ft-caption">Partner formativo</span>
-                <span class="ft-qualimed"><img src="{{ asset('images/Group.png') }}" alt="Qualimed" style="width:16.83px;height:16.74px;object-fit:contain;display:inline-block;">Qualimed</span>
+                <span class="ft-qualimed"><img src="{{ asset('images/qualimed-logo.svg') }}" alt="Qualimed" style="height:24px;width:auto;object-fit:contain;display:inline-block;"></span>
             </div>
         </div>
         {{-- Bloque inferior: divisor + legal + separador + links --}}

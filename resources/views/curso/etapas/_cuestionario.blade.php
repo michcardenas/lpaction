@@ -4,6 +4,23 @@
     // lo decide el controlador con $reevaluando. En el primer intento (activa) queda oculto, aunque haya error.
     $reevaluando = $reevaluando ?? false;
     $preSelCsv   = implode(',', $preSel ?? []);   // opciones ya marcadas (se re-pintan; el rojo permanece)
+
+    // ÚLTIMA pregunta (monitorizacion-2): permitir "Repetir etapa" también en el intento activo,
+    // en cuanto el usuario haya marcado al menos una opción y aún no haya finalizado el caso.
+    // Motivo: es la última decisión antes de "Finalizar caso", debe poder rectificar.
+    $esUltimaPregunta = $etapaActual === 'monitorizacion-2';
+    $repetirHabilitado = empty($casoFinalizado) && !empty($preSel) && (
+        (!empty($reevaluando) && !empty($etapaTieneError))
+        || $esUltimaPregunta
+    );
+
+    // Cuando el usuario re-evalúa una etapa (típicamente tras "Repetir etapa"),
+    // barajamos las opciones para que no aparezcan siempre en el mismo orden.
+    // Primer intento (no reevaluando) conserva el orden Figma.
+    $opciones = $pregunta['opciones'];
+    if (!empty($reevaluando)) {
+        $opciones = collect($opciones)->shuffle()->values()->all();
+    }
 @endphp
 <div class="pregunta-card" id="cuestionario" data-xp="{{ $pregunta['xp'] }}" data-reevaluando="{{ $reevaluando ? '1' : '0' }}" data-presel="{{ $preSelCsv }}" data-etapa="{{ $etapaActual }}" data-marcar="{{ route('curso.marcar', $ingreso) }}">
     <div class="pregunta-head">
@@ -12,7 +29,7 @@
     </div>
 
     <div class="pregunta-opts">
-        @foreach ($pregunta['opciones'] as $op)
+        @foreach ($opciones as $op)
             <label class="opt" data-correcta="{{ $op['correcta'] ? '1' : '0' }}" data-puntos="{{ $op['puntos'] }}" data-justif="{{ $op['justificacion'] }}">
                 <input type="radio" name="pregunta" value="{{ $op['key'] }}">
                 <span class="opt-mark"></span>
@@ -41,7 +58,7 @@
         {{-- Siempre visible; se DESBLOQUEA solo al volver (reevaluando) a una etapa con fallo (rojo) Y que aún tenga respuestas marcadas.
              Tras pulsar "Repetir etapa" la pregunta queda fresca (sel vacío) → el botón se vuelve a bloquear.
              Y tras "Finalizar caso" ($casoFinalizado) queda BLOQUEADO en todas las etapas: ya no se puede repetir. --}}
-        <button type="button" class="btn-repetir" @unless(!empty($reevaluando) && !empty($etapaTieneError) && !empty($preSel) && empty($casoFinalizado)) disabled @endunless>
+        <button type="button" class="btn-repetir" @unless($repetirHabilitado) disabled @endunless>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 2.6-6.4L3 8"/><path d="M3 3v5h5"/></svg>
             Repetir etapa
         </button>

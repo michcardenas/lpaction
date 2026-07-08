@@ -296,6 +296,106 @@
         }
 
         /* ===================================================================== */
+        /* =====================  TABLET  (768-1023px)  ======================== */
+        /* Layout apilado adaptado al ancho tablet: Juan arriba, panel debajo    */
+        /* ===================================================================== */
+        @media (min-width: 768px) and (max-width: 1023px) {
+            body.curso-bg { height: auto !important; min-height: 100vh; display: block !important; }
+            .curso-scale-outer { overflow: hidden !important; height: auto !important; min-height: 0 !important; }
+
+            .curso-stage {
+                width: 100% !important; max-width: min(760px, 92vw); margin: 0 auto;
+                padding: clamp(24px, 4vw, 40px) clamp(20px, 3vw, 32px) !important; transform: none !important;
+                display: flex; flex-direction: column; gap: 12px;
+            }
+
+            /* Títulos apilados y CENTRADOS (uno debajo del otro), escala fluida */
+            .curso-titles {
+                flex-direction: column !important; align-items: center !important;
+                gap: 12px !important; margin: 0 !important; text-align: center !important;
+            }
+            .curso-title { font-size: clamp(28px, 4vw, 38px); font-weight: 600; line-height: 130%; text-align: center !important; }
+            .curso-subtitle { font-size: clamp(28px, 4vw, 38px); font-weight: 600; line-height: 130%; text-align: center !important; }
+            .curso-subtitle .rojo, .curso-subtitle .cyan { display: block; }
+
+            /* Fila Juan + Panel → columna, sin absoluto — gap pequeño para pegar Juan al panel */
+            .curso-row {
+                display: flex !important; flex-direction: column; gap: 8px;
+                margin: 0 !important; top: 0 !important; justify-content: flex-start !important;
+            }
+
+            /* Juan: escala fluida para toda la gama tablet (768-1023)
+               Recortamos el aire transparente que la imagen trae arriba de la cabeza
+               moviendo la img hacia arriba dentro del col (overflow:hidden) */
+            .juan-col {
+                position: relative !important; left: auto !important; bottom: auto !important;
+                width: 100% !important; max-width: min(620px, 88vw); margin: 0 auto !important;
+                height: clamp(460px, 58vw, 560px) !important; overflow: hidden;
+            }
+            .juan-img {
+                display: block !important; position: absolute;
+                left: 50%; top: clamp(-100px, -10vw, -60px); transform: translateX(-50%);
+                height: clamp(620px, 78vw, 740px) !important; width: auto !important; max-width: none !important;
+                margin-left: 0 !important;
+            }
+            .juan-img-mobile { display: none !important; }
+
+            /* Tarjeta de datos: abajo-izquierda dentro de la columna Juan */
+            .juan-cards {
+                position: absolute !important; left: clamp(12px, 2vw, 24px) !important; right: auto !important;
+                bottom: clamp(16px, 2.5vw, 28px) !important; width: clamp(230px, 30vw, 280px) !important;
+                display: flex; flex-direction: column;
+                padding: 0 !important;
+                border-radius: 0 !important; overflow: hidden;
+                background: rgba(255,255,255,0.06) !important;
+                box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05) !important;
+                -webkit-backdrop-filter: blur(12px) !important; backdrop-filter: blur(12px) !important;
+                z-index: 2;
+            }
+            .juan-card {
+                width: 100% !important; max-width: none !important;
+                gap: 14px !important;
+                padding: 14px 20px !important;
+                background: none !important; box-shadow: none !important;
+                border: 0 !important; box-sizing: border-box;
+                font-size: 14px !important; line-height: 1.5 !important; color: #FFFFFF;
+            }
+            .juan-card + .juan-card { border-top: 1px solid rgba(255,255,255,0.14) !important; margin-top: 0 !important; }
+            .juan-card svg { width: 20px !important; height: 20px !important; color: #cdd9dd; }
+
+            /* Panel de módulos: 100% del contenedor, sin overlap con Juan */
+            .curso-panel {
+                position: static !important; top: 0 !important;
+                width: 100% !important; flex: none !important;
+                margin-top: 0 !important;
+                padding: 20px !important;
+            }
+
+            /* Cada módulo: label arriba (todo el ancho), título debajo, % y botón en fila */
+            .ing-row {
+                display: grid !important;
+                grid-template-columns: 1fr auto;
+                grid-template-areas: "label label" "title title" "pct cta";
+                gap: 16px 16px !important; padding: 20px 12px !important; align-items: center;
+            }
+            .ing-label { grid-area: label; font-size: 20px !important; font-weight: 600 !important; line-height: 140% !important; padding-bottom: 8px !important; border-bottom: 0.5px solid rgba(185,185,185,0.25) !important; }
+            .ing-title { grid-area: title; font-size: 15px !important; font-weight: 400 !important; line-height: 150% !important; padding-left: 0 !important; border-left: none !important; color: #FFFFFF !important; }
+            .ing-pct { grid-area: pct; align-self: center; }
+            .ing-cta { grid-area: cta; justify-self: end; }
+            .btn-iniciar, .btn-locked { width: 148px !important; height: 45px !important; font-size: 15px; }
+
+            /* Detalle del curso: label en bloque, estado + fecha en línea */
+            .detalle-head { display: block !important; padding: 20px 12px 12px !important; }
+            .detalle-label { margin-bottom: 8px; }
+            .detalle-estado { display: inline !important; padding-left: 0 !important; border-left: none !important; }
+            .detalle-hasta { display: inline; margin-left: 12px; }
+            .finales-grid {
+                grid-template-columns: 1fr 1fr !important; gap: 16px !important;
+                padding-left: 12px !important; padding-right: 12px !important;
+            }
+        }
+
+        /* ===================================================================== */
         /* =====================  MÓVIL  (≤767px)  ============================= */
         /* Layout de una sola columna · sección 390 · padding 16 · gap 32 · #26383F */
         /* ===================================================================== */

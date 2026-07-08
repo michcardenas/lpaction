@@ -413,6 +413,147 @@
         .etapa-juan-m { display: none; }   /* imagen con piso, solo móvil */
         .etapa-bg-glows { display: none; }   /* globos de fondo, solo móvil */
 
+        /* ===================== TABLET (768–1023px) =====================
+           Layout equivalente al mobile (drawer + columna, sin scale) pero
+           con anchos y tipografía adaptados al ancho tablet. */
+        @media (min-width: 768px) and (max-width: 1023px) {
+            html, body { height: auto !important; }
+            body { overflow: visible !important; display: block !important; min-height: 100vh; }
+
+            /* Top bar tablet: hamburguesa + score + corazón (como mobile pero con más aire) */
+            .etapa-top {
+                position: sticky; top: 0; z-index: 60;
+                height: 72px !important; padding: 0 24px !important; gap: 20px;
+                background:
+                    radial-gradient(130% 190% at 50% 0%, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.05) 45%, rgba(255,255,255,0) 75%),
+                    #0a0a0c !important;
+                -webkit-backdrop-filter: blur(40px); backdrop-filter: blur(40px);
+                box-shadow: 0 0.5px 0 0 #BFBFBF !important;
+                border-bottom: 0 !important;
+            }
+            .top-left { width: auto !important; flex: 0 0 auto; gap: 12px; }
+            .top-name, .top-center, .top-back { display: none !important; }
+            .etapa-burger { display: inline-flex !important; }
+            .top-right { flex: 1; display: flex; align-items: center; gap: 16px; justify-content: flex-start; }
+            .top-scope { font-weight: 500 !important; font-size: 15px !important; letter-spacing: 0.02em !important; color: #FFFFFF !important; flex: 0 0 auto; white-space: nowrap; }
+            .top-scope b { font-weight: 500 !important; color: #FFFFFF !important; }
+            .sc-pre { display: none; }
+            .sc-max { display: inline; }
+            .score-bar { flex: 1; max-width: 320px; height: 8px !important; background: #D4D4D4 !important; border-radius: 99px !important; box-shadow: 0 0 0 0.5px #D4D4D4; }
+            .top-heart { flex: 0 0 auto; }
+            .heart-desktop { display: none; }
+            .heart-mobile { display: block !important; width: 34px; height: 34px; }
+
+            /* Sidebar → drawer lateral (idéntico al mobile) */
+            .etapa-body { display: block !important; }
+            .etapa-side {
+                position: fixed !important; top: 0; left: 0; bottom: 0; width: 340px; max-width: 85vw;
+                z-index: 100; transform: translateX(-100%); transition: transform .28s ease;
+                box-shadow: 2px 0 24px rgba(0,0,0,0.55);
+            }
+            .etapa-side.open { transform: translateX(0); }
+            .etapa-backdrop { display: block; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 99; opacity: 0; pointer-events: none; transition: opacity .28s; }
+            .etapa-backdrop.open { opacity: 1; pointer-events: auto; }
+
+            .side-head { display: flex; align-items: center; gap: 10px; padding: 18px 20px; border-bottom: 1px solid rgba(255,255,255,0.10); flex-shrink: 0; }
+            .side-close { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; background: none; border: 0; color: #fff; cursor: pointer; padding: 0; }
+            .side-head-lbl { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 15px; color: #fff; white-space: nowrap; }
+            .side-head-bar { flex: 1; height: 6px; min-width: 24px; }
+            .side-head-pct { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 13px; color: #fff; flex-shrink: 0; }
+            .side-salir { display: block; margin: 16px 20px 20px; padding: 14px; text-align: center; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.20); border-radius: 8px; color: #fff; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 14px; text-decoration: none; }
+
+            /* Content: reflow a columna, reset scale */
+            .etapa-main { width: 100% !important; display: block !important; overflow: visible !important; align-items: stretch !important; justify-content: flex-start !important; }
+            .main-stage { width: 100% !important; height: auto !important; transform: none !important; padding: 32px 32px !important; max-width: 800px !important; margin: 0 auto !important; }
+            .content-col { width: 100% !important; margin-left: 0 !important; }
+            .seg-top { position: static !important; top: auto !important; right: auto !important; display: inline-flex; margin: 0 0 20px; }
+            .view { position: static !important; inset: auto !important; }
+            .view-scroll, #view-biblio { overflow: visible !important; bottom: auto !important; }
+
+            /* Juan en flujo, centrado, tamaño tablet — Juan COMPLETO con ondas visibles */
+            .etapa-juan {
+                position: relative !important; right: auto !important; top: auto !important;
+                width: 100% !important; max-width: 520px !important; margin: 40px auto 0 !important;
+                height: 820px !important; overflow: hidden;
+                -webkit-mask-image: none;
+                mask-image: none;
+            }
+            .etapa-juan .etapa-rings, .etapa-juan-d { display: none !important; }
+            .etapa-juan-m {
+                display: block !important; position: absolute !important;
+                left: 50% !important; top: -40px !important;
+                transform: translateX(-50%);
+                width: 520px !important; max-width: none !important; height: auto !important; margin: 0 !important;
+                -webkit-mask-image: none !important; mask-image: none !important;
+            }
+
+            /* Botón Siguiente etapa: centrado, presencia visual clara */
+            .btn-next {
+                position: static !important; right: auto !important; bottom: auto !important;
+                display: flex !important; align-items: center; justify-content: center; gap: 12px;
+                width: 100%; max-width: 320px;
+                margin: 40px auto 20px !important;
+                padding: 16px 32px !important; line-height: 21px !important;
+                background: rgba(255,255,255,0.22) !important;
+                border: 0 !important; box-shadow: inset 0 0 0 1px #2F728C !important;
+                border-radius: 4px !important;
+                -webkit-backdrop-filter: blur(40px); backdrop-filter: blur(40px);
+                font-size: 15px !important; font-weight: 500;
+            }
+            .biblio-next { margin-top: 28px !important; }
+            .main-stage:has(.video-full) { display: flex !important; flex-direction: column; min-height: calc(100dvh - 72px); }
+            .main-stage:has(.video-full) .btn-next { margin-top: auto !important; }
+            .btn-descargar { width: 100% !important; justify-content: center; max-width: 400px; }
+            .btn-finalizar { width: 100% !important; max-width: 400px; }
+            .resumen-foot { width: 100%; }
+            .main-stage:has(.resumen-card) { display: flex !important; flex-direction: column; min-height: calc(100dvh - 72px); }
+            .main-stage:has(.resumen-card) #view-contenido { flex: 1 1 auto; display: flex; flex-direction: column; }
+            .main-stage:has(.resumen-card) .riesgo { flex: 1 1 auto; display: flex; flex-direction: column; }
+            .main-stage:has(.resumen-card) .resumen-foot { margin-top: auto !important; }
+
+            /* Tabs (Perfil/Historia/Medicación/Alergias) scroll horizontal si no cabe */
+            .tabs { overflow-x: auto !important; scrollbar-width: none; }
+            .tabs::-webkit-scrollbar { display: none; height: 0; }
+            .tabs .tab { flex: 0 0 auto !important; }
+
+            /* Tipografía tablet: entre mobile y desktop */
+            .h-caso { font-size: 28px !important; line-height: 130% !important; margin-bottom: 20px !important; }
+            .h-sec:has(+ .motivo-p) { margin-top: -8px !important; margin-bottom: 10px !important; }
+            #view-biblio .h-caso { display: none !important; }
+            #view-biblio .biblio-list { overflow: visible !important; flex: none !important; padding-right: 0 !important; }
+            .biblio-item { font-weight: 400 !important; font-size: 15px !important; line-height: 150% !important; }
+            .biblio-h { margin-top: 0 !important; }
+
+            /* Quiz: opciones a 2 columnas (más espacio que móvil) */
+            .pregunta-opts { grid-template-columns: 1fr 1fr !important; }
+            .pregunta-opts .opt { padding: 20px 24px !important; }
+            .pregunta-head { padding: 24px 24px 18px !important; }
+            .pregunta-foot { flex-direction: row !important; flex-wrap: wrap !important; align-items: stretch !important; padding: 20px 24px !important; gap: 12px !important; }
+            .pregunta-foot .foot-spacer { display: none !important; }
+            .pregunta-foot .btn-comprobar { order: 1; flex: 1 0 100% !important; width: auto !important; padding: 14px !important; font-size: 15px !important; }
+            .pregunta-foot .btn-repetir  { order: 2; flex: 1 1 0 !important; width: auto !important; justify-content: center; gap: 8px !important; padding: 12px 16px !important; font-size: 14px !important; white-space: nowrap; }
+            .pregunta-foot .btn-next-q   { order: 3; flex: 1 1 0 !important; width: auto !important; padding: 12px 16px !important; font-size: 14px !important; white-space: nowrap; }
+
+            /* Texto del cuerpo consistente (15/150%) */
+            .perfil-card p, .motivo-p, .prueba-p, .pregunta-q, .pregunta-sub,
+            .analitica-intro, .analitica-list, .opt, .video-cap, .biblio-item {
+                font-size: 15px !important; line-height: 150% !important;
+            }
+
+            /* Toggle Contenido/Bibliografía + Tabs internos */
+            .seg-top, .tabs {
+                width: auto !important; display: inline-flex !important; gap: 8px !important; padding: 6px !important;
+                background: rgba(255,255,255,0.10) !important; border: 1px solid #2F728C !important;
+                border-radius: 0 !important;
+                -webkit-backdrop-filter: blur(40px); backdrop-filter: blur(40px);
+            }
+            .seg-top button, .tabs .tab {
+                font-weight: 500 !important; font-size: 13px !important; line-height: 150% !important; letter-spacing: 0.01em !important; padding: 10px 18px !important;
+                border-radius: 6px !important;
+            }
+            .seg-top button.on, .tabs .tab.on { color: #454545 !important; }
+        }
+
         /* ===================== MÓVIL (≤767px) ===================== */
         @media (max-width: 767px) {
             html, body { height: auto !important; }
@@ -570,9 +711,11 @@
         }
 
         /* =====================================================================  */
-        /* ===  PULIDO WEB + TABLET (≥768px) — destellos glass + sidebar activo === */
+        /* ===  PULIDO WEB (≥1024px) — destellos glass + sidebar activo         === */
+        /* Antes aplicaba desde 768, pero rompía el layout tablet. Ahora solo    */
+        /* aplica en desktop y el bloque tablet propio (768-1023) toma el resto. */
         /* =====================================================================  */
-        @media (min-width: 768px) {
+        @media (min-width: 1024px) {
             /* === FIX bug imagen doble: .etapa-juan img tiene specificidad (0,1,1) y vence a
                    .etapa-juan-m {display:none} (0,1,0) → la imagen mobile aparecía en desktop/tablet.
                    Forzamos ocultarla con !important. */
@@ -909,9 +1052,22 @@
                 <span class="top-scope"><span class="sc-pre">Score: </span><b><span id="xp-val">{{ $exp ?? 0 }}</span><span class="sc-max"> / {{ $maxScore ?? 450 }}</span> Exp</b></span>
                 @php $mx = max(1, $maxScore ?? 450); $gW = max(0, min(100, ($exp ?? 0) / $mx * 100)); $rW = max(0, min(100 - $gW, ($rojoBase ?? 0) / $mx * 100)); @endphp
                 <span class="bar score-bar" id="score-bar" data-verde="{{ $verdeBase ?? 0 }}" data-rojo="{{ $rojoBase ?? 0 }}" data-max="{{ $mx }}" style="width:120px;"><i id="xp-green" class="green" style="width:{{ $gW }}%"></i><i id="xp-red" class="red" style="width:{{ $rW }}%"></i></span>
-                <span class="top-heart">
-                    <svg class="heart-desktop" width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35c-.3 0-.6-.1-.84-.3C7.2 17.66 2.5 13.88 2.5 9.6 2.5 6.5 4.9 4.5 7.4 4.5c1.8 0 3.42.94 4.6 2.42C13.18 5.44 14.8 4.5 16.6 4.5c2.5 0 4.9 2 4.9 5.1 0 4.28-4.7 8.06-8.66 11.45-.24.2-.54.3-.84.3Z"/></svg>
-                    <img class="heart-mobile" src="{{ asset('images/experiencia-global.png') }}" alt="Experiencia" width="32" height="32">
+                @php
+                    $medKey = $medalla['key'] ?? 'sin';
+                    $medSrc = $medKey === 'sin'
+                        ? asset('images/experiencia-global.svg')
+                        : asset('images/medalla-' . $medKey . '.png');
+                    $medalToJs = collect($curso['medallas'] ?? [])->map(fn($m) => [
+                        'key' => $m['key'], 'min' => (int) $m['min'],
+                    ])->values()->all();
+                @endphp
+                <span class="top-heart" id="top-heart"
+                      data-medallas='@json($medalToJs)'
+                      data-medalla="{{ $medKey }}"
+                      data-sin-src="{{ asset('images/experiencia-global.svg') }}"
+                      data-base="{{ asset('images/') }}/">
+                    <img class="heart-desktop" src="{{ $medSrc }}" alt="{{ $medalla['label'] ?? 'Experiencia' }}" width="32" height="32">
+                    <img class="heart-mobile"  src="{{ $medSrc }}" alt="{{ $medalla['label'] ?? 'Experiencia' }}" width="32" height="32">
                 </span>
             </div>
         </header>
@@ -1110,9 +1266,10 @@
                                 </form>
                             @else
                                 @php
+                                    $ultimaEtapaKey = collect($curso['etapas'] ?? [])->last()['key'] ?? 'resumen';
                                     $href = $accion === 'mejorar'
-                                        ? route('curso.etapa', [$ingreso, $etapaActual])   // cierra el modal y vuelve a la etapa a repasar
-                                        : route('curso');                                   // temario (sin/bronce) → portal a repetir
+                                        ? route('curso.etapa', [$ingreso, $etapaActual])       // cierra el modal y vuelve a la etapa a repasar
+                                        : route('curso.etapa', [$ingreso, $ultimaEtapaKey]);   // temario (sin/bronce) → último capítulo (Resumen)
                                 @endphp
                                 <a class="rp-btn {{ ($b['estilo'] ?? '') === 'cyan' ? 'cyan' : '' }}" href="{{ $href }}">{{ $b['texto'] }}</a>
                             @endif
@@ -1452,6 +1609,34 @@
                 var r = Math.max(0, Math.min(100 - g, rojo / maxScore * 100));     // rojo = penalizaciones; "come" al verde (contrapeso)
                 if (green) green.style.width = g + '%';
                 if (red) red.style.width = r + '%';
+                actualizarMedallaHeader(exp);
+            }
+
+            // Cambia el corazón del header a la medalla que corresponde al score actual.
+            // Umbrales del config (sin=0, bronce=200, plata=300, oro=400).
+            var heartWrap = document.getElementById('top-heart');
+            var heartImgs = heartWrap ? heartWrap.querySelectorAll('img') : [];
+            var medallasCfg = [];
+            var heartBase = '', heartSinSrc = '';
+            if (heartWrap) {
+                try { medallasCfg = JSON.parse(heartWrap.getAttribute('data-medallas') || '[]'); } catch (e) {}
+                heartBase = heartWrap.getAttribute('data-base') || '';
+                heartSinSrc = heartWrap.getAttribute('data-sin-src') || '';
+            }
+            function medallaKeyPara(score) {
+                var key = 'sin';
+                for (var i = 0; i < medallasCfg.length; i++) {
+                    if (score >= medallasCfg[i].min) key = medallasCfg[i].key;
+                }
+                return key;
+            }
+            function actualizarMedallaHeader(exp) {
+                if (!heartWrap || heartImgs.length === 0) return;
+                var nueva = medallaKeyPara(exp);
+                if (heartWrap.getAttribute('data-medalla') === nueva) return;
+                heartWrap.setAttribute('data-medalla', nueva);
+                var src = nueva === 'sin' ? heartSinSrc : (heartBase + 'medalla-' + nueva + '.png');
+                heartImgs.forEach(function (img) { img.src = src; });
             }
 
             // Re-pinta las opciones ya marcadas en intentos previos (al volver, el rojo permanece visible).
@@ -1472,17 +1657,31 @@
             sincronizarSel();
             if (Object.keys(marcadas).length >= totalOpts) comprobar.disabled = true;
 
-            // ===== Revisión de opciones ya cursadas: clic en una opción YA respondida → ver su justificación =====
+            // ===== Revisión de opciones ya cursadas: clic en una opción YA respondida → ver su justificación + puntuación =====
             // Aplica SIEMPRE: tras Comprobar en la etapa activa Y al VOLVER a un capítulo ya hecho (modo revisión).
             card.querySelectorAll('.opt').forEach(function (opt) {
                 var inp = opt.querySelector('input[name="pregunta"]');
                 var k   = inp ? inp.value : null;
                 opt.addEventListener('click', function (e) {
-                    if (k && marcadas[k]) {                 // opción ya cursada → mostrar su justificación (no re-puntúa)
+                    if (k && marcadas[k]) {                 // opción ya cursada → mostrar su justificación + puntuación (no re-puntúa)
                         e.preventDefault();
                         justifTxt.innerHTML = formatCitas(opt.getAttribute('data-justif') || '');
                         justif.hidden = false;
-                        if (resultado) resultado.hidden = true;
+                        if (resultado && resIco && resTxt) {
+                            var pts = parseInt(opt.getAttribute('data-puntos'), 10) || 0;
+                            var correcta = pts > 0;
+                            var xp = Math.abs(pts);
+                            if (correcta) {
+                                resultado.className = 'resultado ok';
+                                resIco.textContent = '✓';
+                                resTxt.textContent = '¡Excelente!   + ' + xp + ' XP';
+                            } else {
+                                resultado.className = 'resultado bad';
+                                resIco.textContent = '✕';
+                                resTxt.textContent = '¡Respuesta incorrecta!   - ' + xp + ' XP';
+                            }
+                            resultado.hidden = false;
+                        }
                     }
                 });
             });
@@ -1491,6 +1690,11 @@
             if (modoRevision) {
                 if (comprobar) { comprobar.hidden = true; comprobar.disabled = true; }   // Comprobar bloqueado
                 sigBtn.classList.add('enabled');                                          // etapa ya superada: puede avanzar
+                // Chrome/bfcache puede restaurar el estado marcado de radios entre navegaciones →
+                // limpiamos explícitamente para que ninguna opción aparezca marcada al entrar.
+                card.querySelectorAll('input[name="pregunta"]').forEach(function (inp) {
+                    inp.checked = false;
+                });
                 card.querySelectorAll('.opt').forEach(function (opt) {
                     var inp = opt.querySelector('input[name="pregunta"]');
                     var k   = inp ? inp.value : null;
