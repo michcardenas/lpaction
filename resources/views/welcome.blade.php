@@ -296,6 +296,17 @@
             pointer-events: none;
         }
         .hero-mol img { width: 100%; height: auto; object-fit: contain; display: block; }
+        /* Sello 15 créditos SEC — desktop: lado derecho a media altura (spec Figma) */
+        .hero-sello {
+            position: absolute;
+            right: -12%;
+            bottom: 30%;
+            width: clamp(110px, 24%, 180px) !important;
+            height: auto !important;
+            z-index: 21;
+            pointer-events: none;
+            filter: drop-shadow(0 6px 14px rgba(0,0,0,0.18));
+        }
         @media (max-width: 1023px) {
             /* ── Resetear sistema de escala desktop (aplica mobile + tablet) ─ */
             .hero {
@@ -354,6 +365,12 @@
                 height: 100%;
                 object-fit: contain;
                 filter: drop-shadow(0px 4px 4px rgba(0,0,0,0.50));
+            }
+            /* En mobile/tablet el sello va sobre la molécula, esquina inferior derecha (spec Figma) */
+            .hero-mol .hero-sello {
+                right: 6%;
+                bottom: 8%;
+                width: clamp(95px, 28%, 150px) !important;
             }
 
             /* ── Bar inferior ───────────────────────────────────────── */
@@ -548,6 +565,8 @@
                     src="{{ asset('images/molecula-lpa.png') }}"
                     alt="Representación 3D de Lipoproteína(a)"
                 >
+                {{-- Sello 15 créditos (SEC) — abajo-derecha de la molécula --}}
+                <img class="hero-sello" src="{{ asset('images/sello-15-creditos.png') }}" alt="15 créditos — Sociedad Española de Cardiología">
             </div>
 
             {{-- Spacer to push bar to bottom --}}
@@ -557,7 +576,7 @@
             <div class="hero-pad-bottom relative" style="z-index: 30;">
                 <div class="hero-bar flex flex-col md:flex-row items-start md:items-center justify-between">
                     <p class="text-neutral-600 max-w-2xl leading-relaxed hero-bar-text">
-                        Solicitada la acreditación al Sistema Español de Acreditación de la Formación Médica Continuada (SEAFORMEC).
+                        Solicitada la acreditación del Consejo Profesional Médico Español para el DPC/FMC (SEAFORMEC-EACCME).
                     </p>
                     <a href="{{ route('login') }}" class="inline-flex items-center gap-3 font-medium rounded-lg transition whitespace-nowrap hero-bar-cta">
                         Accede al curso
