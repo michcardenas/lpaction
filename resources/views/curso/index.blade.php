@@ -69,6 +69,8 @@
         .curso-row { position: relative; display: flex; justify-content: flex-end; margin-top: 140px; }
         .juan-col { position: absolute; left: 0; bottom: -80px; width: 297px; z-index: 2; }
         .juan-img { height: 742px; width: auto; max-width: none; display: block; margin-left: -99px; filter: drop-shadow(0 22px 38px rgba(0,0,0,0.45)); }
+        /* La imagen del Ingreso 2 (paciente_pantalla_2.png) ahora es 555x746 con las ondas
+           horneadas, igual que la del Ingreso 1 → usa el MISMO tratamiento, sin overrides. */
         .juan-img-mobile { display: none; }   /* solo se usa en móvil */
         .juan-cards {
             position: absolute; left: -13px; bottom: 122px;
@@ -148,6 +150,16 @@
             font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 16px; color: #D6E0E3;
         }
         .final-card svg { color: #7c949c; }
+        /* Tarjeta final DESBLOQUEADA (Evaluación final disponible): botón cyan con flecha ↗ */
+        a.final-card { text-decoration: none; transition: background .2s, border-color .2s; }
+        a.final-card:hover { background: rgba(5,186,238,0.10); border-color: rgba(5,186,238,0.35); }
+        .final-arrow {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 44px; height: 44px; border-radius: 8px; flex-shrink: 0;
+            background: #05BAEE; color: #fff; transition: background .2s;
+        }
+        a.final-card:hover .final-arrow { background: #04a3d1; }
+        .final-arrow svg { color: #fff; }
 
         /* ===== Footer ===== */
         .curso-footer { background: #000000; }
@@ -658,12 +670,18 @@
             {{-- Fila: Juan + Panel (Juan absoluto → no infla la altura) --}}
             <div class="curso-row">
 
-                {{-- Juan + tarjetas --}}
+                {{-- Juan + tarjetas — la imagen y datos cambian según el ingreso ACTIVO (Ingreso 1/2/3).
+                     La imagen del Ingreso 2 es un recorte medio (342x510) → se marca con clase modificadora
+                     para que el CSS respete su proporción y no la estire como un cuerpo completo. --}}
+                @php
+                    $pAct = $pacienteActivo ?? $curso['paciente'];
+                    $esPacienteBase = ($pAct['imagen'] ?? '') === ($curso['paciente']['imagen'] ?? '');
+                @endphp
                 <div class="juan-col">
-                    <img class="juan-img" src="{{ asset($curso['paciente']['imagen']) }}" alt="{{ $curso['paciente']['nombre'] }}">
-                    <img class="juan-img-mobile" src="{{ asset('images/paciente.png') }}" alt="{{ $curso['paciente']['nombre'] }}">
+                    <img class="juan-img" src="{{ asset($pAct['imagen']) }}" onerror="this.onerror=null;this.src='{{ asset($curso['paciente']['imagen']) }}';" alt="{{ $pAct['nombre'] }}">
+                    <img class="juan-img-mobile" src="{{ asset($pAct['imagen_mobile'] ?? 'images/paciente.png') }}" onerror="this.onerror=null;this.src='{{ asset('images/paciente.png') }}'" alt="{{ $pAct['nombre'] }}">
                     <div class="juan-cards">
-                        @foreach ($curso['paciente']['datos'] as $dato)
+                        @foreach ($pAct['datos'] as $dato)
                             <div class="juan-card">
                                 @if ($dato['icon'] === 'edad')
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg>
@@ -721,12 +739,31 @@
                         <div class="detalle-estado">{{ $cursoIniciado ? 'En curso' : 'No iniciado' }}</div>
                         <div class="detalle-hasta">Disponible hasta: {{ $curso['disponible_hasta'] }}</div>
                     </div>
+                    @php
+                        // La EVALUACIÓN FINAL se desbloquea cuando los módulos disponibles (Ingreso 1 y 2)
+                        // están completados. (Ingreso 3 está pospuesto, no se exige.) El DIPLOMA se
+                        // desbloquea solo tras aprobar la evaluación (APTO) — de momento queda bloqueado.
+                        $ing1Comp = optional($progress->get('ingreso-1'))->status === 'completed';
+                        $ing2Comp = optional($progress->get('ingreso-2'))->status === 'completed';
+                        $evalDesbloqueada = $ing1Comp && $ing2Comp;
+                    @endphp
                     <div class="finales-grid">
                         @foreach ($curso['finales'] as $fin)
-                            <div class="final-card">
-                                <span>{{ $fin['titulo'] }}</span>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
-                            </div>
+                            @if ($fin['key'] === 'evaluacion' && $evalDesbloqueada)
+                                {{-- Desbloqueada: enlace a la pantalla de evaluación con botón cyan ↗ --}}
+                                <a href="{{ route('evaluacion') }}" class="final-card">
+                                    <span>{{ $fin['titulo'] }}</span>
+                                    <span class="final-arrow">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M17 7H8M17 7V16"/></svg>
+                                    </span>
+                                </a>
+                            @else
+                                {{-- Bloqueada: candado --}}
+                                <div class="final-card">
+                                    <span>{{ $fin['titulo'] }}</span>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+                                </div>
+                            @endif
                         @endforeach
                     </div>
 

@@ -21,18 +21,297 @@ class CursoController extends Controller
 
         $curso = config('curso');
 
-        return view('curso.index', compact('user', 'curso', 'progress'));
+        // Paciente ACTIVO: el Juan cambia según en qué ingreso esté el usuario.
+        // - En Ingreso 1 (in_progress o completed sin haber empezado el 2): Juan 52 años, fumador.
+        // - En Ingreso 2 (disponible/in_progress/completed): Juan 53 años, exfumador.
+        // - En Ingreso 3 (cuando exista): idem.
+        $pacienteActivo = $this->pacienteActivo($curso, $progress);
+
+        return view('curso.index', compact('user', 'curso', 'progress', 'pacienteActivo'));
+    }
+
+    /**
+     * Determina qué paciente (imagen + datos) mostrar en el portal según el estado de los ingresos.
+     * Refleja "La evolución de Juan": la imagen cambia conforme el usuario avanza.
+     *
+     * Reglas (confirmadas con el cliente):
+     *  - Ingreso 1 activo                       → Juan polo oscuro    (paciente)
+     *  - Ingreso 2 recién activado (0% avance)  → Juan polo a rayas   (paciente_2, imagen)
+     *  - Ingreso 2 EN PROGRESO (>0% avance)     → Juan camisa gris    (paciente_2, imagen_progreso)
+     *  - Ingreso 2 COMPLETADO/aprobado          → Juan sano           (paciente_2, imagen_completado)
+     *
+     * Devuelve la variante del ingreso más avanzado que ya esté al menos disponible.
+     */
+    private function pacienteActivo(array $curso, $progress): array
+    {
+        $ingresos = $curso['ingresos'] ?? [];
+        $activo = $curso['paciente'];   // fallback: Ingreso 1
+
+        foreach ($ingresos as $idx => $ing) {
+            $p = $progress[$ing['key']] ?? null;
+            if (! $p) continue;
+            // Un ingreso "activa" su paciente cuando ya está disponible/en curso/completado.
+            if (! in_array($p->status, ['available', 'in_progress', 'completed'])) continue;
+
+            if ($idx === 0) {
+                $activo = $curso['paciente'] ?? $activo;
+                continue;
+            }
+
+            $key = 'paciente_'.($idx + 1);
+            if (! isset($curso[$key])) continue;
+
+            $variante = $curso[$key];
+            // La imagen evoluciona según el avance del ingreso:
+            //  completado → imagen_completado (Juan sano) · en progreso → imagen_progreso (camisa gris)
+            if ($p->status === 'completed' && ! empty($variante['imagen_completado'])) {
+                $variante['imagen'] = $variante['imagen_completado'];
+            } elseif ((int) ($p->etapa_index ?? 0) > 0 && ! empty($variante['imagen_progreso'])) {
+                $variante['imagen'] = $variante['imagen_progreso'];
+            }
+            $activo = $variante;
+        }
+        return $activo;
     }
 
     /** Pantalla de intro a la evaluación final (certificación). */
     public function evaluacion()
     {
         $user = Auth::user();
-        $intentos    = 0;
-        $maxIntentos = 2;
-        $nota        = 'SN';
+        CourseProgress::seedFor($user);
 
-        return view('curso.evaluacion', compact('user', 'intentos', 'maxIntentos', 'nota'));
+        $cfg = config('curso.evaluacion');
+        $maxIntentos = (int) ($cfg['max_intentos'] ?? 2);
+
+        $prog = $user->progress()->where('module_key', 'evaluacion')->first();
+        $meta = $prog->etapas ?? [];
+        $intentos = (int) ($meta['intentos'] ?? 0);
+        $apto     = (bool) ($meta['apto'] ?? false);
+        // Nota mostrada: "SN" (sin nota) si aún no se ha hecho; si no, la última nota sobre el total.
+        $nota = isset($meta['ultima_nota'])
+            ? $meta['ultima_nota'].' / '.($cfg['tomar'] ?? 10)
+            : 'SN';
+
+        // La evaluación SOLO se puede comenzar tras completar la encuesta de satisfacción.
+        $encuestaProg  = $user->progress()->where('module_key', 'encuesta')->first();
+        $encuestaHecha = $encuestaProg && $encuestaProg->status === 'completed';
+
+        return view('curso.evaluacion', compact('user', 'intentos', 'maxIntentos', 'nota', 'apto', 'encuestaHecha'));
+    }
+
+    /** Inicia un intento del examen: escoge N preguntas al azar y guarda el estado en sesión. */
+    public function evaluacionComenzar(Request $request)
+    {
+        $user = Auth::user();
+        CourseProgress::seedFor($user);
+
+        $cfg     = config('curso.evaluacion');
+        $todas   = $cfg['preguntas'] ?? [];
+        $tomar   = min((int) ($cfg['tomar'] ?? 10), count($todas));
+        $maxInt  = (int) ($cfg['max_intentos'] ?? 2);
+
+        // Guard: la encuesta de satisfacción es OBLIGATORIA antes de comenzar la evaluación.
+        $encuestaProg = $user->progress()->where('module_key', 'encuesta')->first();
+        if (! ($encuestaProg && $encuestaProg->status === 'completed')) {
+            return redirect()->route('encuesta');
+        }
+
+        $prog = $user->progress()->where('module_key', 'evaluacion')->first();
+        $meta = $prog->etapas ?? [];
+
+        // Si ya aprobó o agotó los intentos, no se puede volver a empezar.
+        if (! empty($meta['apto'])) {
+            return redirect()->route('evaluacion.resultado');
+        }
+        if ((int) ($meta['intentos'] ?? 0) >= $maxInt) {
+            return redirect()->route('evaluacion')->with('eval_error', 'Has agotado los intentos disponibles.');
+        }
+
+        // Escoge $tomar índices al azar del banco de preguntas.
+        $indices = array_keys($todas);
+        shuffle($indices);
+        $sel = array_slice($indices, 0, $tomar);
+
+        session()->put('eval', [
+            'preguntas'  => $sel,   // índices en config.preguntas
+            'pos'        => 0,
+            'respuestas' => [],     // pos => letra elegida
+        ]);
+
+        return redirect()->route('evaluacion.pregunta');
+    }
+
+    /** Muestra la pregunta actual del intento en curso. */
+    public function evaluacionPregunta()
+    {
+        $eval = session('eval');
+        if (! $eval || empty($eval['preguntas'])) {
+            return redirect()->route('evaluacion');
+        }
+
+        $cfg   = config('curso.evaluacion');
+        $todas = $cfg['preguntas'] ?? [];
+        $pos   = (int) $eval['pos'];
+        $total = count($eval['preguntas']);
+
+        if ($pos >= $total) {
+            return redirect()->route('evaluacion.resultado');
+        }
+
+        $idx      = $eval['preguntas'][$pos];
+        $pregunta = $todas[$idx] ?? null;
+        if (! $pregunta) {
+            return redirect()->route('evaluacion');
+        }
+
+        // Baraja el orden visual de las opciones (a-d) en cada carga, conservando la clave.
+        $opciones = $pregunta['opciones'];
+        $keys = array_keys($opciones);
+        shuffle($keys);
+        $opcionesBarajadas = [];
+        foreach ($keys as $k) $opcionesBarajadas[$k] = $opciones[$k];
+
+        $numero = $pos + 1;
+        $seleccion = $eval['respuestas'][$pos] ?? null;
+
+        return view('curso.evaluacion-pregunta', compact('pregunta', 'opcionesBarajadas', 'numero', 'total', 'seleccion'));
+    }
+
+    /** Guarda la respuesta de la pregunta actual y avanza (o califica si es la última). */
+    public function evaluacionResponder(Request $request)
+    {
+        $eval = session('eval');
+        if (! $eval || empty($eval['preguntas'])) {
+            return redirect()->route('evaluacion');
+        }
+
+        $pos = (int) $eval['pos'];
+        $sel = (string) $request->input('opcion', '');
+        if (in_array($sel, ['a', 'b', 'c', 'd'], true)) {
+            $eval['respuestas'][$pos] = $sel;
+        }
+        $eval['pos'] = $pos + 1;
+        session()->put('eval', $eval);
+
+        if ($eval['pos'] >= count($eval['preguntas'])) {
+            return $this->calificarEvaluacion();
+        }
+        return redirect()->route('evaluacion.pregunta');
+    }
+
+    /** Califica el intento, persiste el resultado y desbloquea el diploma si es APTO. */
+    private function calificarEvaluacion()
+    {
+        $user = Auth::user();
+        $eval = session('eval');
+        $cfg  = config('curso.evaluacion');
+        $todas = $cfg['preguntas'] ?? [];
+        $aprobarPct = (int) ($cfg['aprobar_pct'] ?? 80);
+        $total = count($eval['preguntas']);
+
+        $aciertos = 0;
+        $detalle  = [];   // detalle por pregunta para la pantalla "Ver respuestas"
+        foreach ($eval['preguntas'] as $pos => $idx) {
+            $q = $todas[$idx];
+            $correcta = $q['correcta'] ?? null;
+            $elegida  = $eval['respuestas'][$pos] ?? null;
+            if ($elegida === $correcta) $aciertos++;
+            $detalle[] = [
+                'enunciado' => $q['enunciado'],
+                'opciones'  => $q['opciones'],
+                'correcta'  => $correcta,
+                'elegida'   => $elegida,
+            ];
+        }
+        $pct  = $total > 0 ? round($aciertos / $total * 100) : 0;
+        $apto = $pct >= $aprobarPct;
+
+        // Persiste en la fila 'evaluacion' de course_progress.
+        $prog = $user->progress()->where('module_key', 'evaluacion')->first();
+        $meta = $prog->etapas ?? [];
+        $meta['intentos']    = (int) ($meta['intentos'] ?? 0) + 1;
+        $meta['ultima_nota'] = $aciertos;
+        $meta['ultimo_pct']  = $pct;
+        $meta['apto']        = (bool) ($meta['apto'] ?? false) || $apto;   // una vez APTO, se queda
+        $prog->update([
+            'etapas'       => $meta,
+            'status'       => $meta['apto'] ? 'completed' : 'in_progress',
+            'percent'      => $pct,
+            'completed_at' => $meta['apto'] ? now() : null,
+        ]);
+
+        // APTO → desbloquea el diploma.
+        if ($meta['apto']) {
+            $diploma = $user->progress()->where('module_key', 'diploma')->first();
+            if ($diploma && $diploma->status === 'locked') {
+                $diploma->update(['status' => 'available']);
+            }
+        }
+
+        // Guarda el resumen del intento para la pantalla de resultado y limpia el estado en curso.
+        session()->put('eval_result', [
+            'aciertos' => $aciertos, 'total' => $total, 'pct' => $pct,
+            'apto' => $apto, 'intentos' => $meta['intentos'],
+            'max_intentos' => (int) ($cfg['max_intentos'] ?? 2),
+            'aprobar_pct' => $aprobarPct,
+            'detalle' => $detalle,
+        ]);
+        session()->forget('eval');
+
+        return redirect()->route('evaluacion.resultado');
+    }
+
+    /** Pantalla de resultado del examen (APTO / NO APTA). */
+    public function evaluacionResultado()
+    {
+        $res = session('eval_result');
+        if (! $res) {
+            return redirect()->route('evaluacion');
+        }
+        return view('curso.evaluacion-resultado', compact('res'));
+    }
+
+    /** Encuesta de satisfacción (13 ítems con estrellas + observaciones). */
+    public function encuesta()
+    {
+        $user = Auth::user();
+        CourseProgress::seedFor($user);
+        $cfg = config('curso.encuesta');
+
+        // Si ya la completó, se muestran sus valoraciones (solo lectura no obligatoria).
+        $prog = $user->progress()->where('module_key', 'encuesta')->first();
+        $respuestas = $prog->etapas['respuestas'] ?? [];
+
+        return view('curso.encuesta', compact('cfg', 'respuestas'));
+    }
+
+    /** Guarda la encuesta de satisfacción. */
+    public function encuestaGuardar(Request $request)
+    {
+        $user = Auth::user();
+        CourseProgress::seedFor($user);
+        $cfg = config('curso.encuesta');
+        $total = count($cfg['items'] ?? []);
+
+        $valoraciones = [];
+        for ($i = 0; $i < $total; $i++) {
+            $v = (int) $request->input('estrella_'.$i, 0);
+            $valoraciones[$i] = max(0, min(5, $v));
+        }
+        $observaciones = trim((string) $request->input('observaciones', ''));
+
+        $prog = $user->progress()->where('module_key', 'encuesta')->firstOrCreate(
+            ['module_key' => 'encuesta'], ['status' => 'available', 'percent' => 0]
+        );
+        $prog->update([
+            'status'       => 'completed',
+            'percent'      => 100,
+            'completed_at' => now(),
+            'etapas'       => ['respuestas' => $valoraciones, 'observaciones' => $observaciones],
+        ]);
+
+        // Tras enviar la encuesta → a la evaluación final (flujo del cliente: encuesta habilita el examen).
+        return redirect()->route('evaluacion')->with('encuesta_ok', true);
     }
 
     /** Etapa de un ingreso (Presentación, Pruebas complementarias, …). */
@@ -102,8 +381,10 @@ class CursoController extends Controller
         $exp        = $totalVerde - $totalRojo;
 
         // Máximo del score = suma de los puntos de TODAS las opciones correctas del ingreso.
+        // Cada ingreso tiene su propio set de preguntas (sufijo _2 para ingreso-2, etc.).
         $maxScore = 0;
-        foreach (['pregunta_pruebas', 'pregunta_riesgo', 'pregunta_terapeutico', 'pregunta_monitorizacion', 'pregunta_monitorizacion2'] as $pk) {
+        foreach (['pruebas', 'riesgo', 'terapeutico', 'monitorizacion', 'monitorizacion-2'] as $stage) {
+            $pk = $this->preguntaKey($ingreso, $stage);
             foreach (($curso[$pk]['opciones'] ?? []) as $op) {
                 if (($op['puntos'] ?? 0) > 0) $maxScore += (int) $op['puntos'];
             }
@@ -152,7 +433,7 @@ class CursoController extends Controller
         $rojoFloor  = (int) ($resultados[$stageKey]['rfloor'] ?? 0);   // rojo permanente de repeticiones previas
         $sentSel    = array_filter(array_map('trim', explode(',', (string) $request->input('sel', ''))));
         $union      = array_values(array_unique(array_merge($prevSel, $sentSel)));
-        $resultado  = $this->puntuarEtapa($curso, $stageKey, $union, $rojoFloor);
+        $resultado  = $this->puntuarEtapa($curso, $ingreso, $stageKey, $union, $rojoFloor);
         // Etapas sin cuestionario: no piso lo guardado si no llega selección.
         if ($resultado['sel'] || isset($resultados[$stageKey])) {
             $resultados[$stageKey] = $resultado;
@@ -165,11 +446,12 @@ class CursoController extends Controller
             return redirect()->route('curso.etapa', [$ingreso, 'monitorizacion-2', 'resultado' => 1]);
         }
 
-        // Última etapa ("Finalizar ingreso"): el ingreso queda completado/bloqueado.
+        // Última etapa ("Finalizar ingreso"): el ingreso queda completado y se desbloquea el siguiente.
         if ($desde >= count($etapas) - 1) {
             $progreso->update([
                 'status' => 'completed', 'percent' => 100, 'completed_at' => now(), 'etapas' => $resultados,
             ]);
+            $this->desbloquearSiguienteIngreso($user, $ingreso);
             return redirect()->route('curso');   // la medalla va en la última pregunta, no aquí
         }
 
@@ -207,7 +489,7 @@ class CursoController extends Controller
         $rojoFloor  = (int) ($resultados[$stageKey]['rfloor'] ?? 0);   // rojo permanente de repeticiones previas
         $sentSel    = array_filter(array_map('trim', explode(',', (string) $request->input('sel', ''))));
         $union      = array_values(array_unique(array_merge($prevSel, $sentSel)));
-        $resultado  = $this->puntuarEtapa($curso, $stageKey, $union, $rojoFloor);
+        $resultado  = $this->puntuarEtapa($curso, $ingreso, $stageKey, $union, $rojoFloor);
 
         if ($resultado['sel'] || isset($resultados[$stageKey])) {
             $resultados[$stageKey] = $resultado;
@@ -254,21 +536,35 @@ class CursoController extends Controller
     }
 
     /**
-     * Puntúa una etapa a partir de las opciones marcadas (claves) según la config.
-     * Cada opción correcta suma 50 al verde; cada incorrecta suma 50 al rojo (Score = verde - rojo).
-     * Devuelve también el set normalizado de opciones válidas, para persistir la marca.
+     * Resuelve la clave de config para la pregunta de una etapa en un ingreso concreto.
+     * Ingreso 1 usa las claves originales (pregunta_pruebas, ...); ingresos posteriores
+     * usan el mismo nombre con sufijo (_2, _3). Devuelve null si la etapa no tiene pregunta.
      */
-    private function puntuarEtapa(array $curso, string $etapaKey, array $selKeys, int $rojoFloor = 0): array
+    private function preguntaKey(string $ingreso, string $etapaKey): ?string
     {
-        $map = [
+        $base = [
             'pruebas'          => 'pregunta_pruebas',
             'riesgo'           => 'pregunta_riesgo',
             'terapeutico'      => 'pregunta_terapeutico',
             'monitorizacion'   => 'pregunta_monitorizacion',
             'monitorizacion-2' => 'pregunta_monitorizacion2',
         ];
+        $pk = $base[$etapaKey] ?? null;
+        if ($pk === null) return null;
+        // ingreso-1 usa el nombre plano; ingreso-N usa sufijo _N.
+        if ($ingreso === 'ingreso-1') return $pk;
+        if (preg_match('/^ingreso-(\d+)$/', $ingreso, $m)) return $pk.'_'.$m[1];
+        return $pk;
+    }
 
-        $pk = $map[$etapaKey] ?? null;
+    /**
+     * Puntúa una etapa a partir de las opciones marcadas (claves) según la config.
+     * Cada opción correcta suma sus puntos (positivos) al verde; cada incorrecta suma al rojo
+     * el valor absoluto de su penalización. Score = verde - rojo.
+     */
+    private function puntuarEtapa(array $curso, string $ingreso, string $etapaKey, array $selKeys, int $rojoFloor = 0): array
+    {
+        $pk = $this->preguntaKey($ingreso, $etapaKey);
         if (! $pk || empty($curso[$pk]['opciones'])) {
             return ['verde' => 0, 'rojo' => $rojoFloor, 'sel' => [], 'rfloor' => $rojoFloor];
         }
@@ -293,6 +589,23 @@ class CursoController extends Controller
 
         // El rojo de intentos previos (rfloor) es PERMANENTE: se suma al de este intento.
         return ['verde' => $verde, 'rojo' => $rojoFloor + $rojo, 'sel' => array_values($clean), 'rfloor' => $rojoFloor];
+    }
+
+    /**
+     * Desbloquea el siguiente ingreso en la secuencia (locked → available) cuando el usuario
+     * completa el actual. Si es el último ingreso, no hay nada que desbloquear.
+     */
+    private function desbloquearSiguienteIngreso($user, string $ingresoActual): void
+    {
+        $ingresos = config('curso.ingresos', []);
+        $idx = array_search($ingresoActual, array_column($ingresos, 'key'), true);
+        if ($idx === false || $idx >= count($ingresos) - 1) return;
+
+        $siguienteKey = $ingresos[$idx + 1]['key'];
+        $sig = $user->progress()->where('module_key', $siguienteKey)->first();
+        if ($sig && $sig->status === 'locked') {
+            $sig->update(['status' => 'available']);
+        }
     }
 
     /** Devuelve el progreso del ingreso si está desbloqueado; si no, 404. */

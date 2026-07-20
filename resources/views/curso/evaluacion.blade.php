@@ -28,7 +28,7 @@
         .ev-back:hover { color: #fff; }
 
         /* Contenido: escenario fijo escalado a la pantalla (igual que las etapas) + animación */
-        .ev-main { flex: 1; display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 24px 32px; }
+        .ev-main { flex: 1; display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 56px 32px; }
         .ev-stage { width: 1320px; flex-shrink: 0; transform-origin: center center; }
         .ev-inner { animation: evAppear .55s cubic-bezier(.22,.61,.36,1) both; }
         @keyframes evAppear { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
@@ -55,13 +55,30 @@
         .ev-stat-num { font-weight: 700; font-size: 22px; }
         .ev-stat-lbl { font-weight: 400; font-size: 14px; color: #aeb9bd; margin-top: 4px; }
 
-        .ev-foot { display: flex; justify-content: flex-end; margin-top: 40px; }
+        .ev-aviso-encuesta { display: flex; align-items: center; gap: 12px; margin-top: 22px; padding: 16px 20px; border-radius: 8px; background: rgba(230,196,106,0.10); border: 1px solid rgba(230,196,106,0.35); color: #f0dda2; font-weight: 500; font-size: 14px; line-height: 150%; }
+        .ev-aviso-encuesta svg { flex-shrink: 0; }
+        .ev-aviso-encuesta b { color: #fff; font-weight: 600; }
+        .ev-foot { display: flex; justify-content: flex-end; margin-top: 28px; }
         .ev-comenzar { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px; background: #05BAEE; color: #fff; border: 0; padding: 16px 42px; border-radius: 6px; cursor: pointer; transition: background .2s; }
         .ev-comenzar:hover { background: #04a3d1; }
 
         @media (max-width: 880px) {
             .ev-main { padding: 28px 22px; }
             .ev-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Footer (mismo que el resto del sitio) */
+        .ev-footer {
+            flex-shrink: 0; background: #000000;
+            padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+        }
+        .ev-footer-txt { font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 13px; line-height: 150%; color: #FFFFFF; margin: 0; }
+        .ev-footer-links { display: flex; align-items: center; gap: 32px; }
+        .ev-footer-links a { font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 13px; color: #FFFFFF; text-decoration: none; transition: color .2s; }
+        .ev-footer-links a:hover { color: #05BAEE; }
+        @media (max-width: 700px) {
+            .ev-footer { flex-direction: column; text-align: center; gap: 10px; padding: 16px; }
+            .ev-footer-links { gap: 16px; flex-wrap: wrap; justify-content: center; }
         }
     </style>
 </head>
@@ -92,7 +109,7 @@
                         <p>Has dejado atrás los casos prácticos. Esta evaluación funciona distinto: es obligatoria, puntúa, y de ella depende tu diploma.</p>
                         <p class="ev-saber">Qué necesitas saber:</p>
                         <ul class="ev-list">
-                            <li>25 preguntas tipo test, con 4 opciones y una única respuesta correcta</li>
+                            <li>10 preguntas tipo test, con 4 opciones y una única respuesta correcta</li>
                             <li>Necesitas un 80% de aciertos para superarla</li>
                             <li>Tómate tu tiempo: lee cada enunciado con calma antes de responder</li>
                         </ul>
@@ -111,12 +128,41 @@
                 </div>
             </div>
 
+            @unless ($encuestaHecha ?? false)
+                {{-- La encuesta de satisfacción es obligatoria antes de la evaluación --}}
+                <div class="ev-aviso-encuesta">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <span>Para comenzar la evaluación primero debes completar la <b>encuesta de satisfacción</b>.</span>
+                </div>
+            @endunless
+
             <div class="ev-foot">
-                <button type="button" class="ev-comenzar" onclick="return false;">Comenzar evaluación</button>
+                @if (! ($encuestaHecha ?? false))
+                    <a href="{{ route('encuesta') }}" class="ev-comenzar" style="text-decoration:none;">Completar encuesta de satisfacción</a>
+                @elseif (($intentos ?? 0) >= ($maxIntentos ?? 2) && empty($apto))
+                    <button type="button" class="ev-comenzar" disabled style="opacity:.5;cursor:not-allowed;">Sin intentos disponibles</button>
+                @elseif (! empty($apto))
+                    <a href="{{ route('curso') }}" class="ev-comenzar" style="text-decoration:none;">Volver al curso (APTO)</a>
+                @else
+                    <form method="POST" action="{{ route('evaluacion.comenzar') }}" style="margin:0;">
+                        @csrf
+                        <button type="submit" class="ev-comenzar">Comenzar evaluación</button>
+                    </form>
+                @endif
             </div>
             </div>{{-- /ev-inner --}}
         </div>
     </main>
+
+    {{-- Footer (mismo que el resto del sitio) --}}
+    <footer class="ev-footer">
+        <p class="ev-footer-txt">El contenido de este sitio web está orientado exclusivamente a profesionales sanitarios. 2026 © Qualimed Ediciones S.L.</p>
+        <div class="ev-footer-links">
+            <a href="#">Aviso legal</a>
+            <a href="#">Política de privacidad</a>
+            <a href="#">Política de cookies</a>
+        </div>
+    </footer>
 
     <script>
         // Escala el contenido para que se vea igual y llene la pantalla en cualquier PC (como las etapas).
@@ -128,8 +174,15 @@
                 stage.style.transform = 'none';
                 var sw = stage.offsetWidth, sh = stage.offsetHeight;
                 if (!main.clientWidth || !sw) { requestAnimationFrame(scaleEv); return; }
-                var s = Math.min(main.clientWidth / sw, main.clientHeight / sh);
-                s = Math.min(Math.max(s, 0.5), 1.7);
+                // Descontar el padding del main para que el contenido NO llene los bordes
+                // (así queda aire entre el título/botón y el topbar/footer).
+                var cs = getComputedStyle(main);
+                var padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+                var padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+                var availW = main.clientWidth - padX;
+                var availH = main.clientHeight - padY;
+                var s = Math.min(availW / sw, availH / sh);
+                s = Math.min(Math.max(s, 0.4), 1.7);
                 stage.style.transform = 'scale(' + s + ')';
             }
             setTimeout(scaleEv, 60);

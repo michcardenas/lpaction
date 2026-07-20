@@ -1129,19 +1129,32 @@
                     <button type="button" id="tab-biblio">Bibliografía</button>
                 </div>
 
-                {{-- Vista: Contenido (cambia por etapa) --}}
+                {{-- Vista: Contenido (cambia por etapa e ingreso).
+                     Convención:
+                     - Ingreso 1 usa vistas planas: curso/etapas/{etapa}-contenido.blade.php
+                     - Ingresos posteriores usan subcarpeta: curso/etapas/ingreso-{N}/{etapa}-contenido.blade.php
+                     (Evita conflictos con la etapa "monitorizacion-2" que ya existe con sufijo -2 en I1.) --}}
+                @php
+                    $ingresoN = preg_match('/ingreso-(\d+)/', $ingreso, $m) ? (int)$m[1] : 1;
+                    $contenidoView = $ingresoN > 1
+                        ? 'curso.etapas.ingreso-'.$ingresoN.'.'.$etapaActual.'-contenido'
+                        : 'curso.etapas.'.$etapaActual.'-contenido';
+                    $biblioView = $ingresoN > 1
+                        ? 'curso.etapas.ingreso-'.$ingresoN.'.'.$etapaActual.'-biblio'
+                        : 'curso.etapas.'.$etapaActual.'-biblio';
+                @endphp
                 <div id="view-contenido" class="view @if($etapaActual !== 'presentacion') view-scroll @endif">
-                    @if (view()->exists('curso.etapas.' . $etapaActual . '-contenido'))
-                        @include('curso.etapas.' . $etapaActual . '-contenido')
+                    @if (view()->exists($contenidoView))
+                        @include($contenidoView)
                     @else
                         <h1 class="h-caso">{{ collect($etapasEstado)->firstWhere('key', $etapaActual)['titulo'] ?? 'Etapa' }}</h1>
                         <p class="prueba-p" style="margin-top:10px;">Contenido en construcción.</p>
                     @endif
                 </div>
 
-                {{-- Vista: Bibliografía (cambia por etapa) --}}
+                {{-- Vista: Bibliografía (cambia por etapa e ingreso) --}}
                 <div id="view-biblio" class="view" style="display:none;">
-                    @includeIf('curso.etapas.' . $etapaActual . '-biblio')
+                    @includeIf($biblioView)
                     {{-- En etapas con quiz el botón "Siguiente etapa" vive dentro del cuestionario (Contenido, aquí oculto);
                          agregamos uno en Bibliografía que envía ese mismo form para poder avanzar. --}}
                     @if (in_array($etapaActual, ['pruebas', 'riesgo', 'terapeutico', 'monitorizacion', 'monitorizacion-2', 'resumen']))

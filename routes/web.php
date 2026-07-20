@@ -25,6 +25,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/perfil', [PerfilController::class, 'show'])->name('perfil');
     Route::put('/perfil/password', [PerfilController::class, 'updatePassword'])->name('perfil.password');
     Route::get('/evaluacion', [CursoController::class, 'evaluacion'])->name('evaluacion');
+    Route::post('/evaluacion/comenzar', [CursoController::class, 'evaluacionComenzar'])->name('evaluacion.comenzar');
+    Route::get('/evaluacion/pregunta', [CursoController::class, 'evaluacionPregunta'])->name('evaluacion.pregunta');
+    Route::post('/evaluacion/responder', [CursoController::class, 'evaluacionResponder'])->name('evaluacion.responder');
+    Route::get('/evaluacion/resultado', [CursoController::class, 'evaluacionResultado'])->name('evaluacion.resultado');
+    Route::get('/encuesta', [CursoController::class, 'encuesta'])->name('encuesta');
+    Route::post('/encuesta', [CursoController::class, 'encuestaGuardar'])->name('encuesta.guardar');
     Route::post('/curso/{ingreso}/marcar', [CursoController::class, 'marcar'])->name('curso.marcar');
     Route::post('/curso/{ingreso}/avanzar', [CursoController::class, 'avanzar'])->name('curso.avanzar');
     Route::post('/curso/{ingreso}/reiniciar', [CursoController::class, 'reiniciar'])->name('curso.reiniciar');

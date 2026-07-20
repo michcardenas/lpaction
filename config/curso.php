@@ -277,4 +277,337 @@ return [
             ],
         ],
     ],
+
+    // ================================================================
+    // =====================  INGRESO 2  ==============================
+    // ================================================================
+    // Datos del paciente en el Ingreso 2 (Juan, 53 años, exfumador).
+    // La imagen EVOLUCIONA con el avance (concepto "La evolución de Juan"):
+    //   - activado 0%           → polo a rayas    (imagen)
+    //   - en progreso >0%       → camisa gris      (imagen_progreso)
+    //   - completado/aprobado   → Juan sano        (imagen_completado, se queda así)
+    'paciente_2' => [
+        'nombre' => 'Juan',
+        'imagen'            => 'images/paciente_pantalla_2.png',    // Ingreso 2 recién activado (polo a rayas)
+        'imagen_progreso'   => 'images/paciente_pantalla_2b.png',   // Ingreso 2 en progreso (camisa gris)
+        'imagen_completado' => 'images/paciente_pantalla_2c.png',   // Ingreso 2 aprobado (Juan sano, brazos cruzados)
+        'datos'  => [
+            ['icon' => 'edad',  'texto' => '53 años'],
+            ['icon' => 'fuma',  'texto' => 'Exfumador'],
+            ['icon' => 'salud', 'texto' => 'Adherente a tratamiento y estilo de vida'],
+        ],
+    ],
+
+    // Contenido narrativo del Ingreso 2 (textos, valores clínicos, medicación).
+    'datos_ingreso_2' => [
+        'perfil' => [
+            'edad_sexo' => 'varón, 53 años',
+            'peso_estatura' => '76 kg, 167 cm (índice de masa corporal [IMC]: 27,3 kg/m²; sobrepeso).',
+            'habitos' => 'exfumador.',
+            'ocupacion' => 'empresario.',
+            'estilo_vida' => 'el paciente había sido adherente a la medicación y al estilo de vida.',
+        ],
+        'historia' => [
+            'Hipertensión arterial (HTA).',
+            'Infarto agudo de miocardio con elevación del segmento ST (IAMCEST) inferoposterior 10 meses antes, con dos stents farmacoactivos (stents DES) y lesión moderada 50% en la arteria descendente anterior (DA).',
+        ],
+        'medicacion' => [
+            'Ácido acetilsalicílico (AAS): 100 mg/24 h.',
+            'Prasugrel: 10 mg/24 h.',
+            'Ramipril: 5 mg/24 h.',
+            'Atorvastatina/ezetimiba: 80/10 mg/24 h.',
+            'Ácido bempedoico: 180 mg/24 h.',
+            'Semaglutida: 2,4 mg/semana.',
+        ],
+        'alergias' => 'Sin alergias medicamentosas conocidas.',
+        'motivo_consulta' => 'El paciente vuelve a acudir al servicio de Urgencias de nuestro hospital, 10 meses después del primer evento, por un cuadro de dolor retroesternal opresivo y sensación de ahogo asociada a pequeños esfuerzos rápidamente progresivos hasta alcanzar el reposo de 15 días de evolución.',
+        // ECG al ingreso
+        'ecg_texto' => 'A su llegada al servicio de Urgencias, se le realiza ECG en ritmo sinusal y se orienta como síndrome coronario agudo sin elevación del segmento ST (SCASEST).',
+        'ecg_caption' => 'Figura 1. Electrocardiograma al ingreso en ritmo sinusal, orientativo de síndrome coronario agudo sin elevación del segmento ST.',
+        // Cateterismo cardíaco
+        'cateterismo_texto' => 'Se realiza coronariografía emergente observando stents permeables en arteria coronaria derecha (CD) y progresión de lesión en DA, revascularizada con stent DES en DA media/D1. Además, en acceso femoral se aprecian placas de ateroma con estenosis arterial.',
+        'video4_caption' => 'Vídeo 4. Cateterismo cardíaco. Se puede apreciar revascularización DAm-D1.',
+        'video5_caption' => 'Vídeo 5. Arteriografía femoral. Placas de ateroma que condicionan estenosis.',
+        // Ecocardiograma + ITB
+        'eco_texto' => 'Ecocardiograma transtorácico: fracción de eyección del ventrículo izquierdo (FEVI) conservada: 56%. Hipocinesia ligera inferobasal.',
+        'itb_texto' => 'Índice tobillo brazo (ITB) <0,9 = enfermedad arterial periférica.',
+        // Analítica en urgencias (antes de Lp(a))
+        'analitica_urgencias' => [
+            'Troponina US: normal.',
+            'Glucosa plasmática (GLU): 104 mg/dL.',
+            'Hemoglobina glicada (HbA1c): 5,9%.',
+            'Colesterol total (CT): 125 mg/dL.',
+            'Triglicéridos (TG): 70 mg/dL.',
+            'Colesterol unido a lipoproteínas de alta densidad (cHDL): 35 mg/dL.',
+            'Colesterol unido a lipoproteínas de baja densidad (cLDL): 76 mg/dL.',
+            'Colesterol no HDL: 90 mg/dL.',
+            'Apolipoproteína B (ApoB): 86 mg/dL.',
+            'Colesterol remanente: 14 mg/dL.',
+            'Colesterol unido a lipoproteínas de muy baja densidad (cVLDL): 14 mg/dL.',
+            'TG/HDL: 2.',
+            'TG/Glucosa: 4,45.',
+            'Proteína C reactiva (PCR): 1,5 mg/L.',
+        ],
+        // Analítica con Lp(a) — tras determinación
+        'lpa_intro' => 'Tras el diagnóstico de SCASEST tipo angina inestable y revascularización, por fin se solicitó determinación de lipoproteína (a) [Lp(a)]:',
+        'analitica_lpa' => [
+            'GLU: 104 mg/dL.',
+            'HbA1c: 5,9%.',
+            'CT: 125 mg/dL.',
+            'TG: 70 mg/dL.',
+            'cHDL: 35 mg/dL.',
+            'cLDL: 76 mg/dL.',
+            'Colesterol no-HDL: 90 mg/dL.',
+            'ApoB: 86 mg/dL.',
+            'Colesterol remanente: 14 mg/dL.',
+            'cVLDL: 14 mg/dL.',
+            'TG/HDL: 2.',
+            'TG/Glucosa: 4,45.',
+            'PCR: 1,5 mg/L.',
+            'Lp(a): 315 nmol/L.',
+        ],
+        // Tratamiento farmacológico tras alta
+        'tratamiento_alta_intro' => 'Tras buena evolución clínica, Juan fue dado de alta para seguimiento estricto en consultas.',
+        'tratamiento_alta' => [
+            'AAS: 100 mg/24 h.',
+            'Prasugrel: 10 mg/24 h.',
+            'Ramipril: 5 mg/24 h.',
+            'Atorvastatina/ezetimiba: 80/10 mg/24 h.',
+            'Ácido bempedoico: 180 mg/24 h.',
+            'Semaglutida: 2,4 mg/semana.',
+        ],
+        // Optimización con inclisirán
+        'inclisiran_intro' => 'Tras la reevaluación del paciente y obtener el valor de Lp(a), se solicitó a farmacia tratamiento con inclisirán por evento recurrente en paciente polivascular con terapia hipolipemiante óptima, que fue aceptado por parte de la farmacia hospitalaria.',
+        // Perfil lipídico tras 1 mes de inclisirán
+        'perfil_post_inclisiran_intro' => 'Una vez optimizado el tratamiento con inclisirán, al mes se repite la analítica. Perfil lipídico completo (tras 1 mes de inclisirán, 1.ª dosis):',
+        'perfil_post_inclisiran' => [
+            'CT: 103 mg/dL.',
+            'cHDL: 42 mg/dL.',
+            'cLDL: 38 mg/dL.',
+            'TG: 115 mg/dL.',
+            'Colesterol no-HDL: 71 mg/dL.',
+            'ApoB: 45 mg/dL (0–100).',
+            'cVLDL calculado: 23 mg/dL (0–30).',
+            'TG/HDL: 2,7.',
+            'Partículas remanentes: 24 mg/dL.',
+            'Lp(a): 276 nmol/L.',
+            'HbA1c: 5,9%.',
+            'GLU: 91 mg/dL.',
+        ],
+        'perfil_post_inclisiran_comentario' => 'Ha alcanzado el objetivo de cLDL y ApoB tras inclisirán; el colesterol no-HDL queda en 71 mg/dL, ligeramente por encima del objetivo <70 mg/dL de la categoría de riesgo extremo. La Lp(a) disminuye modestamente, pero permanece marcadamente elevada.',
+        // Screening familiar
+        'screening' => [
+            'texto_1' => 'Juan es consciente de que su riesgo cardiovascular es excepcionalmente alto y de que es portador de un factor sobre el que el tratamiento actual solo tiene un efecto parcial. Asume que debe extremar su autocuidado y la cumplimentación farmacológica.',
+            'texto_2' => 'De acuerdo con sus resultados, se recomienda screening familiar.',
+            'texto_3' => 'Screening familiar: dado que se determina Lp(a) >90% por factores genéticos, los hijos de Juan tienen una probabilidad del 50% de heredar niveles elevados. Se recomienda medir la Lp(a) al menos una vez en la vida a todos los familiares de primer grado (hijos, hermanos) a partir de los 18 años.',
+        ],
+        'cierre' => 'Aquí es donde surge la verdadera incógnita: ¿hemos hecho todo lo posible... o solo hemos tratado una parte del problema? Tal vez la respuesta pueda estar más cerca de lo que pensamos, marcando el siguiente capítulo en el manejo del riesgo cardiovascular residual.',
+    ],
+
+    // Bibliografía del Ingreso 2 (34 referencias del PDF oficial).
+    'bibliografia_2' => [
+        'Sud M, Han L, Koh M, Abdel-Qadir H, Austin PC, Farkouh ME, et al. Low-Density Lipoprotein Cholesterol and Adverse Cardiovascular Events After Percutaneous Coronary Intervention. J Am Coll Cardiol. 2020 Sep 22;76(12):1440-1450. doi: 10.1016/j.jacc.2020.07.033.',
+        'Johannesen CDL, Langsted A, Nordestgaard BG, Mortensen MB. Excess Apolipoprotein B and Cardiovascular Risk in Women and Men. J Am Coll Cardiol. 2024 Jun 11;83(23):2262-2273. doi: 10.1016/j.jacc.2024.03.423.',
+        'Takahashi D, Wada H, Ogita M, Yasuda K, Nishio R, Takeuchi M, et al. Impact of Lipoprotein(a) as a Residual Risk Factor in Long-Term Cardiovascular Outcomes in Patients With Acute Coronary Syndrome Treated With Statins. Am J Cardiol. 2022 Apr 1;168:11-16. doi: 10.1016/j.amjcard.2021.12.014.',
+        'Berman AN, Biery DW, Besser SA, Singh A, Shiyovich A, Weber BN, et al. Lipoprotein(a) and Major Adverse Cardiovascular Events in Patients With or Without Baseline Atherosclerotic Cardiovascular Disease. J Am Coll Cardiol. 2024 Mar 5;83(9):873-886. doi: 10.1016/j.jacc.2023.12.031.',
+        'Liu L, Ma H, Yang S, Yu C, Liu T, Liu M, et al. The Role of Lipoprotein(a) in Cardiovascular Risk Stratification: Integrating Low-density Lipoprotein Cholesterol and Polygenic Risk Scores. Am J Cardiol. 2026 Jan 15;259:116-122. doi: 10.1016/j.amjcard.2025.09.012.',
+        'MacDougall DE, Tybjaerg-Hansen A, Knowles JW et al. Lipoprotein(a) and recurrent atherosclerotic cardiovascular events: the US Family Heart Database. European Heart Journal 2025; 46:4762-4775.',
+        'Romeo FJ, Golino M, Morello M, Di Muro FM, Moroni F, Del Buono MG, et al. Residual inflammatory risk and clinical outcomes after contemporary percutaneous coronary intervention: a systematic review and meta-analysis. Sci Rep. 2026 Feb 12;16(1):8584. doi: 10.1038/s41598-026-39691-1.',
+        'Liao J, Qiu M, Su X, Qi Z, Xu Y, Liu H, et al. The residual risk of inflammation and remnant cholesterol in acute coronary syndrome patients on statin treatment undergoing percutaneous coronary intervention. Lipids Health Dis. 2024 Jun 7;23(1):172. doi: 10.1186/s12944-024-02156-3.',
+        'Imbesi A, Greco A, Spagnolo M, Laudani C, Raffo C, Finocchiaro S, et al. Targeting Inflammation After Acute Myocardial Infarction. J Am Coll Cardiol. 2025 Oct 14;86(15):1146-1169. doi: 10.1016/j.jacc.2025.07.064.',
+        'Sullivan AE, Nanna MG, Wang TY, Bhatt DL, Angiolillo DJ, Mehran R, et al. Bridging Antiplatelet Therapy After Percutaneous Coronary Intervention: JACC Review Topic of the Week. J Am Coll Cardiol. 2021 Oct 12;78(15):1550-1563. doi: 10.1016/j.jacc.2021.08.013.',
+        'Rodriguez F, Harrington RA. Management of Antithrombotic Therapy after Acute Coronary Syndromes. N Engl J Med. 2021 Feb 4;384(5):452-460. doi: 10.1056/NEJMra1607714.',
+        'Cuisset T, Verheugt FWA, Mauri L. Update on antithrombotic therapy after percutaneous coronary revascularisation. Lancet. 2017 Aug 19;390(10096):810-820. doi: 10.1016/S0140-6736(17)31936-0.',
+        'Kamran H, Jneid H, Kayani WT, Virani SS, Levine GN, Nambi V, et al. Oral Antiplatelet Therapy After Acute Coronary Syndrome: A Review. JAMA. 2021 Apr 20;325(15):1545-1555. doi: 10.1001/jama.2021.0716. Erratum in: JAMA. 2021 Jul 13;326(2):190. doi: 10.1001/jama.2021.9484.',
+        'Sidhu MS, Lyubarova R, Bangalore S, Bonaca MP. Challenges of long-term dual antiplatelet therapy use following acute coronary syndromes. Am Heart J. 2022 Apr;246:44-64. doi: 10.1016/j.ahj.2021.12.005.',
+        'Acharjee S, Boden WE, Hartigan PM, Teo KK, Maron DJ, Sedlis SP, et al. Low levels of high-density lipoprotein cholesterol and increased risk of cardiovascular events in stable ischemic heart disease patients: a post-hoc analysis from the COURAGE Trial (Clinical Outcomes Utilizing Revascularization and Aggressive Drug Evaluation). J Am Coll Cardiol. 2013 Nov 12;62(20):1826-1833. doi: 10.1016/j.jacc.2013.07.051.',
+        'Nakazawa M, Arashi H, Yamaguchi J, Ogawa H, Hagiwara N. Lower levels of high-density lipoprotein cholesterol are associated with increased cardiovascular events in patients with acute coronary syndrome. Atherosclerosis. 2020 Jun;303:21-28. doi: 10.1016/j.atherosclerosis.2020.05.005.',
+        'Vivas D, Escobar C, Cordero A, Fernández-Olmo R, Oterino A, Blanco-Echevarría A, et al. Uso de nuevas terapias hipolipemiantes en la práctica clínica. Consenso SEC/SEA/SEEN/SEMFYC/SEMERGEN/SEMG/SEN/SEACV/S.E.N. REC CardioClinics. 2024 Oct-Dec;59(4):310-321. doi: 10.1016/j.rccl.2024.06.002.',
+        'Reyes-Soffer G, Ginsberg HN, Berglund L, Duell PB, Heffron SP, Kamstrup PR, et al. Lipoprotein(a): A Genetically Determined, Causal, and Prevalent Risk Factor for Atherosclerotic Cardiovascular Disease: A Scientific Statement From the American Heart Association. Arterioscler Thromb Vasc Biol. 2022 Jan;42(1):e48-e60. doi: 10.1161/ATV.0000000000000147.',
+        'Tsimikas S, Fazio S, Ferdinand KC, Ginsberg HN, Koschinsky ML, Marcovina SM, et al. NHLBI Working Group recommendations to reduce lipoprotein(a)-mediated risk of cardiovascular disease and aortic stenosis. J Am Coll Cardiol. 2018 Jan 16;71(2):177-192. doi: 10.1016/j.jacc.2017.11.014.',
+        'Duarte Lau F, Giugliano RP. Lipoprotein(a) and its Significance in Cardiovascular Disease: A Review. JAMA Cardiol. 2022 Jul 1;7(7):760-769. doi: 10.1001/jamacardio.2022.0987. Erratum in: JAMA Cardiol. 2022 Jul 1;7(7):776. doi: 10.1001/jamacardio.2022.2074.',
+        'Tsimikas S, Fazio S, Viney NJ, Xia S, Witztum JL, Marcovina SM. Relationship of lipoprotein(a) molar concentrations and mass according to lipoprotein(a) thresholds and apolipoprotein(a) isoform size. J Clin Lipidol. 2018 Sep-Oct;12(5):1313-1323. doi: 10.1016/j.jacl.2018.07.003.',
+        'Ruhaak LR, Cobbaert CM. Quantifying apolipoprotein(a) in the era of proteoforms and precision medicine. Clin Chim Acta. 2020 Dec;511:260-268. doi: 10.1016/j.cca.2020.10.010.',
+        'Kronenberg F. Lipoprotein(a) measurement issues: Are we making a mountain out of a molehill? Atherosclerosis. 2022 May;349:123-135. doi: 10.1016/j.atherosclerosis.2022.04.008.',
+        'Gianos E, Duell PB, Toth PP, Moriarty PM, Thompson GR, Brinton EA, et al. Lipoprotein Apheresis: Utility, Outcomes, and Implementation in Clinical Practice: A Scientific Statement From the American Heart Association. Arterioscler Thromb Vasc Biol. 2024 Dec;44(12):e304-e321. doi: 10.1161/ATV.0000000000000177.',
+        'Safarova MS, Moriarty PM. Lipoprotein Apheresis: Current Recommendations for Treating Familial Hypercholesterolemia and Elevated Lipoprotein(a). Curr Atheroscler Rep. 2023 Jul;25(7):391-404. doi: 10.1007/s11883-023-01113-2.',
+        'Béliard S, Saheb S, Litzler-Renault S, Vimont A, Valero R, Bruckert É, et al. Evinacumab and Cardiovascular Outcome in Patients With Homozygous Familial Hypercholesterolemia. Arterioscler Thromb Vasc Biol. 2024 Jun;44(6):1447-1454. doi: 10.1161/ATVBAHA.123.320609.',
+        'Parhofer KG, Julius U, Herzog AL, Krüger T, Weinmann-Menke J, Heine GH, Cao H, Schorr J, Ferber P, Wang J, Cristante E, Müller-Edenborn B, Vogt A, Schettler V, Steinhagen-Thiessen E. Pelacarsen and lipoprotein(a) apheresis in secondary prevention: the Lp(a)FRONTIERS APHERESIS trial. Eur Heart J. 2026 Feb 21:ehag073. doi: 10.1093/eurheartj/ehag073.',
+        'Wright RS, Ray KK, Raal FJ, Kallend DG, Jaros M, Koenig W, et al. Pooled Patient-Level Analysis of Inclisiran Trials in Patients With Familial Hypercholesterolemia or Atherosclerosis. J Am Coll Cardiol. 2021 Mar 9;77(9):1182-1193. doi: 10.1016/j.jacc.2020.12.058.',
+        'Ray KK, Raal FJ, Kallend DG, Jaros MJ, Koenig W, Leiter LA, et al. Inclisiran and cardiovascular events: a patient-level analysis of phase III trials. Eur Heart J. 2023 Jan 7;44(2):129-138. doi: 10.1093/eurheartj/ehac594.',
+        'Ray KK, Wright RS, Kallend D, Koenig W, Leiter LA, Raal FJ, et al. Two Phase 3 Trials of Inclisiran in Patients with Elevated LDL Cholesterol. N Engl J Med. 2020 Apr 16;382(16):1507-1519. doi: 10.1056/NEJMoa1912387.',
+        'López-Miranda J. Efficacy, benefit and safety of inclisiran. Clin Investig Arterioscler. 2024 Dec;36 Suppl 1:S24-S30. doi: 10.1016/j.arteri.2024.07.003.',
+        'Ference BA, Ginsberg HN, Graham I, Ray KK, Packard CJ, Bruckert E, et al. Low-density lipoproteins cause atherosclerotic cardiovascular disease. 1. Evidence from genetic, epidemiologic, and clinical studies. A consensus statement from the European Atherosclerosis Society Consensus Panel. Eur Heart J. 2017 Aug 21;38(32):2459-2472. doi: 10.1093/eurheartj/ehx144.',
+        'Michos ED, McEvoy JW, Blumenthal RS. Lipid Management for the Prevention of Atherosclerotic Cardiovascular Disease. N Engl J Med. 2019 Oct 17;381(16):1557-1567. doi: 10.1056/NEJMra1806939.',
+        'Packard C, Chapman MJ, Sibartie M, Laufs U, Masana L. Intensive low-density lipoprotein cholesterol lowering in cardiovascular disease prevention: opportunities and challenges. Heart. 2021 Sep;107(17):1369-1375. doi: 10.1136/heartjnl-2020-318760.',
+    ],
+
+    // Pregunta 1 del Ingreso 2 — etapa "pruebas" (parámetros analíticos que explican el nuevo evento).
+    'pregunta_pruebas_2' => [
+        'enunciado'   => 'De los parámetros analíticos, ¿cuáles nos explican con mayor probabilidad el nuevo evento?',
+        'instruccion' => "Selecciona los ítems que creas convenientes y presiona 'Comprobar'.",
+        'xp'          => 100,
+        'opciones' => [
+            [
+                'key' => 'lipidico', 'texto' => 'Riesgo lipídico: no conocemos el dato de lipoproteína (a) [Lp(a)] y no cumple objetivos de ApoB ni cLDL.', 'correcta' => true, 'puntos' => 100,
+                'justificacion' => 'Tras un síndrome coronario agudo (SCA), unos niveles de cLDL >55 mg/dL o de apoB >65 mg/dL se asocian a un aumento significativo del riesgo de eventos cardiovasculares recurrentes, con incrementos relativos del 25–90%, según el grado de elevación. El riesgo es continuo y dependiente de la concentración. El valor plasmático de apoB refleja mejor la carga aterogénica total. La Lp(a) elevada es un factor de riesgo independiente y aditivo, no mitigado completamente por la reducción de cLDL, con hazard ratio (HR) de 1,21–1,66 incluso con cLDL controlado. La coexistencia de ambos factores incrementa el riesgo de forma sinérgica, lo que refuerza la necesidad de un abordaje conjunto1-6.',
+            ],
+            [
+                'key' => 'inflamatorio', 'texto' => 'Riesgo residual inflamatorio.', 'correcta' => false, 'puntos' => -40,
+                'justificacion' => 'En este caso, el riesgo residual inflamatorio (RIR) no parece ser el principal determinante del segundo evento, dado que el paciente presenta proteína C reactiva de alta sensibilidad (hsCRP) <2 mg/L y otros marcadores inflamatorios bajos. El RIR se define por inflamación persistente (hsCRP 2 mg/L) tras un SCA y se asocia a mayor riesgo de MACE, con un odds ratio (OR) de 1,71 en formas persistentes7-9. Los metaanálisis confirman incrementos de eventos cardiovasculares adversos mayores (MACE), mortalidad e infarto incluso con cLDL controlado. La coexistencia de RIR y riesgo lipídico residual tiene un efecto sinérgico, duplicando el riesgo absoluto de eventos.',
+            ],
+            [
+                'key' => 'trombotico', 'texto' => 'Riesgo trombótico.', 'correcta' => false, 'puntos' => -30,
+                'justificacion' => 'En este caso, el riesgo trombótico no parece el principal responsable del segundo evento. Por las características clínicas y los hallazgos angiográficos, es más probable que se deba a progresión de una placa previamente moderada que a trombosis sobre placa vulnerable, especialmente considerando que el paciente mantenía doble antiagregación plaquetaria (DAPT). El riesgo trombótico tras un SCA, incluso bajo DAPT, se asocia a factores como inflamación persistente y activación de la coagulación, comorbilidades (diabetes, insuficiencia renal, disfunción ventricular), complejidad anatómica o del procedimiento, alta reactividad plaquetaria residual y retirada precoz del tratamiento. También influyen la neoaterosclerosis y la progresión de enfermedad en segmentos no tratados. En ausencia de estos condicionantes predominantes, su papel es menos relevante en la recurrencia del evento10-14.',
+            ],
+            [
+                'key' => 'chdl', 'texto' => 'cHDL bajo.', 'correcta' => false, 'puntos' => -30,
+                'justificacion' => 'Aunque un nivel bajo de cHDL se asocia de forma independiente con mayor riesgo de eventos cardiovasculares recurrentes tras un SCA, no es el principal determinante frente a otros factores de riesgo residual. El riesgo es inversamente proporcional a sus niveles, aumentando un 2–3% por cada descenso de 1 mg/dL, y se mantiene incluso con cLDL controlado. Los pacientes con cHDL bajo presentan mayor incidencia de muerte, infarto o ictus, aunque actualmente no existen terapias específicas con impacto demostrado en eventos; en este contexto, fármacos en investigación como el obicetrapib podrían modificar este escenario en el futuro15-17.',
+            ],
+        ],
+    ],
+
+    // Pregunta 2 del Ingreso 2 — etapa "riesgo" (objetivos de cLDL/no-HDL/apoB en riesgo extremo).
+    'pregunta_riesgo_2' => [
+        'enunciado'   => 'Ya conocemos la importancia de alcanzar objetivos de cLDL en este tipo de pacientes. Sin embargo, debemos vigilar más parámetros. Si buscamos objetivos de colesterol no-HDL y apoB, ¿qué opción de las siguientes define correctamente los objetivos en este caso?',
+        'instruccion' => "Selecciona los ítems que creas convenientes y presiona 'Comprobar'.",
+        'xp'          => 100,
+        'opciones' => [
+            [
+                'key' => 'obj_a', 'texto' => 'cLDL <40 mg/dL, colesterol no-HDL <85 mg/dL, apoB <65 mg/dL.', 'correcta' => false, 'puntos' => -40,
+                'justificacion' => 'Estos no son los objetivos según las guías de práctica clínica para evento recurrente y enfermedad polivascular (paciente de riesgo extremo).',
+            ],
+            [
+                'key' => 'obj_b', 'texto' => 'cLDL <40 mg/dL, colesterol no-HDL <70 mg/dL, apoB <55 mg/dL.', 'correcta' => false, 'puntos' => -30,
+                'justificacion' => 'Estos no son los objetivos según las guías de práctica clínica para evento recurrente y enfermedad polivascular (paciente de riesgo extremo).',
+            ],
+            [
+                'key' => 'obj_c', 'texto' => 'cLDL <40 mg/dL, colesterol no-HDL <65 mg/dL, apoB <85 mg/dL.', 'correcta' => false, 'puntos' => -30,
+                'justificacion' => 'Estos no son los objetivos según las guías de práctica clínica para evento recurrente y enfermedad polivascular (paciente de riesgo extremo).',
+            ],
+            [
+                'key' => 'obj_d', 'texto' => 'cLDL <40 mg/dL, colesterol no-HDL <65 mg/dL, apoB <55 mg/dL.', 'correcta' => true, 'puntos' => 100,
+                'justificacion' => 'Estos valores definen adecuadamente los objetivos terapéuticos según el riesgo cardiovascular, de acuerdo con el consenso actual de las principales guías internacionales17. En pacientes con enfermedad coronaria y eventos recurrentes (riesgo extremo), se recomiendan objetivos más intensivos: cLDL <40 mg/dL, colesterol no-HDL <65 mg/dL y apoB <55 mg/dL. ApoB y colesterol no-HDL son mejores marcadores de riesgo residual y su reducción se asocia a menor incidencia de eventos cardiovasculares2,17.',
+            ],
+        ],
+    ],
+
+    // Pregunta 3 del Ingreso 2 — etapa "terapeutico" (unidades de medición Lp(a): nmol/L vs mg/dL).
+    'pregunta_terapeutico_2' => [
+        'enunciado'   => 'El valor de la Lp(a) de nuestro paciente viene expresado en nmol/L. Sobre la medición de la Lp(a), señala la verdadera:',
+        'instruccion' => "Selecciona los ítems que creas convenientes y presiona 'Comprobar'.",
+        'xp'          => 100,
+        'opciones' => [
+            [
+                'key' => 'unidad_mgdl', 'texto' => 'Es más recomendable la medición en mg/dL.', 'correcta' => false, 'puntos' => -50,
+                'justificacion' => 'La unidad preferida para medir la Lp(a) es nmol/L, ya que refleja el número de partículas y no se ve afectada por la variabilidad del tamaño de la apo(a), lo que permite una mayor precisión y estandarización. A diferencia de mg/dL, que mide masa y puede ser imprecisa por la heterogeneidad de las partículas, nmol/L está alineada con los estándares internacionales de la Federación Internacional de Química Clínica y Medicina de Laboratorio (IFCC) y la Organización Mundial de la Salud (OMS), y facilita una mejor interpretación clínica. Por ello, es la unidad recomendada en las guías actuales18-22.',
+            ],
+            [
+                'key' => 'isoforma', 'texto' => 'La conversión depende de la isoforma de apolipoproteína (a) [apo(a)].', 'correcta' => true, 'puntos' => 100,
+                'justificacion' => 'La conversión entre mg/dL y nmol/L en la Lp(a) no es directa ni universal, ya que depende del tamaño de la isoforma de apo(a). La masa (mg/dL) está influida por el número variable de repeticiones de kringle IV, que modifica el peso molecular de cada partícula. Por ello, la relación entre ambas unidades varía según el método analítico y las características individuales, lo que limita la fiabilidad de conversiones estándar21,23.',
+            ],
+            [
+                'key' => 'conversion_valida', 'texto' => 'Existe una conversión válida entre mg/dL y nmol/L.', 'correcta' => false, 'puntos' => -25,
+                'justificacion' => 'No existe una conversión válida y universal entre mg/dL y nmol/L para la Lp(a), debido a la variabilidad en el tamaño de las isoformas de la apo(a). La relación entre ambas unidades depende del número de repeticiones de kringle IV, del método analítico y del calibrador utilizado, lo que impide aplicar un único factor de conversión. Aunque existen fórmulas aproximadas para ensayos concretos, no son generalizables. Por ello, se recomienda reportar Lp(a) en nmol/L, ya que refleja el número de partículas y permite una interpretación más precisa y estandarizada21,23.',
+            ],
+            [
+                'key' => 'convertir_siempre', 'texto' => 'Las guías recomiendan convertir siempre los valores.', 'correcta' => false, 'puntos' => -25,
+                'justificacion' => 'En este paciente, la Lp(a) se ha determinado en nmol/L (315 nmol/L), unidad actualmente preferida. Las guías no recomiendan convertir sistemáticamente a mg/dL, ya que la relación entre ambas depende del tamaño de las isoformas de apo(a) y del método analítico, lo que impide un factor de conversión universal. Por ello, debe interpretarse en la unidad reportada, y nmol/L es más adecuada, puesto que refleja el número de partículas y permite una valoración más precisa del riesgo cardiovascular18,21,23.',
+            ],
+        ],
+    ],
+
+    // Pregunta 4 del Ingreso 2 — etapa "monitorizacion" (optimizar tratamiento con Lp(a) elevada).
+    'pregunta_monitorizacion_2' => [
+        'enunciado'   => '¿Podrías optimizar el tratamiento de este paciente con evento recurrente con cLDL y ApoB fuera de objetivos a pesar de tratamiento hipolipemiante óptimo y con Lp(a) elevada?',
+        'instruccion' => "Selecciona los ítems que creas convenientes y presiona 'Comprobar'.",
+        'xp'          => 100,
+        'opciones' => [
+            [
+                'key' => 'no_farmacos', 'texto' => 'No, en la actualidad no hay fármacos que reduzcan la Lp(a).', 'correcta' => false, 'puntos' => -50,
+                'justificacion' => 'El manejo del paciente con enfermedad cardiovascular y Lp(a) elevada se basa actualmente en la optimización intensiva de factores de riesgo, especialmente la reducción agresiva del cLDL. Las guías recomiendan estatinas de alta intensidad como primera línea, asociando ezetimiba y, si no se alcanzan objetivos (<55 mg/dL en prevención secundaria), terapia dirigida frente a PCSK9, que además puede reducir Lp(a) hasta un 20–25%. En caso de intolerancia, el ácido bempedoico es una alternativa. Aunque hay en desarrollo fármacos dirigidos contra Lp(a) (siRNA y oligonucleótidos antisentido) que han demostrado reducciones muy significativas, su impacto en la disminución de eventos aún está en investigación, por lo que la estrategia actual consiste en identificar a estos pacientes y optimizar de forma intensiva tanto el tratamiento hipolipemiante como el resto de los factores para conseguir la máxima reducción de su riesgo cardiovascular global17,18,20.',
+            ],
+            [
+                'key' => 'pcsk9', 'texto' => 'Sí, la terapia dirigida frente a la proproteína convertasa subtilisina/kexina tipo 9 (TD a PCSK9) permite reducir cLDL y apoB, con un efecto modesto sobre la Lp(a).', 'correcta' => true, 'puntos' => 100,
+                'justificacion' => 'El manejo del paciente con enfermedad cardiovascular y Lp(a) elevada se basa en la optimización intensiva del riesgo cardiovascular, especialmente mediante la reducción agresiva del cLDL. Las guías recomiendan estatinas de alta intensidad como primera línea, asociando ezetimiba y, si no se alcanzan objetivos (<55 mg/dL), TD a PCSK9, que reduce el cLDL hasta un 60% y Lp(a) alrededor de un 20–25%. En caso de intolerancia, el ácido bempedoico es una alternativa. Actualmente no existen terapias específicas aprobadas para reducir Lp(a) con impacto demostrado en eventos, por lo que el abordaje se centra en el control global del riesgo (presión arterial, diabetes, peso, antiagregación). Las terapias dirigidas contra Lp(a) (siRNA y oligonucleótidos antisentido) han mostrado reducciones muy significativas, pero aún están en desarrollo. Por ello, es clave identificar a estos pacientes y optimizar de forma precoz e intensiva el tratamiento17,18,20.',
+            ],
+            [
+                'key' => 'aferesis', 'texto' => 'El único tratamiento posible en este punto es la aféresis.', 'correcta' => false, 'puntos' => -40,
+                'justificacion' => 'La aféresis de lipoproteínas puede reducir de forma significativa la Lp(a); sin embargo, su uso está muy limitado en la práctica clínica. Se reserva para pacientes con enfermedad cardiovascular progresiva y Lp(a) muy elevada, pese a tratamiento óptimo, según recomiendan las guías. Su indicación debe individualizarse. En España, su disponibilidad está restringida a centros altamente especializados y se utiliza fundamentalmente en hipercolesterolemia familiar grave. En el contexto de Lp(a) elevada, su uso es excepcional, condicionado por el coste, la necesidad de sesiones repetidas, el impacto en la calidad de vida y la falta de evidencia robusta en reducción de eventos cardiovasculares24,25. Existen datos prometedores de fármacos en desarrollo que podrían tener efectividad equiparable, a la espera de conocer su impacto en reducción de eventos26.',
+            ],
+            [
+                'key' => 'evinacumab', 'texto' => 'Puedo solicitar a farmacia hospitalaria evinacumab.', 'correcta' => false, 'puntos' => -10,
+                'justificacion' => 'No existe evidencia clínica de que evinacumab reduzca eventos cardiovasculares recurrentes tras un SCA. Este anticuerpo monoclonal dirigido frente a la proteína similar a la angiopoyetina tipo 3 (ANGPTL3) ha demostrado reducciones significativas de cLDL (>50%) en pacientes con hipercolesterolemia refractaria, especialmente en hipercolesterolemia familiar homocigota, pero los ensayos disponibles se han centrado en parámetros lipídicos y seguridad, sin evaluar eventos clínicos en población pos-SCA. Debido a la ausencia de evidencias disponibles en la actualidad, evinacumab no está indicado ni aprobado en este contexto clínico27.',
+            ],
+        ],
+    ],
+
+    // Pregunta 5 del Ingreso 2 — etapa "monitorizacion-2" (ventajas de inclisirán vs iPCSK9).
+    // ÚLTIMA pregunta del ingreso 2 → activa el modal "Finalizar caso".
+    // Tiene 3 opciones CORRECTAS (30 + 40 + 30 = 100) y una INCORRECTA (-100).
+    'pregunta_monitorizacion2_2' => [
+        'enunciado'   => 'En este paciente, ¿qué ventajas encuentras en inclisirán frente a los iPCSK9 a la espera de los resultados de ensayos de eventos cardiovasculares (CVOT)?',
+        'instruccion' => "Selecciona los ítems que creas convenientes y presiona 'Comprobar'.",
+        'xp'          => 30,
+        'opciones' => [
+            [
+                'key' => 'pauta_semestral', 'texto' => 'Pauta dos veces al año.', 'correcta' => true, 'puntos' => 30,
+                'justificacion' => 'Inclisirán se administra con una pauta semestral (tras dosis inicial y a los 3 meses), lo que supone una ventaja frente a los iPCSK9, que requieren administración cada 2–4 semanas. Esta dosificación reduce la carga terapéutica y puede mejorar la adherencia, un aspecto clave en pacientes cardiovasculares de alto riesgo27,30.',
+            ],
+            [
+                'key' => 'adherencia', 'texto' => 'Adaptar las revisiones a la administración del fármaco para facilitar la adherencia y los desplazamientos del paciente y me aseguro de que no haya pérdida de seguimiento en un paciente de tan alto riesgo.', 'correcta' => true, 'puntos' => 40,
+                'justificacion' => 'Facilita la adherencia y el seguimiento clínico. Permite sincronizar las revisiones médicas con la administración del fármaco. Disminuye los desplazamientos del paciente. Reduce el riesgo de pérdida de seguimiento. Favorece un control más estrecho en pacientes de muy alto riesgo cardiovascular. Es especialmente relevante en la práctica real, donde la adherencia a tratamientos inyectables autoadministrados puede ser subóptima.',
+            ],
+            [
+                'key' => 'teoria_lipidica', 'texto' => 'Aunque no tenga aún los resultados de CVOT, creo en la teoría lipídica del cLDL y hay evidencia de reducción potente del cLDL con inclisirán.', 'correcta' => true, 'puntos' => 30,
+                'justificacion' => 'La utilización de inclisirán se fundamenta en el principio fisiopatológico de «cuanto más bajo, mejor», ya que la reducción del cLDL se asocia de forma log-lineal con una disminución del riesgo cardiovascular, sin un umbral inferior conocido. Aunque aún no se dispone de resultados definitivos de ensayos de eventos cardiovasculares (CVOT), su mecanismo de acción permite una reducción sostenida de aproximadamente el 50% del cLDL. Los estudios fase 3 ORION-9, ORION-10 y ORION-11 han demostrado esta eficacia en pacientes con hipercolesterolemia, incluyendo aquellos con enfermedad cardiovascular aterosclerótica bajo tratamiento con estatinas. Su administración subcutánea en pauta semestral (día 1, día 90 y posteriormente cada 6 meses) mantiene reducciones estables en el tiempo, con un perfil de seguridad comparable a placebo, destacando únicamente reacciones locales leves. Los análisis exploratorios sugieren un posible beneficio en la reducción de eventos cardiovasculares, pendiente de confirmación en estudios específicos28-34.',
+            ],
+            [
+                'key' => 'potencia_superior', 'texto' => 'Ha demostrado una potencia de reducción del cLDL significativamente superior a iPCSK9.', 'correcta' => false, 'puntos' => -100,
+                'justificacion' => 'Aunque inclisirán reduce de forma significativa el cLDL, su potencia es similar a la de los anticuerpos monoclonales anti-PCSK9 (alirocumab/evolocumab), con reducciones aproximadas del 50–60% sobre el tratamiento basal con estatinas y/o ezetimiba, sin demostrar una superioridad clara frente a estos28-31.',
+            ],
+        ],
+    ],
+
+    // ================================================================
+    // ==============  ENCUESTA DE SATISFACCIÓN  ======================
+    // ================================================================
+    // 13 ítems con valoración de estrellas (1-5) + 1 campo de observaciones (texto libre).
+    'encuesta' => [
+        'items' => [
+            ['titulo' => 'Adecuación científica',                  'texto' => 'Los contenidos presentan un nivel científico riguroso, actualizado y adecuado para profesionales sanitarios.'],
+            ['titulo' => 'Pertinencia clínica',                    'texto' => 'El curso aborda una necesidad relevante en la estratificación del riesgo cardiovascular y el manejo de la Lp(a).'],
+            ['titulo' => 'Aplicabilidad asistencial',              'texto' => 'Los contenidos son útiles para identificar pacientes con riesgo residual, enfermedad cardiovascular recurrente o alto riesgo heredado.'],
+            ['titulo' => 'Claridad de los contenidos',            'texto' => 'La información se presenta de forma clara, ordenada y comprensible.'],
+            ['titulo' => 'Estructura del caso clínico',           'texto' => 'La evolución del paciente a lo largo de los ingresos facilita el aprendizaje y la toma de decisiones clínicas.'],
+            ['titulo' => 'Metodología docente',                   'texto' => 'La metodología basada en casos clínicos, decisiones interactivas, puntuación y feedback favorece la participación activa.'],
+            ['titulo' => 'Medios didácticos',                     'texto' => 'Los recursos empleados —vídeos, pruebas complementarias, analíticas, imágenes clínicas y materiales descargables— ayudan a comprender mejor el caso.'],
+            ['titulo' => 'Actualización terapéutica',             'texto' => 'El curso contribuye a actualizar mis conocimientos sobre objetivos lipídicos, optimización terapéutica y manejo del riesgo residual.'],
+            ['titulo' => 'Tutoría académica',                     'texto' => 'La tutoría del curso ha sido adecuada en disponibilidad, claridad de las respuestas y apoyo al aprendizaje.'],
+            ['titulo' => 'Objetividad y ausencia de sesgo comercial', 'texto' => 'La información recibida se presenta de forma objetiva, equilibrada y sin sesgo comercial ni otro tipo de parcialidad. 1 estrella = percibo mucho sesgo · 5 estrellas = no percibo sesgo.'],
+            ['titulo' => 'Calidad de la actividad',               'texto' => 'La actividad formativa presenta una calidad adecuada en cuanto a contenidos, desarrollo y recursos empleados.'],
+            ['titulo' => 'Relevancia de la actividad',            'texto' => 'La actividad resulta relevante para mi práctica clínica y para la actualización de mis conocimientos.'],
+            ['titulo' => 'Valor global del curso',                'texto' => 'En conjunto, el curso ha cumplido mis expectativas por su calidad científica, utilidad clínica y enfoque práctico.'],
+        ],
+        // El ítem 14 es el campo de observaciones (texto libre).
+        'observaciones' => [
+            'titulo' => 'Observaciones',
+            'texto'  => 'Agradeceríamos cualquier observación o sugerencia que estimes oportuna para mejorar la actividad.',
+            'placeholder' => 'Escribe aquí tus comentarios o sugerencias.',
+        ],
+    ],
+
+    // ================================================================
+    // ==============  EVALUACIÓN FINAL (nivel CURSO)  ================
+    // ================================================================
+    // Se toman `tomar` preguntas AL AZAR del banco `preguntas`. Se aprueba (APTO) con
+    // `aprobar_pct`% de aciertos. `max_intentos` intentos. Al aprobar se desbloquea el diploma.
+    // Banco cargado del PDF oficial "REV_CLEAN_Cuestionario Lpaction" (31 preguntas).
+    'evaluacion' => [
+        'tomar'        => 10,
+        'aprobar_pct'  => 80,
+        'max_intentos' => 2,
+        // Las 31 preguntas se cargan desde un archivo aparte para mantener el config legible.
+        'preguntas'    => require __DIR__.'/preguntas_examen.php',
+    ],
 ];
