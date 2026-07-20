@@ -610,4 +610,280 @@ return [
         // Las 31 preguntas se cargan desde un archivo aparte para mantener el config legible.
         'preguntas'    => require __DIR__.'/preguntas_examen.php',
     ],
+
+    // ================================================================
+    // =====================  INGRESO 3 (ictus + HORIZON)  ============
+    // ================================================================
+
+
+'paciente_3' => [
+    'nombre' => 'Juan',
+    'imagen'            => 'images/paciente_pantalla_3.png',
+    'imagen_progreso'   => 'images/paciente_pantalla_3b.png',
+    'imagen_completado' => 'images/paciente_pantalla_3c.png',
+    'datos'  => [
+        ['icon' => 'edad',  'texto' => '55 años'],
+        ['icon' => 'fuma',  'texto' => 'Exfumador (3 años)'],
+        ['icon' => 'salud', 'texto' => 'Adherente a hábitos saludables'],
+    ],
+],
+
+'datos_ingreso_3' => [
+    'perfil' => [
+        'edad_sexo' => 'varón, 55 años',
+        'peso_estatura' => '74 kg, 167 cm (índice de masa corporal [IMC]: 26,5 kg/m²; sobrepeso)',
+        'habitos' => 'Exfumador desde hace 3 años',
+        'ocupacion' => 'Empresario',
+        'estilo_vida' => 'Adherente a medicación y hábitos saludables, rehabilitación cardiaca completada',
+    ],
+    'historia' => [
+        'Hipertensión arterial (HTA).',
+        'Infarto agudo de miocardio con elevación del segmento ST (IAMCEST) inferoposterior a los 52 años, con dos stents farmacoactivos en coronaria derecha y lesión moderada (50%) en arteria descendente anterior.',
+        'Síndrome coronario agudo sin elevación del segmento ST (SCASEST) a los 53 años, con revascularización de descendente anterior media y de la primera rama diagonal (D1).',
+        'Enfermedad arterial periférica (EAP) documentada hace 2 años (índice tobillo-brazo [ITB] <0,9).',
+        'Dislipidemia con lipoproteína(a) [Lp(a)] elevada (315 nmol/L en determinación basal).',
+    ],
+    'medicacion' => [
+        'Ácido acetilsalicílico (AAS): 100 mg/24 h.',
+        'Ramipril: 5 mg/24 h.',
+        'Atorvastatina/ezetimiba: 80/10 mg/24 h.',
+        'Semaglutida: 2,4 mg/semana.',
+        'Inclisirán: dosis semestral (última dosis hace 3 meses) con buena tolerancia.',
+    ],
+    'alergias' => 'Sin alergias medicamentosas conocidas.',
+    'motivo_consulta' => 'Juan acude al servicio de Urgencias del hospital acompañado por su esposa tras presentar, 3 horas antes, un cuadro de aparición brusca de debilidad en hemicuerpo izquierdo con inestabilidad y leve confusión. Los síntomas se han mantenido estables desde el inicio. No refiere cefalea, pérdida de conocimiento ni convulsiones. Se le realiza un electrocardiograma (ECG) en el que se observa taquicardia sinusal. Dado su historial de enfermedad cardiovascular (ECV) polivascular y Lp(a) elevada, la sospecha de ictus isquémico es alta.',
+    'tc_texto' => 'TC craneal sin contraste: ausencia de hemorragia intracraneal y de signos de infarto agudo en territorio arterial definido.',
+    'angiotc_texto' => 'Lesión grave (90%) de la arteria carótida interna derecha. Placas de ateroma en bulbo carotídeo izquierdo con estenosis <50%. Signos de enfermedad aterosclerótica difusa en arco aórtico y arterias supraaórticas.',
+    'rm_texto' => 'Resonancia magnética (RM) cerebral a las 48 horas: infarto isquémico agudo hemisférico derecho de localización subinsular y capsular que se extiende a corona radiada. Sin transformación hemorrágica. Leucoaraiosis periventricular ligera.',
+    'revascularizacion_texto' => 'Se realiza endarterectomía carotídea derecha emergente con buen resultado y sin complicaciones.',
+    'analitica' => [
+        'Glucosa plasmática (GLU): 98 mg/dL.',
+        'Hemoglobina glicada (HbA1c): 5,8%.',
+        'Colesterol total (CT): 101 mg/dL.',
+        'Triglicéridos (TG): 95 mg/dL.',
+        'Colesterol unido a lipoproteínas de alta densidad (cHDL): 40 mg/dL.',
+        'Colesterol unido a lipoproteínas de baja densidad (cLDL): 41 mg/dL.',
+        'Colesterol no-HDL: 70 mg/dL.',
+        'Apolipoproteína B (apoB): 46 mg/dL.',
+        'TG/HDL: 2,3.',
+        'Proteína C reactiva (PCR) ultrasensible: 1,2 mg/L.',
+        'Creatinina: 0,72 mg/dL (tasa de filtrado glomerular [TFG] estimada mediante la ecuación Chronic Kidney Disease Epidemiology Collaboration [CKD-EPI]: 98 mL/min/1,73 m²).',
+        'Hemograma, coagulación, función hepática, ferrocinética y perfil tiroideo: normales.',
+        'Lp(a) previa tras 1 mes de tratamiento con inclisirán: 276 nmol/L.',
+    ],
+    'evolucion' => [
+        'Juan evoluciona favorablemente durante su estancia en el hospital, iniciando neurorrehabilitación precoz en la Unidad de Ictus con recuperación progresiva de la paresia.',
+        'Atribuye su último evento a transgresiones dietéticas muy ocasionales y a una reducción reciente de su nivel de ejercicio aeróbico. Es extremadamente consciente de que la dieta, el ejercicio y el cumplimiento estricto de su tratamiento son claves a partir de ahora para minimizar su riesgo cardiovascular y añadir cantidad y calidad de vida.',
+        'El mayor de sus tres hijos se ha realizado una revisión cardiovascular completa con hallazgo de un cLDL de 135 mg/dL y una Lp(a) de 269 nmol/L. Ha dejado de fumar y comenzado a modificar sus hábitos con dieta cardiosaludable y ejercicio físico aeróbico, combinado con un programa específico de fuerza (en total >300 minutos por semana), pendiente de evolución y analítica para valorar la necesidad de tratamiento farmacológico. Ni él ni Juan quieren que se repita su historia.',
+    ],
+    'puntos_clave' => [
+        'La Lp(a) elevada es un factor de riesgo causal e independiente para el ictus isquémico aterotrombótico, incluyendo recurrencias, independientemente de los niveles de cLDL.',
+        'El ictus aterotrombótico es una de las manifestaciones cardiovasculares de la enfermedad aterosclerótica promovida por la Lp(a), junto con el IAM y la EAP.',
+        'No existe ninguna terapia aprobada específicamente para reducir la Lp(a), pero el pelacarsen (ASO), el olpasiran y el lepodisiran (ambos siRNA) han demostrado reducciones >80–95% en estudios de fase II.',
+        'El ensayo Lp(a)HORIZON (NCT04023552) es el primer estudio de fase III diseñado para evaluar si la reducción de Lp(a) con pelacarsen (80 mg en administración subcutánea mensual) disminuye los eventos cardiovasculares en 8323 pacientes con ECV establecida y Lp(a) ≥70 mg/dL.',
+        'En los pacientes con ictus isquémico, Lp(a) elevada y buen control de cLDL, deben considerarse el acceso precoz al tratamiento o su inclusión en ensayos clínicos en fase III.',
+        'Adicionalmente, la estrategia debe centrarse en la reducción máxima de todos los factores de riesgo modificables y en el cribado familiar de Lp(a) en familiares de primer grado.',
+    ],
+],
+
+'bibliografia_3' => [
+    'Tsimikas S, Fazio S, Ferdinand KC, Ginsberg HN, Koschinsky ML, Marcovina SM, et al. NHLBI Working Group recommendations to reduce lipoprotein(a)-mediated risk of cardiovascular disease and aortic stenosis. J Am Coll Cardiol. 2018;71(2):177-192. doi: 10.1016/j.jacc.2017.11.014.',
+    'Reyes-Soffer G, Ginsberg HN, Berglund L, Duell PB, Heffron SP, Kamstrup PR, et al. Lipoprotein(a): A Genetically Determined, Causal, and Prevalent Risk Factor for Atherosclerotic Cardiovascular Disease: A Scientific Statement From the American Heart Association. Arterioscler Thromb Vasc Biol. 2022;42(1):e48-e60. doi: 10.1161/ATV.0000000000000147.',
+    'Kronenberg F, Mora S, Stroes ESG, Ference BA, Arsenault BJ, Berglund L, et al. Lipoprotein(a) in atherosclerotic cardiovascular disease and aortic stenosis: a European Atherosclerosis Society consensus statement. Eur Heart J. 2022;43(39):3925-3946. doi: 10.1093/eurheartj/ehac361.',
+    'Kosmas CE, Bousvarou MD, Papakonstantinou EJ, Zoumi EA, Rallidis LS. Lipoprotein (a) and cerebrovascular disease. J Int Med Res. 2024;52(7):3000605241264182. doi: 10.1177/03000605241264182.',
+    'Chen R, Liu Y, Zhang L, et al. Lipoprotein(a) as a Risk Factor for Recurrent Ischemic Stroke in Type 2 Diabetes. J Clin Med. 2025;14(9):2990. doi: 10.3390/jcm14092990.',
+    'Lange KS, Nave AH, Liman TG, Grittner U, Endres M, Ebinger M. Lipoprotein (a) levels and recurrent vascular events after first ischemic stroke. Stroke. 2017;48(1):36-42. doi: 10.1161/STROKEAHA.116.014436.',
+    'Cho L, Rocco M, Colquhoun D, et al. Design and Rationale of Lp(a)HORIZON Trial: Assessing the Effect of Lipoprotein(a) Lowering With Pelacarsen on Major Cardiovascular Events in Patients With CVD and Elevated Lp(a). Am Heart J. 2025. doi: 10.1016/j.ahj.2025.03.019.',
+    'Tsimikas S, Karwatowska-Prokopczuk E, Gouni-Berthold I, Tardif JC, Baum SJ, Steinhagen-Thiessen E, et al. Lipoprotein(a) Reduction in Persons with Cardiovascular Disease. N Engl J Med. 2020;382(3):244-255. doi: 10.1056/NEJMoa1905239.',
+    'O\'Donoghue ML, Rosenson RS, Gencer B, López JAG, Lepor NE, Baum SJ, et al. Small Interfering RNA to Reduce Lipoprotein(a) in Cardiovascular Disease. N Engl J Med. 2022;387(20):1855-1864. doi: 10.1056/NEJMoa2211023.',
+    'O\'Donoghue ML, Rosenson RS, López JAG, et al. The Off-Treatment Effects of Olpasiran on Lipoprotein(a) Lowering: OCEAN(a)-DOSE Extension Period Results. J Am Coll Cardiol. 2024;84(9):790-797. doi: 10.1016/j.jacc.2024.05.058.',
+    'Nissen SE, Linnebjerg H, Shen X, Wolski K, Ma X, Ose L, et al. Lepodisiran, an Extended-Duration Small Interfering RNA Targeting Lipoprotein(a): A Randomized Clinical Trial. JAMA. 2023;330(21):2075-2083. doi: 10.1001/jama.2023.21835.',
+    'Nissen SE, Kahn P, Lincoff AM, et al. Lepodisiran -- A Long-Duration Small Interfering RNA Targeting Lipoprotein(a). N Engl J Med. 2025. doi: 10.1056/NEJMoa2415818.',
+    'Parhofer KG, Julius U, Herzog AL, et al. Pelacarsen and lipoprotein(a) apheresis in secondary prevention: the Lp(a)FRONTIERS APHERESIS trial. Eur Heart J. 2026 Feb 21:ehag073. doi: 10.1093/eurheartj/ehag073.',
+    'Yan JH, Baker BF, Hantash FM, et al. Pharmacokinetics and Safety of Pelacarsen, a GalNAc3-Conjugated Antisense Oligonucleotide, in Individuals With Mild Hepatic Impairment. Clin Pharmacol Ther. 2025. doi: 10.1002/cpt.3566.',
+    'Powers WJ, Rabinstein AA, Ackerson T, et al. Guidelines for the Early Management of Patients With Acute Ischemic Stroke: 2019 Update to the 2018 Guidelines for the Early Management of Acute Ischemic Stroke. Stroke. 2019;50(12):e344-e418. doi: 10.1161/STR.0000000000000211.',
+    'Berge E, Whiteley W, Audebert H, et al. European Stroke Organisation (ESO) guidelines on intravenous thrombolysis for acute ischaemic stroke. Eur Stroke J. 2021;6(1):I-LXII. doi: 10.1177/2396987321989865.',
+    'Mach F, Koskinas KC, Roeters van Lennep JE, Tokgözolu L, Badimon L, Baigent C, et al. 2025 focused update of the 2019 ESC/EAS guidelines for the management of dyslipidaemias. Eur Heart J. 2025;46(42):4359-4378. doi: 10.1093/eurheartj/ehaf190.',
+],
+
+'pregunta_pruebas_3' => [
+    'enunciado' => 'Juan presenta un ictus isquémico hemisférico derecho. Dado que su Lp(a) fue de 316 nmol/L en situación basal y, tras el tratamiento, descendió a 276 nmol/L (todavía muy elevada), ¿cuál es la relación más precisa entre la Lp(a) elevada y el riesgo de ictus isquémico?',
+    'instruccion' => "Selecciona los ítems que creas convenientes y presiona 'Comprobar'.",
+    'xp' => 100,
+    'opciones' => [
+        [
+            'key' => 'lpa_causal',
+            'texto' => 'La Lp(a) elevada aumenta el riesgo de ictus aterotrombótico a través de mecanismos proaterogénicos y protrombóticos independientes del cLDL, con evidencia de causalidad respaldada por estudios de aleatorización mendeliana.',
+            'correcta' => true,
+            'puntos' => 100,
+            'justificacion' => 'La Lp(a) es un factor de riesgo causal e independiente para el ictus isquémico aterotrombótico1-3. Los mecanismos implicados incluyen: 1) aterogénesis acelerada por transporte de fosfolípidos oxidados (OxPL) a la pared vascular; 2) inhibición competitiva de la activación del plasminógeno, con efecto protrombótico; 3) inflamación vascular mediada por citoquinas proinflamatorias (IL-1, TNF-α); y 4) expresión de moléculas de adhesión (ICAM-1, VCAM-1), que facilitan la infiltración de monocitos2,4. Los estudios de aleatorización mendeliana confirman la relación causal entre variantes del gen LPA y el ictus isquémico, independientemente de los niveles de cLDL1,2. Un metaanálisis de 2024 demostró que por cada descenso de 50 nmol/L en Lp(a) genéticamente predicha, el riesgo de ictus isquémico se reduce un 8–10%5,6.',
+        ],
+        [
+            'key' => 'marcador',
+            'texto' => 'La Lp(a) elevada es un marcador de riesgo, pero no ha demostrado ser un factor causal de ictus; el riesgo real viene determinado exclusivamente por los niveles de cLDL y la presencia añadida de HTA.',
+            'correcta' => false,
+            'puntos' => -42,
+            'justificacion' => 'Esta afirmación es incorrecta. La Lp(a) es un factor causal independiente, no un mero marcador.1,2 Los estudios de aleatorización mendeliana han demostrado que las variantes genéticas que elevan Lp(a) se asocian de forma causal con mayor riesgo de ictus isquémico, independientemente de otros factores de riesgo.2 El gen LPA está ubicado en el cromosoma 6q26-27 y las variaciones en el número de repeticiones del dominio kringle IV determinan >90% de la variabilidad interindividual de Lp(a).1',
+        ],
+        [
+            'key' => 'hf_ldl',
+            'texto' => 'La relación entre Lp(a) e ictus solo existe en pacientes con hipercolesterolemia familiar o niveles residuales de cLDL >100 mg/dL.',
+            'correcta' => false,
+            'puntos' => -33,
+            'justificacion' => 'El riesgo atribuible a Lp(a) es independiente de los niveles de cLDL1,3. Pacientes como Juan, con el cLDL bien controlado (42 mg/dL), siguen teniendo riesgo residual significativo por su Lp(a) elevada. La Lp(a) es un factor genéticamente determinado sin correlación con los niveles de cLDL1. De hecho, aproximadamente el 20% de la población mundial presenta una Lp(a) elevada (>125 nmol/L), independientemente de su perfil lipídico convencional1,3.',
+        ],
+        [
+            'key' => 'cardioembolico',
+            'texto' => 'La Lp(a) se asocia con ictus cardioembólico por su similitud estructural con el plasminógeno, independientemente de su relación con la enfermedad aterosclerótica intracraneal.',
+            'correcta' => false,
+            'puntos' => -25,
+            'justificacion' => 'Aunque la similitud estructural entre la apolipoproteína(a) [apo(a)] y el plasminógeno confiere propiedades antifibrinolíticas a la Lp(a), la principal asociación de Lp(a) con ictus es de tipo aterosclerótico, no cardioembólico. Los estudios muestran que la Lp(a) se asocia específicamente con ictus isquémico de gran vaso aterotrombótico y con enfermedad carotídea (como en el caso de Juan) 4,6. La evidencia genética no sugiere un papel causal en la fibrilación auricular ni en el ictus cardioembólico.',
+        ],
+    ],
+],
+
+'pregunta_riesgo_3' => [
+    'enunciado' => 'Tras el ictus, ¿qué valor de Lp(a) debería considerarse umbral de alto riesgo en la estratificación de este paciente para prevención secundaria, de acuerdo con la evidencia más reciente?',
+    'instruccion' => "Selecciona los ítems que creas convenientes y presiona 'Comprobar'.",
+    'xp' => 100,
+    'opciones' => [
+        [
+            'key' => 'umbral_125',
+            'texto' => 'El umbral de riesgo es Lp(a) ≥50 mg/dL (125 nmol/L), que identifica aproximadamente al 20% de la población con mayor riesgo relativo de eventos cardiovasculares, incluyendo ictus.',
+            'correcta' => true,
+            'puntos' => 100,
+            'justificacion' => 'El umbral de Lp(a) ≥50 mg/dL (125 nmol/L) es el criterio ampliamente aceptado para definir riesgo elevado2,3. La declaración científica de la American Heart Association de 2022 y el consenso de la European Atherosclerosis Society definen Lp(a) ≥50 mg/dL como el umbral por encima del cual el riesgo cardiovascular aumenta significativamente1-3. Aproximadamente el 20% de la población mundial supera este valor. Pacientes con Lp(a) 70-90 mg/dL (como Juan, con 316 nmol/L ≈130 mg/dL) tienen un riesgo particularmente alto y son precisamente los incluidos en los ensayos clínicos de terapias específicas anti-Lp(a) 7.',
+        ],
+        [
+            'key' => 'umbral_30',
+            'texto' => 'Una Lp(a) ≥30 mg/dL ya constituye un factor de riesgo elevado, por lo que cualquier valor a partir de este umbral requiere intensificación terapéutica.',
+            'correcta' => false,
+            'puntos' => -18,
+            'justificacion' => 'El umbral de 30 mg/dL es demasiado bajo y no está respaldado por la evidencia. Los grandes metaanálisis (como los de Emerging Risk Factors Collaboration) demuestran que el riesgo cardiovascular comienza a aumentar significativamente a partir de una Lp(a) ≥50 mg/dL (percentil 80 de la población). El uso de umbrales más bajos podría llevar a una medicalización innecesaria de población de bajo riesgo, dado que aún no existen terapias aprobadas específicamente para reducir la Lp(a).',
+        ],
+        [
+            'key' => 'umbral_200',
+            'texto' => 'Solo los valores >200 nmol/L (>80 mg/dL) se consideran de alto riesgo; por debajo de este nivel la Lp(a) no tiene relevancia clínica.',
+            'correcta' => false,
+            'puntos' => -23,
+            'justificacion' => 'El riesgo asociado a la Lp(a) es continuo y log-lineal; no existe un umbral único de riesgo a partir del cual la Lp(a) «comience a importar». Los valores >125 nmol/L ya se asocian con mayor riesgo, y cada incremento adicional se traduce en mayor riesgo absoluto1,3. El criterio de inclusión del ensayo HORIZON con pelacarsen (Lp(a) ≥70 mg/dL) precisamente refleja que incluso valores intermedios-elevados se consideran relevantes en población de alto riesgo con ECV establecida7. El riesgo relativo para ictus isquémico es de aproximadamente 1,15–1,25 por cada cuartil de incremento de Lp(a)4.',
+        ],
+        [
+            'key' => 'no_relevante',
+            'texto' => 'El valor de Lp(a) deja de ser relevante para el riesgo de ictus tras la revascularización exitosa y solo importa la prevención del ictus hemorrágico.',
+            'correcta' => false,
+            'puntos' => -59,
+            'justificacion' => 'El riesgo de recurrencia de ictus isquémico tras un primer evento es sustancial: hasta 10–15% en el primer año. La Lp(a) elevada es un determinante independiente de recurrencia, especialmente en pacientes con enfermedad arteriosclerótica de grandes vasos. Los estudios han demostrado que pacientes con Lp(a) en el percentil 90 (>90–100 mg/dL) tienen un odds ratio de 1,7–2,1 para recurrencia de ictus isquémico en comparación con aquellos con Lp(a) <50 mg/dL. La prevención secundaria debe ser integral: control de todos los factores de riesgo modificables más evaluación de elegibilidad para terapias emergentes anti-Lp(a).',
+        ],
+    ],
+],
+
+'pregunta_terapeutico_3' => [
+    'enunciado' => 'En cuanto al manejo terapéutico de la Lp(a) elevada en el post-ictus de Juan, ¿qué opción describe mejor la situación actual de las terapias disponibles y en desarrollo?',
+    'instruccion' => "Selecciona los ítems que creas convenientes y presiona 'Comprobar'.",
+    'xp' => 100,
+    'opciones' => [
+        [
+            'key' => 'emergentes',
+            'texto' => 'Actualmente no existe ninguna terapia aprobada específicamente para reducir la Lp(a), pero la inhibición con muvalaplin o la interferencia sobre su expresión genética con pelacarsen (oligonucleótido antisentido [ASO] anti-LPA) o los siRNA olpasiran y lepodisiran han demostrado, en estudios en fase II, reducciones >80–95% de Lp(a) y se encuentran en ensayos de resultados cardiovasculares de fase III.',
+            'correcta' => true,
+            'puntos' => 100,
+            'justificacion' => 'A fecha de 2026, no hay ninguna terapia aprobada específicamente para reducir la Lp(a)1,3. Los iPCSK9 reducen la Lp(a) solo un 20–25% de forma indirecta. Muvalaplin es un inhibidor oral de la síntesis de la Lp(a) que impide la unión entre apo(a) y apoB-100 y, en el ensayo fase II KRAKEN, demostró una reducción del 70% con dosis de 240 mg/día. En la modulación de la expresividad genética existen tres grandes candidatos en desarrollo con ensayos en fase III de reducción de eventos cardiovasculares: 1. Pelacarsen: ASO ligado a N-acetilgalactosamina (GalNAc) que se une de forma altamente selectiva al mRNA de LPA en el hepatocito y lo degrada mediante la ribonucleasa H1 (RNasa H1). En fase II redujo la Lp(a) un 80% con dosis de 20 mg de administración subcutánea semanal8 (equivalente a 80 mg/mes, que corresponde a la dosis evaluada en el ensayo fase III HORIZON (NCT04023552), actualmente en marcha7. 2. Olpasiran: siRNA-GalNAc que silencia la expresión de LPA degradando el mRNA mediante el complejo de silenciamiento inducido por ARN (RISC). En fase II (OCEAN(a)-DOSE) logró una reducción de la Lp(a) >95% con una dosis de 225 mg cada 12 semanas9,10. 3. Lepodisiran: siRNA no canónico que, en su ensayo fase II (ALPACA), redujo la Lp(a) un 93,9% con dos dosis semestrales de 400 mg y un efecto duradero hasta 12 meses después11,12.',
+        ],
+        [
+            'key' => 'estatinas',
+            'texto' => 'Las estatinas de alta potencia combinadas con ezetimiba son el tratamiento de elección para reducir la Lp(a) elevada tras un ictus.',
+            'correcta' => false,
+            'puntos' => -42,
+            'justificacion' => 'Las estatinas NO reducen la Lp(a); de hecho, pueden aumentarla ligeramente (en un 10–20% en algunos estudios). La ezetimiba tampoco tiene un efecto significativo sobre la Lp(a). La indicación de estatinas + ezetimiba en este paciente es para alcanzar objetivos de cLDL y apoB, no para tratar la Lp(a) elevada. El manejo actual de la Lp(a) elevada se basa en la reducción intensiva de los factores de riesgo modificables convencionales (cLDL, TA, glucemia), pendiente de terapias específicas.',
+        ],
+        [
+            'key' => 'ipcsk9',
+            'texto' => 'Los inhibidores de PCSK9 (iPCSK9), como evolocumab o alirocumab, reducen la Lp(a) hasta en un 60–70% y están indicados como primera línea para Lp(a) elevada post-ictus.',
+            'correcta' => false,
+            'puntos' => -33,
+            'justificacion' => 'Los iPCSK9 reducen la Lp(a) solo un 20–25% (no un 60–70%), y esta reducción es un efecto colateral de su mecanismo de acción (aumento de los receptores LDL hepáticos), no el objetivo primario. Su indicación actual es la hipercolesterolemia refractaria y la prevención vascular, no específicamente la Lp(a) elevada. Como en el caso de Juan, la reducción del 20–25% puede no ser suficiente para mitigar el riesgo residual atribuible a la Lp(a), que requiere reducciones >50% según los modelos epidemiológicos.',
+        ],
+        [
+            'key' => 'aferesis',
+            'texto' => 'La aféresis de lipoproteínas es el tratamiento estándar para Lp(a) elevada post-ictus en Europa, incluyendo España.',
+            'correcta' => false,
+            'puntos' => -25,
+            'justificacion' => 'La aféresis de lipoproteínas solo está aprobada en Alemania para pacientes con una Lp(a) elevada y una ECV progresiva pese a tratamiento máximo. En España, su disponibilidad está limitada a casos excepcionales de hipercolesterolemia familiar homocigota y se realiza en muy pocos centros. No es un tratamiento estándar para la Lp(a) elevada post-ictus. El acceso a la aféresis requiere autorización excepcional y su impacto en la calidad de vida es considerable por la necesidad de sesiones quincenales o semanales. Recientemente se ha documentado la eficacia de pelacarsen para reducir la necesidad de sesiones de aféresis de forma segura13.',
+        ],
+    ],
+],
+
+'pregunta_monitorizacion_3' => [
+    'enunciado' => 'Respecto al ensayo clínico HORIZON con pelacarsen, señala la afirmación correcta:',
+    'instruccion' => "Selecciona los ítems que creas convenientes y presiona 'Comprobar'.",
+    'xp' => 100,
+    'opciones' => [
+        [
+            'key' => 'horizon_ok',
+            'texto' => 'El ensayo HORIZON (NCT04023552) es un estudio de fase III, doble ciego, aleatorizado, controlado con placebo, que evalúa pelacarsen 80 mg con administración subcutánea mensual frente a placebo en 8323 pacientes con ECV establecida e Lp(a) ≥70 mg/dL, con un criterio de valoración principal compuesto de muerte cardiovascular, infarto agudo de miocardio (IAM) no fatal, ictus no fatal o revascularización coronaria urgente.',
+            'correcta' => true,
+            'puntos' => 100,
+            'justificacion' => 'El ensayo Lp(a) HORIZON es el primer estudio de fase III diseñado para demostrar si la reducción farmacológica de Lp(a) disminuye eventos cardiovasculares7. Características clave: - Diseño: multicéntrico, doble ciego, asignación 1:1 (pelacarsen 80 mg con administración subcutánea mensual vs. placebo). Seguimiento mínimo 2,5 años. - Población: 8323 pacientes con ECV establecida (IAM, ictus isquémico o EAP sintomática) y Lp(a) ≥70 mg/dL (149 nmol/L) en el cribado. - Criterios de inclusión: clínica cardiovascular índice entre 3 meses y 10 años previos al cribado. - Criterio de valoración principal: MACE (eventos cardiovasculares mayores) expandido (muerte cardiovascular, IAM no fatal, ictus no fatal, revascularización coronaria urgente con hospitalización). - Criterio de valoración preespecificado en subgrupo Lp(a) ≥90 mg/dL (192 nmol/L). - Reclutamiento completado en 2022 con resultados pendientes de eventos acumulados. Juan cumple los criterios de inclusión del ensayo (ictus isquémico/IAM + Lp(a) elevada)7,14.',
+        ],
+        [
+            'key' => 'horizon_hf',
+            'texto' => 'El ensayo HORIZON evalúa pelacarsen a dosis semanales de 20 mg en pacientes con hipercolesterolemia familiar sin antecedentes cardiovasculares.',
+            'correcta' => false,
+            'puntos' => -18,
+            'justificacion' => 'La dosis de pelacarsen en HORIZON es de 80 mg una vez al mes (no 20 mg semanales). Aunque 20 mg semanales fue la dosis evaluada en fase II, los modelos farmacodinámicos demostraron que 80 mg en administración mensual proporciona una reducción media acumulada equivalente (~80%)7,8. Además, HORIZON incluye a pacientes con ECV establecida (IAM, ictus o EAP), no a pacientes sin antecedentes. Los pacientes deben tener una Lp(a) ≥70 mg/dL en el cribado, medida en un laboratorio central7.',
+        ],
+        [
+            'key' => 'horizon_endpoint_lpa',
+            'texto' => 'El criterio de valoración principal de HORIZON es el cambio en los niveles de Lp(a) a las 52 semanas.',
+            'correcta' => false,
+            'puntos' => -23,
+            'justificacion' => 'El criterio de valoración principal de HORIZON es clínico: MACE expandido (muerte cardiovascular, IAM no fatal, ictus no fatal y revascularización coronaria urgente). El cambio en Lp(a) es un criterio de valoración principal secundario/exploratorio. HORIZON es un ensayo de resultados cardiovasculares, no un ensayo de eficacia analítica. Este aspecto es fundamental porque la pregunta que busca responder es si reducir la Lp(a) se traduce en un beneficio clínico, y no solo si el fármaco reduce los niveles de Lp(a)7.',
+        ],
+        [
+            'key' => 'horizon_excluye_ictus',
+            'texto' => 'El ensayo HORIZON excluye a pacientes con antecedentes de ictus isquémico, por lo que Juan no sería elegible para este tratamiento.',
+            'correcta' => false,
+            'puntos' => -59,
+            'justificacion' => 'El ictus isquémico es uno de los tres criterios de inclusión de ECV establecida en HORIZON (junto con IAM y EAP sintomática). Los pacientes deben haber tenido un evento cardiovascular entre 3 meses y 10 años antes del cribado. Juan, con su ictus isquémico reciente, sería potencialmente elegible para el tratamiento tras cumplir el período de estabilización de 3 meses post-evento. La inclusión de pacientes con ictus es fundamental porque representan una población de alto riesgo residual en la que la Lp(a) juega un papel patogénico importante.',
+        ],
+    ],
+],
+
+'pregunta_monitorizacion2_3' => [
+    'enunciado' => 'Considerando el caso de Juan (ictus isquémico tras eventos coronarios previos, Lp(a) de 276 nmol/L, cLDL de 41 mg/dL, colesterol no-HDL de 70 mg/dL, con tratamiento máximo incluyendo inclisirán), ¿cuál sería la estrategia de manejo más adecuada tras el alta hospitalaria?',
+    'instruccion' => "Selecciona los ítems que creas convenientes y presiona 'Comprobar'.",
+    'xp' => 100,
+    'opciones' => [
+        [
+            'key' => 'mantener_optimizar',
+            'texto' => 'Mantener la terapia hipolipemiante actual (incluyendo inclisirán), asegurar adherencia, evaluar elegibilidad para el uso precoz de pelacarsen en función de los resultados del ensayo HORIZON o valorar la inclusión en otro ensayo de fase III con terapia anti-Lp(a).',
+            'correcta' => true,
+            'puntos' => 100,
+            'justificacion' => 'Esta es la estrategia más completa y correcta. Los componentes clave son: - Mantener la terapia actual: con un cLDL de 41 mg/dL y una apoB de 46 mg/dL, el control lipídico es límite a pesar de la triple terapia hipolipemiante, que incluye inclisirán administrado semestralmente. En el ensayo HORIZON, 897 pacientes (un 10,8%) incluyen tratamiento con iPCSK9. - Optimizar el resto de la prevención secundaria post-ictus: antiagregación y control estricto de la HTA (objetivo <130/80 mmHg)15,16. - Evaluar la elegibilidad para un uso precoz del tratamiento anti-Lp(a): a los 3 meses del ictus, Juan cumpliría criterios para uso de pelacarsen de acuerdo con el ensayo HORIZON (ictus isquémico entre 3 meses y 10 años + Lp(a) ≥70 mg/dL)7. La participación en otros ensayos de fase III podría ser otra opción para acceder a terapia específica anti-Lp(a).',
+        ],
+        [
+            'key' => 'retirar_inclisiran',
+            'texto' => 'Retirar inclisirán y sustituirlo por pelacarsen de forma inmediata al alta, ya que el ensayo HORIZON ya ha demostrado resultados positivos.',
+            'correcta' => false,
+            'puntos' => -40,
+            'justificacion' => '- Los resultados del ensayo HORIZON confirmando la reducción de eventos aún no se han publicado7. - El acceso al tratamiento con pelacarsen está restringido a ensayos clínicos1,3. - No existe indicación de retirar inclisirán, que está proporcionando un excelente control del cLDL y la apoB; ambas terapias (siRNA anti-PCSK9 y ASO/siRNA anti-LPA) tienen mecanismos complementarios y son potencialmente coadministrables. - La sustitución inmediata, post-ictus agudo, no está justificada sin evidencia de resultados clínicos.',
+        ],
+        [
+            'key' => 'suspender_hipolip',
+            'texto' => 'Suspender todas las terapias hipolipemiantes excepto la estatina por su papel neuroprotector, ya que tras un ictus la prioridad es la rehabilitación neurológica, no el control lipídico.',
+            'correcta' => false,
+            'puntos' => -40,
+            'justificacion' => 'El período post-ictus agudo es crítico para la prevención secundaria. La suspensión de terapias hipolipemiantes se asocia con un aumento significativo del riesgo de recurrencia. Las guías de manejo del ictus isquémico de 2024–2025 (AHA/ASA, ESO/ESMINT) mantienen la indicación de estatinas de alta intensidad y, si es necesario, el uso de terapia combinada para alcanzar objetivos15-17. El cLDL <55–70 mg/dL post-ictus constituye un objetivo con una recomendación de clase I. La rehabilitación neurológica y el control lipídico no son mutuamente excluyentes; deben implementarse de forma simultánea e integral.',
+        ],
+        [
+            'key' => 'solo_antiagregacion',
+            'texto' => 'Solo es necesario ajustar la antiagregación y el control de la HTA; la Lp(a) elevada no requiere acciones adicionales, dado que no hay terapias disponibles.',
+            'correcta' => false,
+            'puntos' => -20,
+            'justificacion' => 'Aunque es cierto que no hay terapias aprobadas específicamente anti-Lp(a), esta actitud de inercia terapéutica ignora la importancia de la reducción máxima de todos los factores de riesgo modificables (cLDL, presión arterial, glucemia, peso) como estrategia indirecta para mitigar el riesgo atribuible a la Lp(a)1,3, la posibilidad de un tratamiento precoz (pelacarsen de acuerdo con el ensayo Horizon) o la inclusión en ensayos clínicos de fase III como terapias potencialmente revolucionarias7, y la monitorización de la Lp(a) tras iniciar terapia específica, que será relevante en el próximo futuro.',
+        ],
+    ],
+],
+
 ];
