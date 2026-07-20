@@ -74,6 +74,20 @@ class CursoController extends Controller
         return $activo;
     }
 
+    /**
+     * Devuelve la config del paciente que corresponde a un ingreso concreto (por su posición).
+     * Ingreso 1 → paciente base; Ingreso 2 → paciente_2 (Juan a rayas); Ingreso 3 → paciente_3; etc.
+     * Se usa DENTRO de las etapas del caso, donde la imagen NO evoluciona con el progreso:
+     * en el segundo ingreso siempre se ve al Juan del segundo ingreso.
+     */
+    private function pacienteDeIngreso(array $curso, string $ingreso): array
+    {
+        $idx = array_search($ingreso, array_column($curso['ingresos'] ?? [], 'key'), true);
+        if ($idx === false || $idx === 0) return $curso['paciente'];
+        $key = 'paciente_'.($idx + 1);
+        return $curso[$key] ?? $curso['paciente'];
+    }
+
     /** Pantalla de intro a la evaluación final (certificación). */
     public function evaluacion()
     {
@@ -402,9 +416,13 @@ class CursoController extends Controller
         $esUltimaEtapa = $viewIndex >= count($etapas) - 1;
         $avance = (int) round($etapaIndex / max(count($etapas), 1) * 100);
 
+        // Paciente del ingreso que se está viendo: dentro del Ingreso 2 se ve al Juan del Ingreso 2
+        // (polo a rayas), en el 3 al del 3, etc. — independientemente del progreso.
+        $pacienteIngreso = $this->pacienteDeIngreso($curso, $ingreso);
+
         return view('curso.etapa', compact(
             'user', 'curso', 'ingreso', 'ingresoData', 'etapaActual', 'etapasEstado', 'esUltimaEtapa', 'avance',
-            'exp', 'verdeBase', 'rojoBase', 'maxScore', 'score', 'medalla', 'mostrarResultado', 'preSel', 'reevaluando', 'etapaTieneError', 'casoFinalizado'
+            'exp', 'verdeBase', 'rojoBase', 'maxScore', 'score', 'medalla', 'mostrarResultado', 'preSel', 'reevaluando', 'etapaTieneError', 'casoFinalizado', 'pacienteIngreso'
         ));
     }
 

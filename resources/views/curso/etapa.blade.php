@@ -1172,8 +1172,9 @@
                             <ellipse cx="230" cy="105" rx="{{ $r * 52 }}" ry="{{ $r * 13 }}" stroke="#7fa6b2" stroke-width="1" opacity="{{ 0.5 - $r * 0.1 }}"/>
                         @endfor
                     </svg>
-                    <img class="etapa-juan-d" src="{{ asset($curso['paciente']['imagen']) }}" alt="{{ $curso['paciente']['nombre'] }}">
-                    <img class="etapa-juan-m" src="{{ asset('images/paciente.png') }}" alt="{{ $curso['paciente']['nombre'] }}">
+                    @php $pImg = ($pacienteIngreso ?? $curso['paciente'])['imagen']; @endphp
+                    <img class="etapa-juan-d" src="{{ asset($pImg) }}" onerror="this.onerror=null;this.src='{{ asset($curso['paciente']['imagen']) }}'" alt="{{ $curso['paciente']['nombre'] }}">
+                    <img class="etapa-juan-m" src="{{ asset($pImg) }}" onerror="this.onerror=null;this.src='{{ asset('images/paciente.png') }}'" alt="{{ $curso['paciente']['nombre'] }}">
                 </div>
                 @endif
 
