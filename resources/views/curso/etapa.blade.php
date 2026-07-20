@@ -90,8 +90,10 @@
         .side-item { text-decoration: none; }
         .side-item .ico { flex-shrink: 0; color: rgba(255,255,255,0.40); }
         /* perfecta: etapa superada sin errores → texto claro + check verde */
-        .side-item.perfecta { color: rgba(255,255,255,0.80); cursor: pointer; }
+        .side-item.perfecta { color: rgba(255,255,255,0.80); }
         .side-item.perfecta .ico { color: #54c06a; }
+        /* Etapas no clickeables (check verde superado, o la que se está viendo): sin cursor de mano */
+        .side-item.no-click { cursor: default; }
         /* error: etapa superada con algún fallo → texto claro + cruz roja */
         .side-item.error { color: rgba(255,255,255,0.80); cursor: pointer; }
         .side-item.error .ico { color: #d9534f; }
@@ -1088,9 +1090,14 @@
                     <span class="side-head-pct">{{ $avance }}%</span>
                 </div>
                 @foreach ($etapasEstado as $etapa)
-                    @php $clickable = in_array($etapa['estado'], ['perfecta', 'error', 'activa']); @endphp
+                    @php
+                        // Solo se puede volver a una etapa con FALLO (cruz roja) para repetirla, o a la activa.
+                        // Las etapas ya superadas SIN fallo (check verde) NO son clickeables: no se repiten.
+                        // La etapa que se está viendo tampoco necesita re-enlace.
+                        $clickable = in_array($etapa['estado'], ['error', 'activa']) && ! $etapa['viendo'];
+                    @endphp
                     <a href="{{ $clickable ? route('curso.etapa', [$ingreso, $etapa['key']]) : '#' }}"
-                       class="side-item {{ $etapa['estado'] }} {{ $etapa['viendo'] ? 'viendo' : '' }}"
+                       class="side-item {{ $etapa['estado'] }} {{ $etapa['viendo'] ? 'viendo' : '' }} {{ $clickable ? '' : 'no-click' }}"
                        @unless($clickable) onclick="return false;" @endunless>
                         <span>{{ $etapa['titulo'] }}</span>
                         @if ($etapa['estado'] === 'perfecta')
