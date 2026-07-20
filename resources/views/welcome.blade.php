@@ -687,8 +687,8 @@
                     </h2>
 
                     <div style="font-family:'Montserrat',sans-serif; font-weight:400; font-size:13px; line-height:150%; letter-spacing:0; color:#FFFFFF; width:358px; max-width:100%;">
-                        <p class="mb-4">A lo largo de tres ingresos hospitalarios, seguirás la evolución de Juan en distintos momentos clave.</p>
-                        <p>En cada contacto clínico con el paciente tendrás la oportunidad de tomar decisiones que impacten en su pronóstico.</p>
+                        <p class="mb-4">A lo largo de tres ingresos hospitalarios, seguirás la evolución de Juan en distintos momentos clave de su trayectoria cardiovascular.</p>
+                        <p>En cada fase tendrás que valorar si la información disponible revela un riesgo no completamente explicado por los factores clásicos y si la determinación de Lp(a) puede cambiar la interpretación del caso y el manejo posterior.</p>
                     </div>
                 </div>
 
