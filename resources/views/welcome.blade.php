@@ -687,7 +687,7 @@
                     </h2>
 
                     <div style="font-family:'Montserrat',sans-serif; font-weight:400; font-size:13px; line-height:150%; letter-spacing:0; color:#FFFFFF; width:358px; max-width:100%;">
-                        <p class="mb-4">A lo largo de tres ingresos hospitalarios, seguirás la evolución de Juan en distintos momentos clave de su trayectoria cardiovascular.</p>
+                        <p class="mb-4">A lo largo de tres ingresos hospitalarios, seguirás la evolución de Juan en distintos momentos clave.</p>
                         <p>En cada fase tendrás que valorar si la información disponible revela un riesgo no completamente explicado por los factores clásicos y si la determinación de Lp(a) puede cambiar la interpretación del caso y el manejo posterior.</p>
                     </div>
                 </div>
@@ -709,7 +709,7 @@
                         <div class="relative" style="width:160%; margin-left:-30%; margin-right:-30%; height:auto;">
                             <img src="{{ asset('images/juan.png') }}" alt="Juan, paciente del caso clínico"
                                  style="width:100%; height:auto; aspect-ratio:358/480; object-fit:contain; display:block; opacity:0.95;">
-                            <span class="absolute" style="left:18%; bottom:38%; color:#05BAEE; font-family:'Montserrat',sans-serif; font-weight:700; font-size:24px; line-height:34px; letter-spacing:0; text-align:left; display:inline-block; z-index:5;">Juan</span>
+                            {{-- Etiqueta "Juan" retirada a petición del cliente (la imagen ya identifica al paciente). --}}
                         </div>
                         {{-- Data card overlapping Juan's lower body --}}
                         <div class="caso-card caso-card-glass relative z-20"
@@ -757,7 +757,7 @@
                         </div>
                     </div>
                     {{-- Desktop: palabra "Juan" — independiente de la figura, fija bajo sus pies --}}
-                    <span class="hidden lg:block absolute z-30" style="left:36%; bottom:4%; color:#05BAEE; font-family:'Montserrat',sans-serif; font-weight:700; font-size:36px; line-height:1; letter-spacing:0;">Juan</span>
+                    {{-- Etiqueta "Juan" retirada a petición del cliente (la imagen ya identifica al paciente). --}}
 
                     {{-- Desktop: Data card --}}
                     <div class="caso-card hidden lg:flex relative z-20 overflow-hidden"
