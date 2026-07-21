@@ -328,6 +328,129 @@ class CursoController extends Controller
         return redirect()->route('evaluacion')->with('encuesta_ok', true);
     }
 
+    /**
+     * Diploma / certificado UEMS-ICOMEN del curso. Se genera con los datos del alumno
+     * y los datos de acreditación de config('curso.diploma'). Solo accesible cuando el
+     * diploma está desbloqueado (evaluación final APTO). La descarga en PDF la hace el
+     * navegador (window.print → "Guardar como PDF"), que respeta el @page A4 apaisado.
+     */
+    public function diploma()
+    {
+        $user = Auth::user();
+        CourseProgress::seedFor($user);
+
+        // Guard: el diploma solo está disponible tras aprobar la evaluación (status ≠ locked).
+        $prog = $user->progress()->where('module_key', 'diploma')->first();
+        if (! $prog || $prog->status === 'locked') {
+            return redirect()->route('curso')->with('diploma_error', 'Aún no has desbloqueado el diploma. Aprueba la evaluación final para obtenerlo.');
+        }
+
+        $cfg = config('curso.diploma', []);
+
+        // Fecha de emisión: cuándo aprobó la evaluación (o, en su defecto, hoy).
+        $eval = $user->progress()->where('module_key', 'evaluacion')->first();
+        $emision = optional($eval)->completed_at ?? now();
+
+        $diploma = [
+            'nombre'             => trim((string) $user->name),
+            'apellidos'          => trim((string) ($user->last_name ?? '')),
+            'documento'          => trim((string) ($user->document_id ?? '')),
+            'curso'              => 'Programa formativo Lp(a)ction',
+            'fecha_inicio'       => $cfg['fecha_inicio'] ?? '',
+            'fecha_fin'          => $cfg['fecha_fin'] ?? '',
+            'horas'              => $cfg['horas'] ?? '',
+            'creditos'           => $cfg['creditos'] ?? '',
+            'registro_uems'      => $cfg['registro_uems'] ?? '',
+            'registro_seaformec' => $cfg['registro_seaformec'] ?? '',
+            'fecha_emision'      => $this->fechaLarga($emision),
+        ];
+
+        return view('curso.diploma', compact('diploma'));
+    }
+
+    /**
+     * Resumen descargable del caso de un ingreso: enunciados, todas las opciones con la(s)
+     * correcta(s) marcada(s) y la respuesta del alumno, más su puntuación y medalla.
+     * Se abre como página imprimible (window.print → "Guardar como PDF").
+     */
+    public function resumenCaso($ingreso)
+    {
+        $user = Auth::user();
+        CourseProgress::seedFor($user);
+        $progreso = $this->ingresoAbierto($user, $ingreso);   // 404 si el ingreso no está abierto
+
+        $curso      = config('curso');
+        $etapas     = $curso['etapas'];
+        $resultados = $progreso->etapas ?? [];
+
+        $ingresoData = collect($curso['ingresos'])->firstWhere('key', $ingreso);
+        $paciente    = $this->pacienteDeIngreso($curso, $ingreso);
+
+        // Preguntas del ingreso con sus opciones (correcta / elegida por el alumno).
+        $preguntas = [];
+        foreach (['pruebas', 'riesgo', 'terapeutico', 'monitorizacion', 'monitorizacion-2'] as $st) {
+            $pk = $this->preguntaKey($ingreso, $st);
+            if (! $pk || empty($curso[$pk]['opciones'])) continue;
+
+            $q   = $curso[$pk];
+            $sel = $resultados[$st]['sel'] ?? [];
+            $opciones = [];
+            foreach ($q['opciones'] as $op) {
+                $pts = (int) ($op['puntos'] ?? 0);
+                $opciones[] = [
+                    'texto'    => $op['texto'],
+                    'correcta' => $pts > 0,
+                    'elegida'  => in_array($op['key'], $sel, true),
+                    'puntos'   => $pts,
+                ];
+            }
+            $preguntas[] = [
+                'etapa'     => collect($etapas)->firstWhere('key', $st)['titulo'] ?? $st,
+                'enunciado' => $q['enunciado'],
+                'opciones'  => $opciones,
+            ];
+        }
+
+        // Puntuación total y medalla obtenida.
+        $totalVerde = array_sum(array_map(fn ($r) => (int) ($r['verde'] ?? 0), $resultados));
+        $totalRojo  = array_sum(array_map(fn ($r) => (int) ($r['rojo']  ?? 0), $resultados));
+        $score = $totalVerde - $totalRojo;
+        $maxScore = 0;
+        foreach (['pruebas', 'riesgo', 'terapeutico', 'monitorizacion', 'monitorizacion-2'] as $stage) {
+            $pk = $this->preguntaKey($ingreso, $stage);
+            foreach (($curso[$pk]['opciones'] ?? []) as $op) {
+                if (($op['puntos'] ?? 0) > 0) $maxScore += (int) $op['puntos'];
+            }
+        }
+        $medalla = $curso['medallas'][0];
+        foreach ($curso['medallas'] as $m) {
+            if ($score >= $m['min']) $medalla = $m;
+        }
+
+        $resumen = [
+            'ingreso'   => $ingresoData,
+            'paciente'  => $paciente,
+            'preguntas' => $preguntas,
+            'verde'     => $totalVerde,
+            'rojo'      => $totalRojo,
+            'score'     => $score,
+            'maxScore'  => $maxScore,
+            'medalla'   => $medalla,
+            'completado'=> $progreso->status === 'completed',
+            'alumno'    => trim($user->name.' '.($user->last_name ?? '')),
+        ];
+
+        return view('curso.resumen-caso', compact('resumen', 'ingreso'));
+    }
+
+    /** Formatea una fecha como "20 de julio de 2026" (es_ES) sin depender de locale del sistema. */
+    private function fechaLarga($fecha): string
+    {
+        $meses = [1 => 'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+                  'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+        return $fecha->day.' de '.$meses[(int) $fecha->month].' de '.$fecha->year;
+    }
+
     /** Etapa de un ingreso (Presentación, Pruebas complementarias, …). */
     public function etapa($ingreso, $etapa = null)
     {
@@ -363,13 +486,16 @@ class CursoController extends Controller
         // Estados del sidebar: perfecta (check) / error (cruz) / activa (reloj) / bloqueada (candado).
         // La cruz (error) aparece en cuanto la etapa tiene rojo>0, AUNQUE siga siendo la activa
         // (el fallo se guarda al "Comprobar", no hace falta avanzar). El rojo es permanente.
-        $etapasEstado = collect($etapas)->map(function ($e, $i) use ($etapaIndex, $viewIndex, $resultados) {
+        // Cuando el ingreso está COMPLETADO, ya no hay etapa "activa": todas las superadas
+        // quedan con check verde (perfecta), incluida la última (Resumen del caso).
+        $completado = $progreso->status === 'completed';
+        $etapasEstado = collect($etapas)->map(function ($e, $i) use ($etapaIndex, $viewIndex, $resultados, $completado) {
             $tieneError = (int) ($resultados[$e['key']]['rojo'] ?? 0) > 0;
             if ($i > $etapaIndex) {
                 $estado = 'bloqueada';
             } elseif ($tieneError) {
                 $estado = 'error';
-            } elseif ($i === $etapaIndex) {
+            } elseif ($i === $etapaIndex && ! $completado) {
                 $estado = 'activa';
             } else {
                 $estado = 'perfecta';
@@ -414,7 +540,8 @@ class CursoController extends Controller
 
         $ingresoData  = collect($curso['ingresos'])->firstWhere('key', $ingreso);
         $esUltimaEtapa = $viewIndex >= count($etapas) - 1;
-        $avance = (int) round($etapaIndex / max(count($etapas), 1) * 100);
+        // Avance del caso: 100% cuando el ingreso está completado (pulsó "Finalizar ingreso").
+        $avance = $completado ? 100 : (int) round($etapaIndex / max(count($etapas), 1) * 100);
 
         // Paciente del ingreso que se está viendo: dentro del Ingreso 2 se ve al Juan del Ingreso 2
         // (polo a rayas), en el 3 al del 3, etc. — independientemente del progreso.

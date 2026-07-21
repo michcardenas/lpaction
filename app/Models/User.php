@@ -34,6 +34,7 @@ class User extends Authenticatable
         'experience_level',
         'accepted_privacy',
         'accepted_novartis',
+        'is_admin',
     ];
 
     /**
@@ -58,6 +59,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'accepted_privacy' => 'boolean',
             'accepted_novartis' => 'boolean',
+            'is_admin' => 'boolean',
         ];
     }
 
@@ -65,5 +67,11 @@ class User extends Authenticatable
     public function progress(): HasMany
     {
         return $this->hasMany(CourseProgress::class);
+    }
+
+    /** ¿Es administrador del panel? */
+    public function isAdmin(): bool
+    {
+        return (bool) $this->is_admin;
     }
 }

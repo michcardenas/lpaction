@@ -1091,10 +1091,10 @@
                 </div>
                 @foreach ($etapasEstado as $etapa)
                     @php
-                        // Solo se puede volver a una etapa con FALLO (cruz roja) para repetirla, o a la activa.
-                        // Las etapas ya superadas SIN fallo (check verde) NO son clickeables: no se repiten.
-                        // La etapa que se está viendo tampoco necesita re-enlace.
-                        $clickable = in_array($etapa['estado'], ['error', 'activa']) && ! $etapa['viendo'];
+                        // Se puede navegar a CUALQUIER etapa ya alcanzada (perfecta ✓, error ✗ o activa)
+                        // para revisar sus respuestas; solo las bloqueadas y la que se ve ahora no enlazan.
+                        // Las correctas entran en modo revisión (respuestas visibles); las de fallo permiten repetir.
+                        $clickable = ! in_array($etapa['estado'], ['bloqueada']) && ! $etapa['viendo'];
                     @endphp
                     <a href="{{ $clickable ? route('curso.etapa', [$ingreso, $etapa['key']]) : '#' }}"
                        class="side-item {{ $etapa['estado'] }} {{ $etapa['viendo'] ? 'viendo' : '' }} {{ $clickable ? '' : 'no-click' }}"

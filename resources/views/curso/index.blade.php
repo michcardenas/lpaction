@@ -746,12 +746,20 @@
                         $ing1Comp = optional($progress->get('ingreso-1'))->status === 'completed';
                         $ing2Comp = optional($progress->get('ingreso-2'))->status === 'completed';
                         $evalDesbloqueada = $ing1Comp && $ing2Comp;
+                        // El DIPLOMA se desbloquea tras aprobar la evaluación (status ≠ locked).
+                        $diplomaDesbloqueado = optional($progress->get('diploma'))->status
+                            && optional($progress->get('diploma'))->status !== 'locked';
                     @endphp
                     <div class="finales-grid">
                         @foreach ($curso['finales'] as $fin)
-                            @if ($fin['key'] === 'evaluacion' && $evalDesbloqueada)
-                                {{-- Desbloqueada: enlace a la pantalla de evaluación con botón cyan ↗ --}}
-                                <a href="{{ route('evaluacion') }}" class="final-card">
+                            @php
+                                $rutaFinal = $fin['key'] === 'evaluacion' ? 'evaluacion' : ($fin['key'] === 'diploma' ? 'diploma' : null);
+                                $finalAbierto = ($fin['key'] === 'evaluacion' && $evalDesbloqueada)
+                                    || ($fin['key'] === 'diploma' && $diplomaDesbloqueado);
+                            @endphp
+                            @if ($finalAbierto && $rutaFinal)
+                                {{-- Desbloqueada: enlace con botón cyan ↗ --}}
+                                <a href="{{ route($rutaFinal) }}" class="final-card">
                                     <span>{{ $fin['titulo'] }}</span>
                                     <span class="final-arrow">
                                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M17 7H8M17 7V16"/></svg>

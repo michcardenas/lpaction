@@ -8,7 +8,7 @@
             <span class="resumen-title">Antes de finalizar</span>
         </div>
         <p class="resumen-txt">Descarga y revisa el caso con todas las opciones antes de avanzar al siguiente ingreso.</p>
-        <a class="btn-descargar" href="#" onclick="return false;">
+        <a class="btn-descargar" href="{{ route('curso.resumen', $ingreso) }}" target="_blank" rel="noopener">
             Descargar caso
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 12 5 5 5-5"/><path d="M5 21h14"/></svg>
         </a>

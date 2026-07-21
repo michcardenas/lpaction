@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CursoController;
@@ -19,6 +20,9 @@ Route::post('/registro', [RegisterController::class, 'store']);
 
 // Curso (requiere sesión iniciada)
 Route::middleware('auth')->group(function () {
+    Route::get('/admin', [AdminController::class, 'dashboard'])->middleware('admin')->name('admin');
+    Route::get('/admin/informe', [AdminController::class, 'informe'])->middleware('admin')->name('admin.informe');
+    Route::get('/admin/informe-dinamico', [AdminController::class, 'informeDinamico'])->middleware('admin')->name('admin.informe.dinamico');
     Route::get('/curso', [CursoController::class, 'index'])->name('curso');
     Route::view('/tutoria', 'tutoria')->name('tutoria');
     Route::view('/autores', 'autores')->name('autores');
@@ -29,10 +33,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/evaluacion/pregunta', [CursoController::class, 'evaluacionPregunta'])->name('evaluacion.pregunta');
     Route::post('/evaluacion/responder', [CursoController::class, 'evaluacionResponder'])->name('evaluacion.responder');
     Route::get('/evaluacion/resultado', [CursoController::class, 'evaluacionResultado'])->name('evaluacion.resultado');
+    Route::get('/diploma', [CursoController::class, 'diploma'])->name('diploma');
     Route::get('/encuesta', [CursoController::class, 'encuesta'])->name('encuesta');
     Route::post('/encuesta', [CursoController::class, 'encuestaGuardar'])->name('encuesta.guardar');
     Route::post('/curso/{ingreso}/marcar', [CursoController::class, 'marcar'])->name('curso.marcar');
     Route::post('/curso/{ingreso}/avanzar', [CursoController::class, 'avanzar'])->name('curso.avanzar');
     Route::post('/curso/{ingreso}/reiniciar', [CursoController::class, 'reiniciar'])->name('curso.reiniciar');
+    Route::get('/curso/{ingreso}/resumen-caso', [CursoController::class, 'resumenCaso'])->name('curso.resumen');
     Route::get('/curso/{ingreso}/{etapa?}', [CursoController::class, 'etapa'])->name('curso.etapa');
 });

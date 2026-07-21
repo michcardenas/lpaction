@@ -19,6 +19,11 @@ class LoginController extends Controller
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
 
+            // Los administradores entran directo al panel de métricas.
+            if (Auth::user()->isAdmin()) {
+                return redirect()->route('admin');
+            }
+
             return redirect()->intended(route('curso'));
         }
 

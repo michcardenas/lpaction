@@ -13,6 +13,21 @@ return [
     'subtitulo_1'      => 'Tres ingresos,',
     'subtitulo_2'      => 'tres decisiones clave',
     'disponible_hasta' => '15/01/2027',
+    'plazas'           => 1000,   // Plazas totales del curso (para el informe: "sobre 1.000 plazas").
+
+    // ================================================================
+    // ==================  DIPLOMA / CERTIFICADO  =====================
+    // ================================================================
+    // Datos de acreditación que aparecen en el certificado UEMS-ICOMEN.
+    // ⚠️ COMPLETAR con los valores oficiales reales antes de emitir en producción.
+    'diploma' => [
+        'fecha_inicio'       => '2 de enero de 2027',   // COMPLETAR: inicio real del curso
+        'fecha_fin'          => '30 de abril de 2027',  // COMPLETAR: fin real del curso
+        'horas'              => '20',                   // COMPLETAR: horas lectivas
+        'creditos'           => '4,5',                  // COMPLETAR: créditos ECMEC
+        'registro_uems'      => '',                     // COMPLETAR: Registro UEMS-EACCME
+        'registro_seaformec' => '',                     // COMPLETAR: Registro SEAFORMEC-SMPAC
+    ],
 
     'paciente' => [
         'nombre' => 'Juan',
