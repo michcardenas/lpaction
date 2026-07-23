@@ -688,20 +688,12 @@
 
                     <div style="font-family:'Montserrat',sans-serif; font-weight:400; font-size:13px; line-height:150%; letter-spacing:0; color:#FFFFFF; width:358px; max-width:100%;">
                         <p class="mb-4">A lo largo de tres ingresos hospitalarios, seguirás la evolución de Juan en distintos momentos clave.</p>
-                        <p>En cada fase tendrás que valorar si la información disponible revela un riesgo no completamente explicado por los factores clásicos y si la determinación de Lp(a) puede cambiar la interpretación del caso y el manejo posterior.</p>
+                        <p>En cada contacto clínico con el paciente tendrás la oportunidad de tomar decisiones que impacten en su pronóstico.</p>
                     </div>
                 </div>
 
                 {{-- Right: Juan + data card --}}
                 <div class="reveal order-2 lg:order-2 w-full lg:flex-1 relative lg:min-h-[500px] lg:block">
-
-                    {{-- Concentric ripple rings at Juan's feet --}}
-                    <svg class="hidden lg:block absolute left-[33%] bottom-[6%] -translate-x-1/2 w-[480px] h-[160px] opacity-60 pointer-events-none" viewBox="0 0 480 160" fill="none" aria-hidden="true">
-                        @for ($r = 1; $r <= 5; $r++)
-                            <ellipse cx="240" cy="145" rx="{{ $r * 46 }}" ry="{{ $r * 14 }}"
-                                     stroke="#84b0bd" stroke-width="1" opacity="{{ 0.5 - $r * 0.08 }}"/>
-                        @endfor
-                    </svg>
 
                     {{-- Mobile: Juan + card stacked with card overlapping --}}
                     <div class="lg:hidden relative w-full" style="margin-top:-120px;">
@@ -749,7 +741,7 @@
                         </div>
                     </div>
 
-                    {{-- Desktop: Juan figure --}}
+                    {{-- Desktop: Juan figure (sin efecto de ondas, solo la imagen — a petición del cliente) --}}
                     <div class="hidden lg:flex relative z-30 justify-start" style="margin-left:-130px;">
                         <div class="relative">
                             <img src="{{ asset('images/juan.png') }}" alt="Juan, paciente del caso clínico"
@@ -1290,6 +1282,7 @@
                 display: inline-flex;
                 align-items: center;
                 gap: 10px;
+                margin-bottom: 18px;   /* separación icono/pastilla ↔ nombre (el cliente pedía más aire) */
             }
             #comite .comite-icon {
                 width: 36px;
