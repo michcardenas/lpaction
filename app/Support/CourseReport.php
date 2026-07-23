@@ -21,7 +21,8 @@ class CourseReport
         $dimNames = array_map(fn ($it) => $it['titulo'], $items);
         $nDim = count($dimNames);
 
-        $students = User::where('is_admin', false)->with('progress')->get();
+        // Alumnos reales: sin administradores ni cuentas de prueba (is_test).
+        $students = User::where('is_admin', false)->where('is_test', false)->with('progress')->get();
         $registrados = $students->count();
         $plazas = (int) ($curso['plazas'] ?? 0);
 

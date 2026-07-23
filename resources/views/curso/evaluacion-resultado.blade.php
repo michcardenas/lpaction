@@ -61,14 +61,11 @@
         .rv-opt:nth-child(odd) { border-right: 1px solid rgba(255,255,255,0.12); }
         .rv-opt:not(:nth-last-child(-n+2)) { border-bottom: 1px solid rgba(255,255,255,0.12); }
         .rv-mark { flex-shrink: 0; width: 22px; height: 22px; margin-top: 1px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.35); position: relative; }
-        /* Correcta (la buena) → check cyan/verde */
-        .rv-opt.correcta { background: rgba(89,167,0,0.10); color: #eafbe9; }
-        .rv-opt.correcta .rv-mark { border: 0; background: #59A700; }
-        .rv-opt.correcta .rv-mark::after { content: '\2713'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; font-weight: 800; }
-        /* Elegida pero incorrecta → X roja */
-        .rv-opt.mala { background: rgba(192,57,43,0.10); color: #ffe4e0; }
-        .rv-opt.mala .rv-mark { border: 0; background: #C0392B; }
-        .rv-opt.mala .rv-mark::after { content: '\2715'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 11px; font-weight: 800; }
+        /* Elegida por el alumno → azul, igual que al seleccionarla durante el examen.
+           NO se revela si fue correcta o incorrecta (sin verde ni rojo): solo lo que contestó. */
+        .rv-opt.elegida { background: rgba(5,186,238,0.10); color: #eaf0f2; }
+        .rv-opt.elegida .rv-mark { border: 0; background: linear-gradient(180deg, #05BAEE 0%, #2F728C 100%); }
+        .rv-opt.elegida .rv-mark::after { content: '\2713'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 13px; font-weight: 800; }
         @media (max-width: 820px) { .rv-opts { grid-template-columns: 1fr; } .rv-opt:nth-child(odd) { border-right: 0; } .rv-opt { border-bottom: 1px solid rgba(255,255,255,0.12); } }
 
         /* ===== Modal de resultado (sobre la revisión) ===== */
@@ -165,9 +162,8 @@
                 <div class="rv-opts">
                     @foreach ($q['opciones'] as $letra => $texto)
                         @php
-                            $esCorrecta = $letra === $q['correcta'];
-                            $esElegidaMala = $letra === $q['elegida'] && $letra !== $q['correcta'];
-                            $cls = $esCorrecta ? 'correcta' : ($esElegidaMala ? 'mala' : '');
+                            // Solo se resalta LA ELEGIDA (azul, como en el examen); no se revela la correcta.
+                            $cls = $letra === $q['elegida'] ? 'elegida' : '';
                         @endphp
                         <div class="rv-opt {{ $cls }}">
                             <span class="rv-mark"></span>

@@ -89,14 +89,16 @@
         }
         .side-item { text-decoration: none; }
         .side-item .ico { flex-shrink: 0; color: rgba(255,255,255,0.40); }
-        /* perfecta: etapa superada sin errores → texto claro + check verde */
-        .side-item.perfecta { color: rgba(255,255,255,0.80); }
+        /* perfecta: etapa superada sin errores → texto claro + check verde (clickeable → mano) */
+        .side-item.perfecta { color: rgba(255,255,255,0.80); cursor: pointer; }
         .side-item.perfecta .ico { color: #54c06a; }
         /* Etapas no clickeables (check verde superado, o la que se está viendo): sin cursor de mano */
         .side-item.no-click { cursor: default; }
         /* error: etapa superada con algún fallo → texto claro + cruz roja */
         .side-item.error { color: rgba(255,255,255,0.80); cursor: pointer; }
         .side-item.error .ico { color: #d9534f; }
+        /* pendiente: etapa en repetición (sin nueva respuesta aún) → texto claro, SIN icono */
+        .side-item.pendiente { color: rgba(255,255,255,0.80); cursor: pointer; }
         /* activa: texto blanco + reloj cyan */
         .side-item.activa { color: #FFFFFF; cursor: pointer; }
         .side-item.activa .ico { color: #05BAEE; }
@@ -1109,6 +1111,10 @@
                         @elseif ($etapa['estado'] === 'activa')
                             {{-- reloj (activa) --}}
                             <svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                        @elseif ($etapa['estado'] === 'pendiente')
+                            {{-- en repetición: SIN icono hasta aprobar o fallar de nuevo (svg vacío para
+                                 mantener la alineación; el JS le inyecta ✓/✗ en vivo al responder) --}}
+                            <svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"></svg>
                         @else
                             {{-- candado (bloqueada) --}}
                             <svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
@@ -1616,10 +1622,21 @@
             function marcarCruzMenu() {
                 var item = document.querySelector('.etapa-side .side-item.viendo');
                 if (!item || item.classList.contains('error')) return;
-                item.classList.remove('activa', 'perfecta');
+                item.classList.remove('activa', 'perfecta', 'pendiente');
                 item.classList.add('error');
                 var ico = item.querySelector('.ico');
                 if (ico) ico.innerHTML = '<circle cx="12" cy="12" r="9"/><path d="m9 9 6 6M15 9l-6 6"/>';
+            }
+
+            // Al APROBAR una etapa en repetición (pendiente, sin icono): pinta el check verde al instante.
+            // Solo aplica a 'pendiente' — la etapa activa normal conserva su reloj hasta avanzar.
+            function marcarCheckMenu() {
+                var item = document.querySelector('.etapa-side .side-item.viendo');
+                if (!item || !item.classList.contains('pendiente') || item.classList.contains('error')) return;
+                item.classList.remove('pendiente');
+                item.classList.add('perfecta');
+                var ico = item.querySelector('.ico');
+                if (ico) ico.innerHTML = '<circle cx="12" cy="12" r="9"/><path d="m8.4 12 2.4 2.4 4.8-5.2"/>';
             }
 
             function pintarBarra() {
@@ -1774,6 +1791,7 @@
                 persistir();                        // guarda al instante (no espera a "Siguiente etapa")
                 if (!correcta) marcarCruzMenu();     // solo pinta la X en el menu; el botón "Reiniciar capítulo"
                                                      // aparece al VOLVER al capítulo (render del servidor), no al fallar
+                else marcarCheckMenu();              // en repetición (pendiente): al aprobar, check verde al instante
                 if (window.checkMedalUnlock) window.checkMedalUnlock((baseVerde + liveVerde) - (baseRojo + liveRojo));
 
                 if (correcta) {

@@ -61,6 +61,12 @@
   .pill.none { background: rgba(255,255,255,.06); color: #8b9aa3; }
   .center { text-align: center; }
 
+  /* Alumnos de PRUEBA: checkbox + fila atenuada (excluidos de las métricas) */
+  .chk-test { width: 16px; height: 16px; accent-color: #05BAEE; cursor: pointer; vertical-align: middle; }
+  tr.es-test td { opacity: .45; }
+  tr.es-test td.col-test { opacity: 1; } /* el checkbox siempre visible */
+  .pill.test { background: rgba(5,186,238,.16); color: #7fe3ff; }
+
   @media (max-width: 900px) {
     .cards { grid-template-columns: repeat(2, 1fr); }
     .ing-grid { grid-template-columns: 1fr; }
@@ -139,6 +145,7 @@
             <th class="center">Ingreso 3</th>
             <th class="center">Evaluación</th>
             <th>Registro</th>
+            <th class="center" title="Marcar como cuenta de prueba: no cuenta en las métricas de arriba ni en el informe">Test</th>
           </tr>
         </thead>
         <tbody>
@@ -152,9 +159,9 @@
             };
           @endphp
           @forelse ($alumnos as $a)
-            <tr>
+            <tr class="{{ $a['is_test'] ? 'es-test' : '' }}">
               <td>
-                <div>{{ $a['nombre'] }}</div>
+                <div>{{ $a['nombre'] }} @if ($a['is_test'])<span class="pill test">TEST</span>@endif</div>
                 <div class="muted">{{ $a['email'] }}</div>
               </td>
               <td class="center">{!! $pill($a['i1']) !!}</td>
@@ -170,9 +177,17 @@
                 @endif
               </td>
               <td class="muted">{{ optional($a['registro'])->format('d/m/Y') ?? '—' }}</td>
+              <td class="center col-test">
+                <form method="POST" action="{{ route('admin.toggle-test', $a['id']) }}">
+                  @csrf
+                  <input type="checkbox" class="chk-test" onchange="this.form.submit()"
+                         {{ $a['is_test'] ? 'checked' : '' }}
+                         title="{{ $a['is_test'] ? 'Quitar marca de prueba (volverá a contar en las métricas)' : 'Marcar como cuenta de prueba (dejará de contar en las métricas)' }}">
+                </form>
+              </td>
             </tr>
           @empty
-            <tr><td colspan="6" class="center muted" style="padding:26px;">Aún no hay alumnos registrados.</td></tr>
+            <tr><td colspan="7" class="center muted" style="padding:26px;">Aún no hay alumnos registrados.</td></tr>
           @endforelse
         </tbody>
       </table>

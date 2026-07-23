@@ -35,6 +35,7 @@ class User extends Authenticatable
         'accepted_privacy',
         'accepted_novartis',
         'is_admin',
+        'is_test',
     ];
 
     /**
@@ -60,6 +61,7 @@ class User extends Authenticatable
             'accepted_privacy' => 'boolean',
             'accepted_novartis' => 'boolean',
             'is_admin' => 'boolean',
+            'is_test' => 'boolean',
         ];
     }
 

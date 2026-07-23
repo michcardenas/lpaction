@@ -10,8 +10,8 @@ class AdminController extends Controller
     /** Panel de administración: métricas de progreso de los alumnos. */
     public function dashboard()
     {
-        // Alumnos = usuarios NO administradores.
-        $studentIds = User::where('is_admin', false)->pluck('id');
+        // Alumnos = usuarios NO administradores. Los marcados como TEST no cuentan en las métricas.
+        $studentIds = User::where('is_admin', false)->where('is_test', false)->pluck('id');
         $totalAlumnos = $studentIds->count();
 
         // Progreso de todos los alumnos, agrupado por usuario.
@@ -51,12 +51,18 @@ class AdminController extends Controller
         $cursoCompleto = $aptos;
 
         // Registros recientes (últimos 7 días).
-        $nuevos7d = User::where('is_admin', false)
+        $nuevos7d = User::where('is_admin', false)->where('is_test', false)
             ->where('created_at', '>=', now()->subDays(7))->count();
 
-        // Tabla de alumnos con su estado por ingreso.
-        $alumnos = User::where('is_admin', false)->orderByDesc('id')->get()->map(function ($u) use ($progresos) {
-            $filas = $progresos->get($u->id) ?? collect();
+        // Tabla de alumnos con su estado por ingreso (los TEST sí se listan, marcados, pero
+        // su progreso no está en $progresos así que se consulta aparte).
+        $progresosTest = CourseProgress::whereIn(
+            'user_id',
+            User::where('is_admin', false)->where('is_test', true)->pluck('id')
+        )->get()->groupBy('user_id');
+
+        $alumnos = User::where('is_admin', false)->orderByDesc('id')->get()->map(function ($u) use ($progresos, $progresosTest) {
+            $filas = $progresos->get($u->id) ?? $progresosTest->get($u->id) ?? collect();
             $estado = function ($m) use ($filas) {
                 $f = $filas->firstWhere('module_key', $m);
                 return $f->status ?? 'locked';
@@ -73,6 +79,7 @@ class AdminController extends Controller
                 'apto'       => ! empty($evMeta['apto']),
                 'nota'       => $evMeta['ultima_nota'] ?? null,
                 'registro'   => $u->created_at,
+                'is_test'    => (bool) $u->is_test,
             ];
         });
 
@@ -82,6 +89,17 @@ class AdminController extends Controller
         return view('admin.dashboard', compact(
             'totalAlumnos', 'stats', 'aptos', 'mediaNota', 'cursoCompleto', 'nuevos7d', 'alumnos', 'informeDisponible'
         ));
+    }
+
+    /** Marca/desmarca a un alumno como cuenta de PRUEBA (excluida de las métricas). */
+    public function toggleTest(User $user)
+    {
+        abort_if($user->is_admin, 404); // los admins no aparecen en la tabla
+
+        $user->is_test = ! $user->is_test;
+        $user->save();
+
+        return redirect()->route('admin');
     }
 
     /** Descarga del informe final del curso (PDF maqueta con datos simulados). Solo administradores. */

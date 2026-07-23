@@ -491,8 +491,13 @@ class CursoController extends Controller
         $completado = $progreso->status === 'completed';
         $etapasEstado = collect($etapas)->map(function ($e, $i) use ($etapaIndex, $viewIndex, $resultados, $completado) {
             $tieneError = (int) ($resultados[$e['key']]['rojo'] ?? 0) > 0;
+            // Etapa en REPETICIÓN ("Repetir etapa" pulsado, aún sin nueva respuesta): sin icono
+            // en el menú (ni ✓ ni ✗ ni reloj) hasta que se apruebe o se falle de nuevo.
+            $repitiendo = ! empty($resultados[$e['key']]['repitiendo']);
             if ($i > $etapaIndex) {
                 $estado = 'bloqueada';
+            } elseif ($repitiendo && ! $completado) {
+                $estado = 'pendiente';
             } elseif ($tieneError) {
                 $estado = 'error';
             } elseif ($i === $etapaIndex && ! $completado) {
@@ -506,10 +511,10 @@ class CursoController extends Controller
         // "Repetir etapa" solo al VOLVER a una etapa ya superada (no en el primer intento, aunque haya error).
         $reevaluando = $viewIndex < $etapaIndex;
 
-        // Caso FINALIZADO: pulsar "Finalizar caso" (plata/oro) es el ÚNICO modo de pasar de la última
-        // pregunta (monitorizacion-2). Una vez pasada, queda TODO bloqueado: no se puede repetir ninguna etapa.
-        $idxUltimaPregunta = array_search('monitorizacion-2', array_column($etapas, 'key'), true);
-        $casoFinalizado = $idxUltimaPregunta !== false && $etapaIndex > $idxUltimaPregunta;
+        // Caso FINALIZADO: SOLO cuando el ingreso se cerró de verdad ("Finalizar ingreso" → status
+        // completed). Mientras el caso siga abierto, las etapas con fallo pueden repetirse aunque
+        // ya se haya pasado la última pregunta (antes se bloqueaba solo por pasar monitorizacion-2).
+        $casoFinalizado = $completado;
 
         // Score (contrapeso): verde = puntos de correctas, rojo = penalizaciones (NO se recupera).
         // Score = verde - rojo. La base es el TOTAL completo (incluida la etapa que se ve si ya se respondió),
@@ -673,7 +678,9 @@ class CursoController extends Controller
             // Reinicio TOTAL del capítulo: verde y rojo a 0, pregunta limpia (sin "piso" de rojo).
             // Así, al re-responder, las opciones vuelven a puntuar; si se responde perfecto, la
             // etapa queda en verde (check) y el botón "Repetir" se bloquea de nuevo.
-            $resultados[$etapaKey] = ['verde' => 0, 'rojo' => 0, 'sel' => []];
+            // 'repitiendo' deja la etapa SIN icono en el menú (ni ✓ ni ✗) hasta responder de nuevo;
+            // se borra solo al persistir la nueva respuesta (marcar reemplaza la entrada completa).
+            $resultados[$etapaKey] = ['verde' => 0, 'rojo' => 0, 'sel' => [], 'repitiendo' => true];
             $progreso->update(['etapas' => $resultados]);
         }
 

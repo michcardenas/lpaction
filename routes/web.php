@@ -21,6 +21,7 @@ Route::post('/registro', [RegisterController::class, 'store']);
 // Curso (requiere sesión iniciada)
 Route::middleware('auth')->group(function () {
     Route::get('/admin', [AdminController::class, 'dashboard'])->middleware('admin')->name('admin');
+    Route::post('/admin/alumno/{user}/test', [AdminController::class, 'toggleTest'])->middleware('admin')->name('admin.toggle-test');
     Route::get('/admin/informe', [AdminController::class, 'informe'])->middleware('admin')->name('admin.informe');
     Route::get('/admin/informe-dinamico', [AdminController::class, 'informeDinamico'])->middleware('admin')->name('admin.informe.dinamico');
     Route::get('/curso', [CursoController::class, 'index'])->name('curso');
