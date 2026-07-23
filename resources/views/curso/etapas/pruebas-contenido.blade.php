@@ -51,7 +51,7 @@
                     'videos' => [
                         ['file' => 'cateterismo-3', 'cap' => 'Video 3. Ecocardiograma (plano 4 cámaras). Fracción de eyección del ventrículo izquierdo conservada.'],
                     ],
-                    'nota' => 'Tras su llegada a Urgencias, el paciente es trasladado inmediatamente al área de Hemodinámica para la realización de una angioplastia primaria. En el cateterismo cardíaco los hallazgos son los siguientes: oclusión coronaria derecha y lesión moderada (50%) en descendente anterior. Fracción de eyección del ventrículo izquierdo (FEVI): 55%. Se procede a angioplastia coronaria transluminal percutánea (ACTP) e implante de 2 stents farmacoactivos (DES) en coronaria derecha con éxito y sin complicaciones. Flujo final TIMI 3 (flujo coronario normal).</p><p class="prueba-p">En evaluación ecocardiográfica tras angioplastia, se objetiva fracción de eyección del ventrículo izquierdo (FEVI) conservada del 55%, con hipocinesia inferior.',
+                    'nota' => 'Tras su llegada a Urgencias, el paciente es trasladado inmediatamente al área de Hemodinámica para la realización de una angioplastia primaria. En el cateterismo cardiaco los hallazgos son los siguientes: oclusión coronaria derecha y lesión moderada (50%) en descendente anterior. Se procede a angioplastia coronaria transluminal percutánea (ACTP) e implante de 2 stents farmacoactivos (DES) en coronaria derecha con éxito y sin complicaciones. Flujo final TIMI 3 (flujo coronario normal).</p><p class="prueba-p">En evaluación ecocardiográfica tras angioplastia, se objetiva fracción de eyección del ventrículo izquierdo (FEVI) conservada del 55%, con hipocinesia inferior.',
                 ],
             ];
         @endphp
@@ -93,7 +93,7 @@
                 <li>Hemoglobina (Hb): 14,7 g/dL.</li>
                 <li>Glucosa plasmática (GLU): 110 mg/dL.</li>
                 <li>Hemoglobina glicada (HbA1c): 5,7%.</li>
-                <li>Creatinina: 0,68 mg/dL (tasa de filtrado glomerular [TFG] &gt;60 mL/min/1,73 m²).</li>
+                <li>Creatinina: 0,68 mg/dL (tasa de filtrado glomerular [TFG CKD-EPI] 106 mL/min/1,73 m²).</li>
                 <li>Colesterol total (CT): 155 mg/dL.</li>
                 <li>Triglicéridos (TG): 78 mg/dL.</li>
                 <li>Colesterol unido a lipoproteínas de alta densidad (cHDL): 36 mg/dL.</li>

@@ -44,7 +44,7 @@ return [
         [
             'key'    => 'ingreso-1',
             'label'  => 'Ingreso 1',
-            'titulo' => 'Lp(a): una lipoproteína única y distinta, heredada y conductora causal de enfermedad cardiovascular',
+            'titulo' => 'Lp(a): una lipoproteína única, distinta, heredada y conductora causal de enfermedad cardiovascular',
         ],
         [
             'key'    => 'ingreso-2',
@@ -195,12 +195,12 @@ return [
 
     // Cuestionario de la etapa "Evaluación del riesgo cardiovascular" (respuesta única).
     'pregunta_riesgo' => [
-        'enunciado'   => 'En el caso de nuestro paciente, si quisiéramos realizar una estratificación de riesgo cardiovascular de alta precisión, ¿cuál sería el criterio más adecuado sobre el número de determinaciones de Lp(a) que deben realizarse a un paciente?',
+        'enunciado'   => 'En el caso de nuestro paciente, si quisiéramos realizar una estratificación de riesgo cardiovascular de alta precisión tras el evento agudo, ¿cuál sería el criterio más adecuado sobre el número de determinaciones de Lp(a) que deben realizarse?',
         'instruccion' => "Selecciona los ítems que creas convenientes y presiona 'Comprobar'.",
         'xp'          => 100,
         'opciones'    => [
             [
-                'key' => 'unica', 'texto' => 'Una única determinación basal en la juventud.', 'correcta' => false, 'puntos' => -20,
+                'key' => 'unica', 'texto' => 'Una única determinación si no dispone de ninguna previa.', 'correcta' => false, 'puntos' => -20,
                 'justificacion' => 'Aunque esta ha sido la recomendación clásica de las guías y la práctica habitual, la evidencia reciente en pacientes con SCA apoya considerar una segunda determinación en situación estable, especialmente si la medición se realizó durante el evento agudo y el resultado condiciona la estratificación del riesgo o decisiones terapéuticas6,7.',
             ],
             [
@@ -212,7 +212,7 @@ return [
                 'justificacion' => 'La Lp(a) presenta una determinación genética superior al 90%, con escasa variabilidad fisiológica en ausencia de cambios metabólicos relevantes (como enfermedad renal crónica o menopausia) o eventos cardiovasculares como el SCA. Por ello, su medición repetida en pacientes metabólicamente estables resulta poco eficiente, ya que no aporta cambios en la estratificación del riesgo ni en la toma de decisiones terapéuticas.',
             ],
             [
-                'key' => 'dos', 'texto' => 'Realizar al menos dos mediciones: una inicial de cribado y una segunda 1–3 meses después, o bien tras cambios metabólicos mayores o eventos cardiovasculares.', 'correcta' => true, 'puntos' => 100,
+                'key' => 'dos', 'texto' => 'Realizar al menos dos mediciones: una inicial de cribado y una segunda 1–3 meses después.', 'correcta' => true, 'puntos' => 100,
                 'justificacion' => 'La Lp(a) puede mostrar variación en el contexto de un evento cardiovascular agudo, por lo que conviene medirla durante el ingreso junto al perfil lipídico y repetir su determinación a los 1–3 meses, cuando el paciente se encuentre clínicamente estable, para confirmar un valor basal más representativo si este condiciona decisiones clínicas. Tras un infarto agudo de miocardio (IAM), se han descrito diferencias entre los niveles medidos en fase aguda y los obtenidos posteriormente. Existe también la recomendación de repetir la medición en situaciones de cambios metabólicos mayores, como tras la menopausia en mujeres con una determinación previa de riesgo intermedio, en los que un valor elevado posterior pueda determinar cambios de la estrategia de seguimiento5. En seguimiento estable, no se recomiendan mediciones seriadas sistemáticas, salvo cambios clínicos relevantes o tratamientos específicos dirigidos a la Lp(a)5-7.',
             ],
         ],
