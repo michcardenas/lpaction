@@ -1179,8 +1179,11 @@
                 {{-- Paciente (solo en Presentación) --}}
                 @if ($etapaActual === 'presentacion')
                 <div class="etapa-juan">
-                    {{-- anillos en la base (solo desktop; en móvil la imagen ya los trae) --}}
-                    <svg class="etapa-rings" style="position:absolute; left:50%; bottom:6px; transform:translateX(-50%); opacity:.5;" width="460" height="120" viewBox="0 0 460 120" fill="none" aria-hidden="true">
+                    {{-- anillos en la base (solo desktop; en móvil la imagen ya los trae).
+                         bottom:110px → el CENTRO del círculo queda a la altura donde el cuerpo de Juan
+                         se desvanece (~85% de la imagen), para que "toque" el círculo y el degradado
+                         empiece ahí, sin hueco (ajuste pedido por el cliente). --}}
+                    <svg class="etapa-rings" style="position:absolute; left:50%; bottom:110px; transform:translateX(-50%); opacity:.5;" width="460" height="120" viewBox="0 0 460 120" fill="none" aria-hidden="true">
                         @for ($r = 1; $r <= 4; $r++)
                             <ellipse cx="230" cy="105" rx="{{ $r * 52 }}" ry="{{ $r * 13 }}" stroke="#7fa6b2" stroke-width="1" opacity="{{ 0.5 - $r * 0.1 }}"/>
                         @endfor
