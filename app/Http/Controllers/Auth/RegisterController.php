@@ -41,6 +41,8 @@ class RegisterController extends Controller
             'password.confirmed'          => 'Las contraseñas no coinciden.',
             'password.min'                => 'La contraseña debe tener al menos 8 caracteres.',
             'specialty_other.required_if' => 'Escribe tu especialidad.',
+            'experience_level.required'   => 'Debes seleccionar tu perfil profesional.',
+            'experience_level.in'         => 'Selecciona un perfil profesional válido.',
         ]);
 
         // Si la especialidad es "Otra", guardamos la que el usuario escribió (sin acreditación oficial).
