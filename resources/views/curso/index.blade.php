@@ -705,7 +705,11 @@
                             $p = $progress->get($ing['key']);
                             $status = $p->status ?? 'locked';
                             // Avance real del módulo: etapa alcanzada / total de etapas (igual que la barra de la etapa).
-                            $etapasTotal = count($curso['etapas']);
+                            // Cada ingreso puede tener su propia lista (el 2 lleva "Objetivos lipídicos adicionales"),
+                            // así que el total se toma de `etapas_N` si existe.
+                            $nIng = (int) filter_var($ing['key'], FILTER_SANITIZE_NUMBER_INT);
+                            $etapasIng = $curso['etapas_'.$nIng] ?? $curso['etapas'];
+                            $etapasTotal = count($etapasIng);
                             $idx = (int) ($p->etapa_index ?? 0);
                             $percent = $status === 'completed' ? 100 : (int) round($idx / max($etapasTotal, 1) * 100);
                             $abierto = in_array($status, ['available', 'in_progress', 'completed']);
@@ -716,7 +720,12 @@
                             <div class="ing-pct">{{ str_pad($percent, 2, '0', STR_PAD_LEFT) }} %</div>
                             <div class="ing-cta">
                                 @if ($abierto)
-                                    <a href="{{ route('curso.etapa', $ing['key']) }}" class="btn-iniciar">{{ $percent > 0 ? 'Continuar' : 'Iniciar' }}</a>
+                                    @php
+                                        // 100% → "Acceder" (el módulo ya está terminado, solo se consulta);
+                                        // empezado → "Continuar"; sin empezar → "Iniciar".
+                                        $ctaTexto = $percent >= 100 ? 'Acceder' : ($percent > 0 ? 'Continuar' : 'Iniciar');
+                                    @endphp
+                                    <a href="{{ route('curso.etapa', $ing['key']) }}" class="btn-iniciar">{{ $ctaTexto }}</a>
                                 @else
                                     <span class="btn-locked">
                                         Iniciar
@@ -740,12 +749,12 @@
                         <div class="detalle-hasta">Disponible hasta: {{ $curso['disponible_hasta'] }}</div>
                     </div>
                     @php
-                        // La EVALUACIÓN FINAL se desbloquea cuando los módulos disponibles (Ingreso 1 y 2)
-                        // están completados. (Ingreso 3 está pospuesto, no se exige.) El DIPLOMA se
-                        // desbloquea solo tras aprobar la evaluación (APTO) — de momento queda bloqueado.
-                        $ing1Comp = optional($progress->get('ingreso-1'))->status === 'completed';
-                        $ing2Comp = optional($progress->get('ingreso-2'))->status === 'completed';
-                        $evalDesbloqueada = $ing1Comp && $ing2Comp;
+                        // La EVALUACIÓN FINAL se desbloquea cuando están completados TODOS los ingresos
+                        // (incluido el 3, al 100%). El DIPLOMA se desbloquea solo tras aprobar la
+                        // evaluación (APTO).
+                        $evalDesbloqueada = collect($curso['ingresos'])->every(
+                            fn ($ing) => optional($progress->get($ing['key']))->status === 'completed'
+                        );
                         // El DIPLOMA se desbloquea tras aprobar la evaluación (status ≠ locked).
                         $diplomaDesbloqueado = optional($progress->get('diploma'))->status
                             && optional($progress->get('diploma'))->status !== 'locked';

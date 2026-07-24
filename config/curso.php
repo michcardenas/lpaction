@@ -118,9 +118,31 @@ return [
     ],
 
     // Etapas (barra lateral) dentro de cada ingreso. La primera queda activa.
+    // OJO: si se añaden/quitan etapas hay que desplazar `course_progress.etapa_index`
+    // (los resultados van por CLAVE de etapa, así que esos no se pierden).
     'etapas' => [
+        ['key' => 'introduccion',     'titulo' => 'Introducción'],
         ['key' => 'presentacion',     'titulo' => 'Presentación'],
         ['key' => 'pruebas',          'titulo' => 'Pruebas complementarias'],
+        ['key' => 'riesgo',           'titulo' => 'Evaluación del riesgo cardiovascular'],
+        ['key' => 'terapeutico',      'titulo' => 'Planteamiento terapéutico'],
+        ['key' => 'monitorizacion',   'titulo' => 'Monitorización y seguimiento'],
+        ['key' => 'monitorizacion-2', 'titulo' => 'Monitorización y seguimiento 2'],
+        ['key' => 'mantenimiento',    'titulo' => 'Terapia de mantenimiento al alta de rehabilitación cardiaca'],
+        ['key' => 'puntos-clave',     'titulo' => 'Puntos clave'],
+        ['key' => 'resumen',          'titulo' => 'Resumen del caso'],
+    ],
+
+    // Etapas propias del INGRESO 2: igual que las generales pero con el capítulo
+    // "Objetivos lipídicos adicionales" entre Pruebas complementarias y Evaluación
+    // del riesgo (petición del cliente). Ahí va la pregunta de objetivos no-HDL/apoB,
+    // con lo que el resto de preguntas del módulo 2 se recolocan una etapa más abajo
+    // y "Monitorización y seguimiento 2" queda solo con contenido.
+    'etapas_2' => [
+        ['key' => 'introduccion',     'titulo' => 'Introducción'],
+        ['key' => 'presentacion',     'titulo' => 'Presentación'],
+        ['key' => 'pruebas',          'titulo' => 'Pruebas complementarias'],
+        ['key' => 'objetivos',        'titulo' => 'Objetivos lipídicos adicionales'],
         ['key' => 'riesgo',           'titulo' => 'Evaluación del riesgo cardiovascular'],
         ['key' => 'terapeutico',      'titulo' => 'Planteamiento terapéutico'],
         ['key' => 'monitorizacion',   'titulo' => 'Monitorización y seguimiento'],
@@ -482,8 +504,8 @@ return [
         ],
     ],
 
-    // Pregunta 2 del Ingreso 2 — etapa "riesgo" (objetivos de cLDL/no-HDL/apoB en riesgo extremo).
-    'pregunta_riesgo_2' => [
+    // Pregunta 2 del Ingreso 2 — etapa "objetivos" (objetivos de cLDL/no-HDL/apoB en riesgo extremo).
+    'pregunta_objetivos_2' => [
         'enunciado'   => 'Ya conocemos la importancia de alcanzar objetivos de cLDL en este tipo de pacientes. Sin embargo, debemos vigilar más parámetros. Si buscamos objetivos de colesterol no-HDL y apoB, ¿qué opción de las siguientes define correctamente los objetivos en este caso?',
         'instruccion' => "Selecciona los ítems que creas convenientes y presiona 'Comprobar'.",
         'xp'          => 100,
@@ -507,8 +529,8 @@ return [
         ],
     ],
 
-    // Pregunta 3 del Ingreso 2 — etapa "terapeutico" (unidades de medición Lp(a): nmol/L vs mg/dL).
-    'pregunta_terapeutico_2' => [
+    // Pregunta 3 del Ingreso 2 — etapa "riesgo" (unidades de medición Lp(a): nmol/L vs mg/dL).
+    'pregunta_riesgo_2' => [
         'enunciado'   => 'El valor de la Lp(a) de nuestro paciente viene expresado en nmol/L. Sobre la medición de la Lp(a), señala la verdadera:',
         'instruccion' => "Selecciona los ítems que creas convenientes y presiona 'Comprobar'.",
         'xp'          => 100,
@@ -532,8 +554,8 @@ return [
         ],
     ],
 
-    // Pregunta 4 del Ingreso 2 — etapa "monitorizacion" (optimizar tratamiento con Lp(a) elevada).
-    'pregunta_monitorizacion_2' => [
+    // Pregunta 4 del Ingreso 2 — etapa "terapeutico" (optimizar tratamiento con Lp(a) elevada).
+    'pregunta_terapeutico_2' => [
         'enunciado'   => '¿Podrías optimizar el tratamiento de este paciente con evento recurrente con cLDL y ApoB fuera de objetivos a pesar de tratamiento hipolipemiante óptimo y con Lp(a) elevada?',
         'instruccion' => "Selecciona los ítems que creas convenientes y presiona 'Comprobar'.",
         'xp'          => 100,
@@ -558,9 +580,9 @@ return [
     ],
 
     // Pregunta 5 del Ingreso 2 — etapa "monitorizacion-2" (ventajas de inclisirán vs iPCSK9).
-    // ÚLTIMA pregunta del ingreso 2 → activa el modal "Finalizar caso".
+    // Pregunta 5 (ÚLTIMA del ingreso 2) — etapa "monitorizacion" → activa el modal "Finalizar caso".
     // Tiene 3 opciones CORRECTAS (30 + 40 + 30 = 100) y una INCORRECTA (-100).
-    'pregunta_monitorizacion2_2' => [
+    'pregunta_monitorizacion_2' => [
         'enunciado'   => 'En este paciente, ¿qué ventajas encuentras en inclisirán frente a los iPCSK9 a la espera de los resultados de ensayos de eventos cardiovasculares (CVOT)?',
         'instruccion' => "Selecciona los ítems que creas convenientes y presiona 'Comprobar'.",
         'xp'          => 30,

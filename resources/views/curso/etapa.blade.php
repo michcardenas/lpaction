@@ -1043,7 +1043,8 @@
                 <a href="{{ route('curso') }}" class="top-back" aria-label="Volver">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
                 </a>
-                <span class="top-name">{{ $curso['paciente']['nombre'] }}</span>
+                {{-- Título del caso: "Ingreso 1/2/3" (antes iba el nombre del paciente) --}}
+                <span class="top-name">{{ $ingresoData['label'] ?? $curso['paciente']['nombre'] }}</span>
             </div>
 
             <div class="top-center">
@@ -1294,14 +1295,22 @@
                                     <input type="hidden" name="confirmar" value="1">
                                     <button type="submit" class="rp-btn cyan rp-continuar" data-espera="{{ ($medalla['key'] ?? '') === 'oro' ? 0 : 10 }}">{{ $b['texto'] }}</button>
                                 </form>
+                            @elseif ($accion === 'mejorar')
+                                {{-- cierra el modal y vuelve a la etapa a repasar --}}
+                                <a class="rp-btn {{ ($b['estilo'] ?? '') === 'cyan' ? 'cyan' : '' }}"
+                                   href="{{ route('curso.etapa', [$ingreso, $etapaActual]) }}">{{ $b['texto'] }}</a>
                             @else
-                                @php
-                                    $ultimaEtapaKey = collect($curso['etapas'] ?? [])->last()['key'] ?? 'resumen';
-                                    $href = $accion === 'mejorar'
-                                        ? route('curso.etapa', [$ingreso, $etapaActual])       // cierra el modal y vuelve a la etapa a repasar
-                                        : route('curso.etapa', [$ingreso, $ultimaEtapaKey]);   // temario (sin/bronce) → último capítulo (Resumen)
-                                @endphp
-                                <a class="rp-btn {{ ($b['estilo'] ?? '') === 'cyan' ? 'cyan' : '' }}" href="{{ $href }}">{{ $b['texto'] }}</a>
+                                {{-- "Volver al temario" (sin/bronce): DESBLOQUEA los capítulos finales y lleva
+                                     al último. Antes era un enlace directo al último capítulo, pero al no haber
+                                     avanzado el progreso rebotaba a esta misma pregunta y el caso no se podía
+                                     terminar nunca. --}}
+                                <form method="POST" action="{{ route('curso.avanzar', $ingreso) }}" style="display:contents;">
+                                    @csrf
+                                    <input type="hidden" name="desde" value="{{ $etapaActual }}">
+                                    <input type="hidden" name="confirmar" value="1">
+                                    <input type="hidden" name="hasta" value="fin">
+                                    <button type="submit" class="rp-btn {{ ($b['estilo'] ?? '') === 'cyan' ? 'cyan' : '' }}">{{ $b['texto'] }}</button>
+                                </form>
                             @endif
                         @endforeach
                     </div>

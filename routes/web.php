@@ -40,6 +40,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/curso/{ingreso}/marcar', [CursoController::class, 'marcar'])->name('curso.marcar');
     Route::post('/curso/{ingreso}/avanzar', [CursoController::class, 'avanzar'])->name('curso.avanzar');
     Route::post('/curso/{ingreso}/reiniciar', [CursoController::class, 'reiniciar'])->name('curso.reiniciar');
+    Route::get('/curso/{ingreso}/descargar-caso', [CursoController::class, 'descargarCaso'])->name('curso.descargar');
     Route::get('/curso/{ingreso}/resumen-caso', [CursoController::class, 'resumenCaso'])->name('curso.resumen');
     Route::get('/curso/{ingreso}/{etapa?}', [CursoController::class, 'etapa'])->name('curso.etapa');
 });

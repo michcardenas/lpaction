@@ -5,10 +5,11 @@
     $reevaluando = $reevaluando ?? false;
     $preSelCsv   = implode(',', $preSel ?? []);   // opciones ya marcadas (se re-pintan; el rojo permanece)
 
-    // ÚLTIMA pregunta (monitorizacion-2): permitir "Repetir etapa" también en el intento activo,
+    // ÚLTIMA pregunta del ingreso: permitir "Repetir etapa" también en el intento activo,
     // en cuanto el usuario haya marcado al menos una opción y aún no haya finalizado el caso.
     // Motivo: es la última decisión antes de "Finalizar caso", debe poder rectificar.
-    $esUltimaPregunta = $etapaActual === 'monitorizacion-2';
+    // Varía por ingreso (en el 2 es "monitorizacion", no "monitorizacion-2").
+    $esUltimaPregunta = $etapaActual === ($ultimaPreguntaKey ?? 'monitorizacion-2');
     $repetirHabilitado = empty($casoFinalizado) && !empty($preSel) && (
         (!empty($reevaluando) && !empty($etapaTieneError))
         || $esUltimaPregunta
@@ -68,7 +69,7 @@
             @csrf
             <input type="hidden" name="desde" value="{{ $etapaActual }}">
             <input type="hidden" name="sel" value="{{ $preSelCsv }}" id="cuest-sel">
-            <button type="submit" class="btn-next-q">{{ $etapaActual === 'monitorizacion-2' ? 'Finalizar caso' : ($esUltimaEtapa ? 'Finalizar' : 'Siguiente etapa') }}</button>
+            <button type="submit" class="btn-next-q">{{ $esUltimaPregunta ? 'Finalizar caso' : ($esUltimaEtapa ? 'Finalizar' : 'Siguiente etapa') }}</button>
         </form>
     </div>
 </div>

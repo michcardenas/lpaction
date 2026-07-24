@@ -62,12 +62,13 @@ class CursoController extends Controller
             if (! isset($curso[$key])) continue;
 
             $variante = $curso[$key];
-            // La imagen evoluciona según el avance del ingreso:
-            //  completado → imagen_completado (Juan sano) · en progreso → imagen_progreso (camisa gris)
+            // Juan evoluciona ENTRE ingresos, no dentro de uno: mientras estés en el ingreso 2
+            // se ve el Juan del ingreso 2. Solo al COMPLETARLO pasa a su imagen final (y en cuanto
+            // se desbloquea el siguiente ingreso, este bucle ya toma el paciente de ese ingreso).
+            // Antes, a mitad del ingreso se mostraba `imagen_progreso`, que el cliente leía como
+            // "el Juan del ingreso siguiente".
             if ($p->status === 'completed' && ! empty($variante['imagen_completado'])) {
                 $variante['imagen'] = $variante['imagen_completado'];
-            } elseif ((int) ($p->etapa_index ?? 0) > 0 && ! empty($variante['imagen_progreso'])) {
-                $variante['imagen'] = $variante['imagen_progreso'];
             }
             $activo = $variante;
         }
@@ -94,6 +95,11 @@ class CursoController extends Controller
         $user = Auth::user();
         CourseProgress::seedFor($user);
 
+        // La evaluación final exige TODOS los ingresos completados al 100% (incluido el 3).
+        if (! $this->todosLosIngresosCompletados($user)) {
+            return redirect()->route('curso');
+        }
+
         $cfg = config('curso.evaluacion');
         $maxIntentos = (int) ($cfg['max_intentos'] ?? 2);
 
@@ -118,6 +124,11 @@ class CursoController extends Controller
     {
         $user = Auth::user();
         CourseProgress::seedFor($user);
+
+        // Guard: no se puede empezar la evaluación sin tener TODOS los ingresos completados.
+        if (! $this->todosLosIngresosCompletados($user)) {
+            return redirect()->route('curso');
+        }
 
         $cfg     = config('curso.evaluacion');
         $todas   = $cfg['preguntas'] ?? [];
@@ -373,6 +384,34 @@ class CursoController extends Controller
      * correcta(s) marcada(s) y la respuesta del alumno, más su puntuación y medalla.
      * Se abre como página imprimible (window.print → "Guardar como PDF").
      */
+    /**
+     * "Descargar caso": entrega el documento OFICIAL del caso (PDF/Word de la carpeta compartida),
+     * no el resumen generado. Un archivo por ingreso en public/casos/ (caso-ingreso-N.pdf|docx).
+     */
+    public function descargarCaso($ingreso)
+    {
+        $user = Auth::user();
+        CourseProgress::seedFor($user);
+        $this->ingresoAbierto($user, $ingreso);   // 404 si el ingreso no está abierto para el usuario
+
+        // Cada ingreso tiene su documento oficial (ingreso-3 es Word; 1 y 2, PDF).
+        $mapa = [
+            'ingreso-1' => 'caso-ingreso-1.pdf',
+            'ingreso-2' => 'caso-ingreso-2.pdf',
+            'ingreso-3' => 'caso-ingreso-3.docx',
+        ];
+        $archivo = $mapa[$ingreso] ?? null;
+        abort_if($archivo === null, 404);
+
+        $ruta = public_path('casos/'.$archivo);
+        abort_unless(is_file($ruta), 404);
+
+        // Nombre amigable de descarga.
+        $n = str_replace('ingreso-', '', $ingreso);
+        $ext = pathinfo($archivo, PATHINFO_EXTENSION);
+        return response()->download($ruta, 'Caso clinico - Ingreso '.$n.'.'.$ext);
+    }
+
     public function resumenCaso($ingreso)
     {
         $user = Auth::user();
@@ -380,7 +419,7 @@ class CursoController extends Controller
         $progreso = $this->ingresoAbierto($user, $ingreso);   // 404 si el ingreso no está abierto
 
         $curso      = config('curso');
-        $etapas     = $curso['etapas'];
+        $etapas     = $this->etapasDe($ingreso);
         $resultados = $progreso->etapas ?? [];
 
         $ingresoData = collect($curso['ingresos'])->firstWhere('key', $ingreso);
@@ -388,7 +427,7 @@ class CursoController extends Controller
 
         // Preguntas del ingreso con sus opciones (correcta / elegida por el alumno).
         $preguntas = [];
-        foreach (['pruebas', 'riesgo', 'terapeutico', 'monitorizacion', 'monitorizacion-2'] as $st) {
+        foreach ($this->etapasConPregunta($ingreso) as $st) {
             $pk = $this->preguntaKey($ingreso, $st);
             if (! $pk || empty($curso[$pk]['opciones'])) continue;
 
@@ -416,7 +455,7 @@ class CursoController extends Controller
         $totalRojo  = array_sum(array_map(fn ($r) => (int) ($r['rojo']  ?? 0), $resultados));
         $score = $totalVerde - $totalRojo;
         $maxScore = 0;
-        foreach (['pruebas', 'riesgo', 'terapeutico', 'monitorizacion', 'monitorizacion-2'] as $stage) {
+        foreach ($this->etapasConPregunta($ingreso) as $stage) {
             $pk = $this->preguntaKey($ingreso, $stage);
             foreach (($curso[$pk]['opciones'] ?? []) as $op) {
                 if (($op['puntos'] ?? 0) > 0) $maxScore += (int) $op['puntos'];
@@ -459,7 +498,7 @@ class CursoController extends Controller
         $curso = config('curso');
 
         $progreso = $this->ingresoAbierto($user, $ingreso);
-        $etapas   = $curso['etapas'];
+        $etapas   = $this->etapasDe($ingreso);
         $etapaIndex = (int) ($progreso->etapa_index ?? 0);   // etapa más lejana alcanzada
 
         // Etapa que se ve: la pedida (si está desbloqueada) o la actual.
@@ -528,7 +567,7 @@ class CursoController extends Controller
         // Máximo del score = suma de los puntos de TODAS las opciones correctas del ingreso.
         // Cada ingreso tiene su propio set de preguntas (sufijo _2 para ingreso-2, etc.).
         $maxScore = 0;
-        foreach (['pruebas', 'riesgo', 'terapeutico', 'monitorizacion', 'monitorizacion-2'] as $stage) {
+        foreach ($this->etapasConPregunta($ingreso) as $stage) {
             $pk = $this->preguntaKey($ingreso, $stage);
             foreach (($curso[$pk]['opciones'] ?? []) as $op) {
                 if (($op['puntos'] ?? 0) > 0) $maxScore += (int) $op['puntos'];
@@ -552,9 +591,12 @@ class CursoController extends Controller
         // (polo a rayas), en el 3 al del 3, etc. — independientemente del progreso.
         $pacienteIngreso = $this->pacienteDeIngreso($curso, $ingreso);
 
+        // Última etapa CON pregunta de ESTE ingreso (dispara "Finalizar caso" y la medalla).
+        $ultimaPreguntaKey = $this->ultimaPreguntaKey($ingreso);
+
         return view('curso.etapa', compact(
             'user', 'curso', 'ingreso', 'ingresoData', 'etapaActual', 'etapasEstado', 'esUltimaEtapa', 'avance',
-            'exp', 'verdeBase', 'rojoBase', 'maxScore', 'score', 'medalla', 'mostrarResultado', 'preSel', 'reevaluando', 'etapaTieneError', 'casoFinalizado', 'pacienteIngreso'
+            'exp', 'verdeBase', 'rojoBase', 'maxScore', 'score', 'medalla', 'mostrarResultado', 'preSel', 'reevaluando', 'etapaTieneError', 'casoFinalizado', 'pacienteIngreso', 'ultimaPreguntaKey'
         ));
     }
 
@@ -565,7 +607,7 @@ class CursoController extends Controller
         $progreso = $this->ingresoAbierto($user, $ingreso);
 
         $curso  = config('curso');
-        $etapas = $curso['etapas'];
+        $etapas = $this->etapasDe($ingreso);
 
         // Avanza desde la etapa indicada (la que se ve); si no llega, desde la actual.
         $desde = array_search($request->input('desde'), array_column($etapas, 'key'), true);
@@ -590,10 +632,28 @@ class CursoController extends Controller
         }
 
         // ÚLTIMA PREGUNTA (Monitorización 2): "Finalizar caso" MUESTRA la medalla; todavía NO avanza.
-        // El avance real lo confirma el modal (plata/oro) re-enviando con confirmar=1.
-        if ($stageKey === 'monitorizacion-2' && ! $request->boolean('confirmar')) {
+        // El avance real lo confirma el modal re-enviando con confirmar=1.
+        // OJO: solo la PRIMERA vez. Si el usuario ya pasó de esta etapa y vuelve a ella a revisar,
+        // "Finalizar caso" debe avanzar normalmente; si no, el modal se repetía en bucle y el
+        // botón parecía bloqueado (error reportado por el cliente).
+        $yaAvanzado = (int) ($progreso->etapa_index ?? 0) > $desde;
+        $ultimaPregunta = $this->ultimaPreguntaKey($ingreso);   // varía por ingreso
+        if ($stageKey === $ultimaPregunta && ! $request->boolean('confirmar') && ! $yaAvanzado) {
             $progreso->update(['etapas' => $resultados, 'status' => 'in_progress']);
-            return redirect()->route('curso.etapa', [$ingreso, 'monitorizacion-2', 'resultado' => 1]);
+            return redirect()->route('curso.etapa', [$ingreso, $stageKey, 'resultado' => 1]);
+        }
+
+        // "Volver al temario" del modal de medalla (sin/bronce): desbloquea los capítulos finales
+        // y lleva al último. Sin esto, esas medallas no tenían NINGÚN botón que avanzara y el
+        // usuario quedaba atrapado en la pregunta (el enlace al último capítulo rebotaba).
+        if ($request->input('hasta') === 'fin') {
+            $ultimo = count($etapas) - 1;
+            $progreso->update([
+                'etapas'      => $resultados,
+                'status'      => 'in_progress',
+                'etapa_index' => max((int) ($progreso->etapa_index ?? 0), $ultimo),
+            ]);
+            return redirect()->route('curso.etapa', [$ingreso, $etapas[$ultimo]['key']]);
         }
 
         // Última etapa ("Finalizar ingreso"): el ingreso queda completado y se desbloquea el siguiente.
@@ -626,7 +686,7 @@ class CursoController extends Controller
         $progreso = $this->ingresoAbierto($user, $ingreso);
 
         $curso  = config('curso');
-        $etapas = $curso['etapas'];
+        $etapas = $this->etapasDe($ingreso);
 
         $stageKey = (string) $request->input('etapa');
         $idx = array_search($stageKey, array_column($etapas, 'key'), true);
@@ -668,7 +728,7 @@ class CursoController extends Controller
         $user = Auth::user();
         $progreso = $this->ingresoAbierto($user, $ingreso);
 
-        $etapas   = config('curso.etapas');
+        $etapas   = $this->etapasDe($ingreso);
         $etapaKey = (string) $request->input('etapa');
         $idx = array_search($etapaKey, array_column($etapas, 'key'), true);
         abort_if($idx === false, 404);
@@ -696,6 +756,7 @@ class CursoController extends Controller
     {
         $base = [
             'pruebas'          => 'pregunta_pruebas',
+            'objetivos'        => 'pregunta_objetivos',    // solo ingreso 2
             'riesgo'           => 'pregunta_riesgo',
             'terapeutico'      => 'pregunta_terapeutico',
             'monitorizacion'   => 'pregunta_monitorizacion',
@@ -707,6 +768,58 @@ class CursoController extends Controller
         if ($ingreso === 'ingreso-1') return $pk;
         if (preg_match('/^ingreso-(\d+)$/', $ingreso, $m)) return $pk.'_'.$m[1];
         return $pk;
+    }
+
+    /**
+     * ¿El alumno ha completado TODOS los ingresos (los 3 al 100%)?
+     * Es el requisito para abrir la evaluación final.
+     */
+    private function todosLosIngresosCompletados($user): bool
+    {
+        $claves = array_column(config('curso.ingresos', []), 'key');
+        if (! $claves) return false;
+
+        $completados = $user->progress()
+            ->whereIn('module_key', $claves)
+            ->where('status', 'completed')
+            ->count();
+
+        return $completados === count($claves);
+    }
+
+    /**
+     * Etapas de un ingreso. Cada ingreso puede tener su propia lista (config `etapas_N`);
+     * si no la define, usa la general. El Ingreso 2 añade "Objetivos lipídicos adicionales".
+     */
+    private function etapasDe(string $ingreso): array
+    {
+        if (preg_match('/^ingreso-(\d+)$/', $ingreso, $m)) {
+            $propias = config('curso.etapas_'.$m[1]);
+            if (is_array($propias) && $propias) return $propias;
+        }
+        return config('curso.etapas', []);
+    }
+
+    /** Etapas de ese ingreso que TIENEN cuestionario (en orden). */
+    private function etapasConPregunta(string $ingreso): array
+    {
+        $curso = config('curso');
+        $keys  = [];
+        foreach ($this->etapasDe($ingreso) as $e) {
+            $pk = $this->preguntaKey($ingreso, $e['key']);
+            if ($pk && ! empty($curso[$pk]['opciones'])) $keys[] = $e['key'];
+        }
+        return $keys;
+    }
+
+    /**
+     * Última etapa CON pregunta del ingreso: es la que dispara "Finalizar caso" y la medalla.
+     * (En el Ingreso 2 es "monitorizacion", porque "monitorizacion-2" quedó solo con contenido.)
+     */
+    private function ultimaPreguntaKey(string $ingreso): ?string
+    {
+        $conPregunta = $this->etapasConPregunta($ingreso);
+        return $conPregunta ? end($conPregunta) : null;
     }
 
     /**
