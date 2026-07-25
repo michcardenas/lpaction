@@ -29,6 +29,37 @@ return [
         'registro_seaformec' => '',                     // COMPLETAR: Registro SEAFORMEC-SMPAC
     ],
 
+    // Especialidades del registro y el CERTIFICADO que obtiene cada una:
+    //   'cases_uems' → Certificado CASES + UEMS
+    //   'casec'      → únicamente Certificado CASEC
+    // (Listado facilitado por el cliente. "Radiodiagnóstico" aparecía en ambos
+    //  grupos; se deja en CASES+UEMS — CONFIRMAR con el cliente si debe ser CASEC.)
+    'especialidades' => [
+        'Análisis Clínicos'                    => 'casec',
+        'Angiología y Cirugía Vascular'        => 'cases_uems',
+        'Bioquímica Clínica'                   => 'casec',
+        'Cardiología'                          => 'cases_uems',
+        'Cirugía Cardiovascular'               => 'cases_uems',
+        'Endocrinología y Nutrición'           => 'cases_uems',
+        'Farmacia Hospitalaria'                => 'casec',
+        'Farmacología Clínica'                 => 'casec',
+        'Geriatría'                            => 'cases_uems',
+        'Hematología y Hemoterapia'            => 'cases_uems',
+        'Medicina de Urgencias y Emergencias'  => 'cases_uems',
+        'Medicina del Trabajo'                 => 'cases_uems',
+        'Medicina Familiar y Comunitaria'      => 'cases_uems',
+        'Medicina Física y Rehabilitación'     => 'cases_uems',
+        'Medicina Intensiva'                   => 'cases_uems',
+        'Medicina Interna'                     => 'cases_uems',
+        'Medicina Preventiva y Salud Pública'  => 'cases_uems',
+        'Nefrología'                           => 'cases_uems',
+        'Neurología'                           => 'cases_uems',
+        'Pediatría y sus Áreas Específicas'    => 'cases_uems',
+        'Radiodiagnóstico'                     => 'cases_uems',
+        'Residentes'                           => 'casec',
+        'Reumatología'                         => 'cases_uems',
+    ],
+
     'paciente' => [
         'nombre' => 'Juan',
         'imagen' => 'images/paciente_pantalla_1.png',
@@ -120,7 +151,22 @@ return [
     // Etapas (barra lateral) dentro de cada ingreso. La primera queda activa.
     // OJO: si se añaden/quitan etapas hay que desplazar `course_progress.etapa_index`
     // (los resultados van por CLAVE de etapa, así que esos no se pierden).
+    // Esta lista GENERAL la usa el Ingreso 3 (no tiene "Introducción" ni "Objetivos").
     'etapas' => [
+        ['key' => 'presentacion',     'titulo' => 'Presentación'],
+        ['key' => 'pruebas',          'titulo' => 'Pruebas complementarias'],
+        ['key' => 'riesgo',           'titulo' => 'Evaluación del riesgo cardiovascular'],
+        ['key' => 'terapeutico',      'titulo' => 'Planteamiento terapéutico'],
+        ['key' => 'monitorizacion',   'titulo' => 'Monitorización y seguimiento'],
+        ['key' => 'monitorizacion-2', 'titulo' => 'Monitorización y seguimiento 2'],
+        ['key' => 'mantenimiento',    'titulo' => 'Terapia de mantenimiento al alta de rehabilitación cardiaca'],
+        ['key' => 'puntos-clave',     'titulo' => 'Puntos clave'],
+        ['key' => 'resumen',          'titulo' => 'Resumen del caso'],
+    ],
+
+    // Etapas del INGRESO 1: incluye "Introducción" (solo vídeo) al inicio.
+    // La introducción va ÚNICAMENTE en el Ingreso 1 (petición del cliente).
+    'etapas_1' => [
         ['key' => 'introduccion',     'titulo' => 'Introducción'],
         ['key' => 'presentacion',     'titulo' => 'Presentación'],
         ['key' => 'pruebas',          'titulo' => 'Pruebas complementarias'],
@@ -133,13 +179,12 @@ return [
         ['key' => 'resumen',          'titulo' => 'Resumen del caso'],
     ],
 
-    // Etapas propias del INGRESO 2: igual que las generales pero con el capítulo
+    // Etapas propias del INGRESO 2: sin "Introducción" y con el capítulo
     // "Objetivos lipídicos adicionales" entre Pruebas complementarias y Evaluación
     // del riesgo (petición del cliente). Ahí va la pregunta de objetivos no-HDL/apoB,
     // con lo que el resto de preguntas del módulo 2 se recolocan una etapa más abajo
     // y "Monitorización y seguimiento 2" queda solo con contenido.
     'etapas_2' => [
-        ['key' => 'introduccion',     'titulo' => 'Introducción'],
         ['key' => 'presentacion',     'titulo' => 'Presentación'],
         ['key' => 'pruebas',          'titulo' => 'Pruebas complementarias'],
         ['key' => 'objetivos',        'titulo' => 'Objetivos lipídicos adicionales'],
@@ -147,6 +192,20 @@ return [
         ['key' => 'terapeutico',      'titulo' => 'Planteamiento terapéutico'],
         ['key' => 'monitorizacion',   'titulo' => 'Monitorización y seguimiento'],
         ['key' => 'monitorizacion-2', 'titulo' => 'Monitorización y seguimiento 2'],
+        ['key' => 'mantenimiento',    'titulo' => 'Terapia de mantenimiento al alta de rehabilitación cardiaca'],
+        ['key' => 'puntos-clave',     'titulo' => 'Puntos clave'],
+        ['key' => 'resumen',          'titulo' => 'Resumen del caso'],
+    ],
+
+    // Etapas propias del INGRESO 3: mismas etapas que las generales, pero la etapa
+    // "monitorizacion" muestra en el menú su título real del documento (§5).
+    'etapas_3' => [
+        ['key' => 'presentacion',     'titulo' => 'Presentación'],
+        ['key' => 'pruebas',          'titulo' => 'Pruebas complementarias'],
+        ['key' => 'riesgo',           'titulo' => 'Evaluación del riesgo cardiovascular'],
+        ['key' => 'terapeutico',      'titulo' => 'Planteamiento terapéutico'],
+        ['key' => 'monitorizacion',   'titulo' => 'Terapias emergentes anti-Lp(a): pelacarsen y ensayo HORIZON'],
+        ['key' => 'monitorizacion-2', 'titulo' => 'Evolución'],
         ['key' => 'mantenimiento',    'titulo' => 'Terapia de mantenimiento al alta de rehabilitación cardiaca'],
         ['key' => 'puntos-clave',     'titulo' => 'Puntos clave'],
         ['key' => 'resumen',          'titulo' => 'Resumen del caso'],
@@ -691,7 +750,7 @@ return [
     'motivo_consulta' => 'Juan acude al servicio de Urgencias del hospital acompañado por su esposa tras presentar, 3 horas antes, un cuadro de aparición brusca de debilidad en hemicuerpo izquierdo con inestabilidad y leve confusión. Los síntomas se han mantenido estables desde el inicio. No refiere cefalea, pérdida de conocimiento ni convulsiones. Se le realiza un electrocardiograma (ECG) en el que se observa taquicardia sinusal. Dado su historial de enfermedad cardiovascular (ECV) polivascular y Lp(a) elevada, la sospecha de ictus isquémico es alta.',
     'tc_texto' => 'TC craneal sin contraste: ausencia de hemorragia intracraneal y de signos de infarto agudo en territorio arterial definido.',
     'angiotc_texto' => 'Lesión grave (90%) de la arteria carótida interna derecha. Placas de ateroma en bulbo carotídeo izquierdo con estenosis <50%. Signos de enfermedad aterosclerótica difusa en arco aórtico y arterias supraaórticas.',
-    'rm_texto' => 'Resonancia magnética (RM) cerebral a las 48 horas: infarto isquémico agudo hemisférico derecho de localización subinsular y capsular que se extiende a corona radiada. Sin transformación hemorrágica. Leucoaraiosis periventricular ligera.',
+    'rm_texto' => 'Infarto isquémico agudo hemisférico derecho de localización subinsular y capsular que se extiende a corona radiada. Sin transformación hemorrágica. Leucoaraiosis periventricular ligera.',
     'revascularizacion_texto' => 'Se realiza endarterectomía carotídea derecha emergente con buen resultado y sin complicaciones.',
     'analitica' => [
         'Glucosa plasmática (GLU): 98 mg/dL.',
@@ -714,12 +773,12 @@ return [
         'El mayor de sus tres hijos se ha realizado una revisión cardiovascular completa con hallazgo de un cLDL de 135 mg/dL y una Lp(a) de 269 nmol/L. Ha dejado de fumar y comenzado a modificar sus hábitos con dieta cardiosaludable y ejercicio físico aeróbico, combinado con un programa específico de fuerza (en total >300 minutos por semana), pendiente de evolución y analítica para valorar la necesidad de tratamiento farmacológico. Ni él ni Juan quieren que se repita su historia.',
     ],
     'puntos_clave' => [
-        'La Lp(a) elevada es un factor de riesgo causal e independiente para el ictus isquémico aterotrombótico, incluyendo recurrencias, independientemente de los niveles de cLDL.',
-        'El ictus aterotrombótico es una de las manifestaciones cardiovasculares de la enfermedad aterosclerótica promovida por la Lp(a), junto con el IAM y la EAP.',
-        'No existe ninguna terapia aprobada específicamente para reducir la Lp(a), pero el pelacarsen (ASO), el olpasiran y el lepodisiran (ambos siRNA) han demostrado reducciones >80–95% en estudios de fase II.',
-        'El ensayo Lp(a)HORIZON (NCT04023552) es el primer estudio de fase III diseñado para evaluar si la reducción de Lp(a) con pelacarsen (80 mg en administración subcutánea mensual) disminuye los eventos cardiovasculares en 8323 pacientes con ECV establecida y Lp(a) ≥70 mg/dL.',
-        'En los pacientes con ictus isquémico, Lp(a) elevada y buen control de cLDL, deben considerarse el acceso precoz al tratamiento o su inclusión en ensayos clínicos en fase III.',
-        'Adicionalmente, la estrategia debe centrarse en la reducción máxima de todos los factores de riesgo modificables y en el cribado familiar de Lp(a) en familiares de primer grado.',
+        'La Lp(a) elevada es un factor de riesgo causal e independiente para el ictus isquémico aterotrombótico, incluyendo recurrencias, independientemente de los niveles de cLDL1-4,6.',
+        'El ictus aterotrombótico es una de las manifestaciones cardiovasculares de la enfermedad aterosclerótica promovida por la Lp(a), junto con el IAM y la EAP1,3,4.',
+        'No existe ninguna terapia aprobada específicamente para reducir la Lp(a), pero el pelacarsen (ASO), el olpasiran y el lepodisiran (ambos siRNA) han demostrado reducciones >80–95% en estudios de fase II8,9,11,12.',
+        'El ensayo Lp(a)HORIZON (NCT04023552) es el primer estudio de fase III diseñado para evaluar si la reducción de Lp(a) con pelacarsen (80 mg en administración subcutánea mensual) disminuye los eventos cardiovasculares en 8323 pacientes con ECV establecida y Lp(a) ≥70 mg/dL7,14.',
+        'En los pacientes con ictus isquémico, Lp(a) elevada y buen control de cLDL, deben considerarse el acceso precoz al tratamiento o su inclusión en ensayos clínicos en fase III1,7.',
+        'Adicionalmente, la estrategia debe centrarse en la reducción máxima de todos los factores de riesgo modificables y en el cribado familiar de Lp(a) en familiares de primer grado1-3.',
     ],
 ],
 
@@ -753,7 +812,7 @@ return [
             'texto' => 'La Lp(a) elevada aumenta el riesgo de ictus aterotrombótico a través de mecanismos proaterogénicos y protrombóticos independientes del cLDL, con evidencia de causalidad respaldada por estudios de aleatorización mendeliana.',
             'correcta' => true,
             'puntos' => 100,
-            'justificacion' => 'La Lp(a) es un factor de riesgo causal e independiente para el ictus isquémico aterotrombótico1-3. Los mecanismos implicados incluyen: 1) aterogénesis acelerada por transporte de fosfolípidos oxidados (OxPL) a la pared vascular; 2) inhibición competitiva de la activación del plasminógeno, con efecto protrombótico; 3) inflamación vascular mediada por citoquinas proinflamatorias (IL-1, TNF-α); y 4) expresión de moléculas de adhesión (ICAM-1, VCAM-1), que facilitan la infiltración de monocitos2,4. Los estudios de aleatorización mendeliana confirman la relación causal entre variantes del gen LPA y el ictus isquémico, independientemente de los niveles de cLDL1,2. Un metaanálisis de 2024 demostró que por cada descenso de 50 nmol/L en Lp(a) genéticamente predicha, el riesgo de ictus isquémico se reduce un 8–10%5,6.',
+            'justificacion' => 'La Lp(a) es un factor de riesgo causal e independiente para el ictus isquémico aterotrombótico1-3. Los mecanismos implicados incluyen: 1) aterogénesis acelerada por transporte de fosfolípidos oxidados (OxPL) a la pared vascular; 2) inhibición competitiva de la activación del plasminógeno, con efecto protrombótico; 3) inflamación vascular mediada por citoquinas proinflamatorias (IL-1β, TNF-α); y 4) expresión de moléculas de adhesión (ICAM-1, VCAM-1), que facilitan la infiltración de monocitos2,4. Los estudios de aleatorización mendeliana confirman la relación causal entre variantes del gen LPA y el ictus isquémico, independientemente de los niveles de cLDL1,2. Un metaanálisis de 2024 demostró que por cada descenso de 50 nmol/L en Lp(a) genéticamente predicha, el riesgo de ictus isquémico se reduce un 8–10%5,6.',
         ],
         [
             'key' => 'marcador',
@@ -825,7 +884,10 @@ return [
             'texto' => 'Actualmente no existe ninguna terapia aprobada específicamente para reducir la Lp(a), pero la inhibición con muvalaplin o la interferencia sobre su expresión genética con pelacarsen (oligonucleótido antisentido [ASO] anti-LPA) o los siRNA olpasiran y lepodisiran han demostrado, en estudios en fase II, reducciones >80–95% de Lp(a) y se encuentran en ensayos de resultados cardiovasculares de fase III.',
             'correcta' => true,
             'puntos' => 100,
-            'justificacion' => 'A fecha de 2026, no hay ninguna terapia aprobada específicamente para reducir la Lp(a)1,3. Los iPCSK9 reducen la Lp(a) solo un 20–25% de forma indirecta. Muvalaplin es un inhibidor oral de la síntesis de la Lp(a) que impide la unión entre apo(a) y apoB-100 y, en el ensayo fase II KRAKEN, demostró una reducción del 70% con dosis de 240 mg/día. En la modulación de la expresividad genética existen tres grandes candidatos en desarrollo con ensayos en fase III de reducción de eventos cardiovasculares: 1. Pelacarsen: ASO ligado a N-acetilgalactosamina (GalNAc) que se une de forma altamente selectiva al mRNA de LPA en el hepatocito y lo degrada mediante la ribonucleasa H1 (RNasa H1). En fase II redujo la Lp(a) un 80% con dosis de 20 mg de administración subcutánea semanal8 (equivalente a 80 mg/mes, que corresponde a la dosis evaluada en el ensayo fase III HORIZON (NCT04023552), actualmente en marcha7. 2. Olpasiran: siRNA-GalNAc que silencia la expresión de LPA degradando el mRNA mediante el complejo de silenciamiento inducido por ARN (RISC). En fase II (OCEAN(a)-DOSE) logró una reducción de la Lp(a) >95% con una dosis de 225 mg cada 12 semanas9,10. 3. Lepodisiran: siRNA no canónico que, en su ensayo fase II (ALPACA), redujo la Lp(a) un 93,9% con dos dosis semestrales de 400 mg y un efecto duradero hasta 12 meses después11,12.',
+            'justificacion' => 'A fecha de 2026, no hay ninguna terapia aprobada específicamente para reducir la Lp(a)1,3. Los iPCSK9 reducen la Lp(a) solo un 20–25% de forma indirecta. Muvalaplin es un inhibidor oral de la síntesis de la Lp(a) que impide la unión entre apo(a) y apoB-100 y, en el ensayo fase II KRAKEN, demostró una reducción del 70% con dosis de 240 mg/día. En la modulación de la expresividad genética existen tres grandes candidatos en desarrollo con ensayos en fase III de reducción de eventos cardiovasculares:
+1. Pelacarsen: ASO ligado a N-acetilgalactosamina (GalNAc) que se une de forma altamente selectiva al mRNA de LPA en el hepatocito y lo degrada mediante la ribonucleasa H1 (RNasa H1). En fase II redujo la Lp(a) un 80% con dosis de 20 mg de administración subcutánea semanal8 (equivalente a 80 mg/mes, que corresponde a la dosis evaluada en el ensayo fase III HORIZON (NCT04023552), actualmente en marcha7.
+2. Olpasiran: siRNA-GalNAc que silencia la expresión de LPA degradando el mRNA mediante el complejo de silenciamiento inducido por ARN (RISC). En fase II (OCEAN(a)-DOSE) logró una reducción de la Lp(a) >95% con una dosis de 225 mg cada 12 semanas9,10.
+3. Lepodisiran: siRNA no canónico que, en su ensayo fase II (ALPACA), redujo la Lp(a) un 93,9% con dos dosis semestrales de 400 mg y un efecto duradero hasta 12 meses después11,12.',
         ],
         [
             'key' => 'estatinas',
@@ -861,7 +923,14 @@ return [
             'texto' => 'El ensayo HORIZON (NCT04023552) es un estudio de fase III, doble ciego, aleatorizado, controlado con placebo, que evalúa pelacarsen 80 mg con administración subcutánea mensual frente a placebo en 8323 pacientes con ECV establecida e Lp(a) ≥70 mg/dL, con un criterio de valoración principal compuesto de muerte cardiovascular, infarto agudo de miocardio (IAM) no fatal, ictus no fatal o revascularización coronaria urgente.',
             'correcta' => true,
             'puntos' => 100,
-            'justificacion' => 'El ensayo Lp(a) HORIZON es el primer estudio de fase III diseñado para demostrar si la reducción farmacológica de Lp(a) disminuye eventos cardiovasculares7. Características clave: - Diseño: multicéntrico, doble ciego, asignación 1:1 (pelacarsen 80 mg con administración subcutánea mensual vs. placebo). Seguimiento mínimo 2,5 años. - Población: 8323 pacientes con ECV establecida (IAM, ictus isquémico o EAP sintomática) y Lp(a) ≥70 mg/dL (149 nmol/L) en el cribado. - Criterios de inclusión: clínica cardiovascular índice entre 3 meses y 10 años previos al cribado. - Criterio de valoración principal: MACE (eventos cardiovasculares mayores) expandido (muerte cardiovascular, IAM no fatal, ictus no fatal, revascularización coronaria urgente con hospitalización). - Criterio de valoración preespecificado en subgrupo Lp(a) ≥90 mg/dL (192 nmol/L). - Reclutamiento completado en 2022 con resultados pendientes de eventos acumulados. Juan cumple los criterios de inclusión del ensayo (ictus isquémico/IAM + Lp(a) elevada)7,14.',
+            'justificacion' => 'El ensayo Lp(a) HORIZON es el primer estudio de fase III diseñado para demostrar si la reducción farmacológica de Lp(a) disminuye eventos cardiovasculares7. Características clave:
+- Diseño: multicéntrico, doble ciego, asignación 1:1 (pelacarsen 80 mg con administración subcutánea mensual vs. placebo). Seguimiento mínimo 2,5 años.
+- Población: 8323 pacientes con ECV establecida (IAM, ictus isquémico o EAP sintomática) y Lp(a) ≥70 mg/dL (149 nmol/L) en el cribado.
+- Criterios de inclusión: clínica cardiovascular índice entre 3 meses y 10 años previos al cribado.
+- Criterio de valoración principal: MACE (eventos cardiovasculares mayores) expandido (muerte cardiovascular, IAM no fatal, ictus no fatal, revascularización coronaria urgente con hospitalización).
+- Criterio de valoración preespecificado en subgrupo Lp(a) ≥90 mg/dL (192 nmol/L).
+- Reclutamiento completado en 2022 con resultados pendientes de eventos acumulados.
+Juan cumple los criterios de inclusión del ensayo (ictus isquémico/IAM + Lp(a) elevada)7,14.',
         ],
         [
             'key' => 'horizon_hf',
@@ -897,14 +966,20 @@ return [
             'texto' => 'Mantener la terapia hipolipemiante actual (incluyendo inclisirán), asegurar adherencia, evaluar elegibilidad para el uso precoz de pelacarsen en función de los resultados del ensayo HORIZON o valorar la inclusión en otro ensayo de fase III con terapia anti-Lp(a).',
             'correcta' => true,
             'puntos' => 100,
-            'justificacion' => 'Esta es la estrategia más completa y correcta. Los componentes clave son: - Mantener la terapia actual: con un cLDL de 41 mg/dL y una apoB de 46 mg/dL, el control lipídico es límite a pesar de la triple terapia hipolipemiante, que incluye inclisirán administrado semestralmente. En el ensayo HORIZON, 897 pacientes (un 10,8%) incluyen tratamiento con iPCSK9. - Optimizar el resto de la prevención secundaria post-ictus: antiagregación y control estricto de la HTA (objetivo <130/80 mmHg)15,16. - Evaluar la elegibilidad para un uso precoz del tratamiento anti-Lp(a): a los 3 meses del ictus, Juan cumpliría criterios para uso de pelacarsen de acuerdo con el ensayo HORIZON (ictus isquémico entre 3 meses y 10 años + Lp(a) ≥70 mg/dL)7. La participación en otros ensayos de fase III podría ser otra opción para acceder a terapia específica anti-Lp(a).',
+            'justificacion' => 'Esta es la estrategia más completa y correcta. Los componentes clave son:
+- Mantener la terapia actual: con un cLDL de 41 mg/dL y una apoB de 46 mg/dL, el control lipídico es límite a pesar de la triple terapia hipolipemiante, que incluye inclisirán administrado semestralmente. En el ensayo HORIZON, 897 pacientes (un 10,8%) incluyen tratamiento con iPCSK9.
+- Optimizar el resto de la prevención secundaria post-ictus: antiagregación y control estricto de la HTA (objetivo <130/80 mmHg)15,16.
+- Evaluar la elegibilidad para un uso precoz del tratamiento anti-Lp(a): a los 3 meses del ictus, Juan cumpliría criterios para uso de pelacarsen de acuerdo con el ensayo HORIZON (ictus isquémico entre 3 meses y 10 años + Lp(a) ≥70 mg/dL)7. La participación en otros ensayos de fase III podría ser otra opción para acceder a terapia específica anti-Lp(a).',
         ],
         [
             'key' => 'retirar_inclisiran',
             'texto' => 'Retirar inclisirán y sustituirlo por pelacarsen de forma inmediata al alta, ya que el ensayo HORIZON ya ha demostrado resultados positivos.',
             'correcta' => false,
             'puntos' => -40,
-            'justificacion' => '- Los resultados del ensayo HORIZON confirmando la reducción de eventos aún no se han publicado7. - El acceso al tratamiento con pelacarsen está restringido a ensayos clínicos1,3. - No existe indicación de retirar inclisirán, que está proporcionando un excelente control del cLDL y la apoB; ambas terapias (siRNA anti-PCSK9 y ASO/siRNA anti-LPA) tienen mecanismos complementarios y son potencialmente coadministrables. - La sustitución inmediata, post-ictus agudo, no está justificada sin evidencia de resultados clínicos.',
+            'justificacion' => '- Los resultados del ensayo HORIZON confirmando la reducción de eventos aún no se han publicado7.
+- El acceso al tratamiento con pelacarsen está restringido a ensayos clínicos1,3.
+- No existe indicación de retirar inclisirán, que está proporcionando un excelente control del cLDL y la apoB; ambas terapias (siRNA anti-PCSK9 y ASO/siRNA anti-LPA) tienen mecanismos complementarios y son potencialmente coadministrables.
+- La sustitución inmediata, post-ictus agudo, no está justificada sin evidencia de resultados clínicos.',
         ],
         [
             'key' => 'suspender_hipolip',

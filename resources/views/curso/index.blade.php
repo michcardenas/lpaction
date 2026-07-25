@@ -140,6 +140,8 @@
         }
         .detalle-label { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px; color: rgba(255,255,255,0.55); }
         .detalle-estado { font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 15px; color: #05BAEE; padding-left: 28px; border-left: 1px solid rgba(255,255,255,0.12); }
+        .detalle-estado.is-apto { color: #3ddc7f; font-weight: 700; }
+        .detalle-estado.is-noapto { color: #ff5c6c; font-weight: 700; }
         .detalle-hasta { font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 15px; color: rgba(255,255,255,0.62); white-space: nowrap; }
         .finales-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding-bottom: 8px; padding-left: 194px; padding-right: 16px; }
         .final-card {
@@ -742,10 +744,30 @@
                         $cursoIniciado = collect($curso['ingresos'])->contains(function ($ing) use ($progress) {
                             return in_array(optional($progress->get($ing['key']))->status, ['in_progress', 'completed']);
                         });
+
+                        // Resultado de la evaluación final para el estado del curso:
+                        //  - APTO      → aprobó la evaluación.
+                        //  - NO APTO   → agotó los intentos sin aprobar.
+                        //  - En curso  → aún puede intentarlo (o el curso está iniciado).
+                        //  - No iniciado.
+                        $evalMeta     = optional($progress->get('evaluacion'))->etapas ?? [];
+                        $evalApto     = (bool) ($evalMeta['apto'] ?? false);
+                        $evalIntentos = (int) ($evalMeta['intentos'] ?? 0);
+                        $maxIntentos  = (int) (config('curso.evaluacion.max_intentos') ?? 2);
+
+                        if ($evalApto) {
+                            $estadoCurso = 'APTO';           $estadoClase = 'is-apto';
+                        } elseif ($evalIntentos >= $maxIntentos) {
+                            $estadoCurso = 'NO APTO';        $estadoClase = 'is-noapto';
+                        } elseif ($cursoIniciado) {
+                            $estadoCurso = 'En curso';       $estadoClase = '';
+                        } else {
+                            $estadoCurso = 'No iniciado';    $estadoClase = '';
+                        }
                     @endphp
                     <div class="detalle-head">
                         <div class="detalle-label">Detalle del curso</div>
-                        <div class="detalle-estado">{{ $cursoIniciado ? 'En curso' : 'No iniciado' }}</div>
+                        <div class="detalle-estado {{ $estadoClase }}">{{ $estadoCurso }}</div>
                         <div class="detalle-hasta">Disponible hasta: {{ $curso['disponible_hasta'] }}</div>
                     </div>
                     @php

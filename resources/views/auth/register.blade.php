@@ -81,9 +81,9 @@
         .center-opt:has(input:checked) .center-dot { border-color: #05BAEE; box-shadow: inset 0 0 0 3px #05BAEE, inset 0 0 0 4px #fff; }
         /* radio cards perfil */
         .perfil-card { border: 1px solid #d4dde2; border-radius: 8px; background: #fff; cursor: pointer; transition: border-color .2s, background .2s; }
-        .perfil-card:has(input:checked) { border-color: #6fb33f; background: #f0f8e9; }
+        .perfil-card:has(input:checked) { border-color: #05BAEE; background: #e9f8fe; }
         .perfil-dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #b9c5cb; flex-shrink: 0; transition: .2s; }
-        .perfil-card:has(input:checked) .perfil-dot { border-color: #6fb33f; background: #6fb33f; box-shadow: inset 0 0 0 3px #fff; }
+        .perfil-card:has(input:checked) .perfil-dot { border-color: #05BAEE; background: #05BAEE; box-shadow: inset 0 0 0 3px #fff; }
         /* header / footer */
         .header-bar { background: linear-gradient(90deg, #060606 0%, #181818 50%, #060606 100%); }
         .footer-dark { background: linear-gradient(90deg, #080808 0%, #1a1a1a 50%, #080808 100%); }
@@ -319,9 +319,10 @@
                         <label class="login-label block mb-1">Especialidad <span class="req">*</span></label>
                         <select name="specialty" id="specialty-select" class="login-input w-full px-4 py-2 appearance-none">
                             <option value="" {{ old('specialty') ? '' : 'selected' }} disabled>Selecciona tu especialidad</option>
-                            @foreach (['Cardiología','Medicina Interna','Medicina Familiar y Comunitaria','Endocrinología','Nefrología','Neurología','Medicina Intensiva','Otra'] as $s)
+                            @foreach (array_keys(config('curso.especialidades', [])) as $s)
                                 <option value="{{ $s }}" {{ old('specialty') === $s ? 'selected' : '' }}>{{ $s }}</option>
                             @endforeach
+                            <option value="Otra" {{ old('specialty') === 'Otra' ? 'selected' : '' }}>Otra</option>
                         </select>
                         @error('specialty')<p class="field-error">{{ $message }}</p>@enderror
 

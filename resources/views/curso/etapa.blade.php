@@ -128,7 +128,10 @@
         .seg button.on { background: #ffffff; color: #16262c; font-weight: 600; }
         .seg-top { position: absolute; top: 32px; right: 8px; z-index: 3; }
 
-        .h-caso { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 26px; color: #05BAEE; margin: 0 0 32px; }
+        /* padding-right reserva sitio para las pestañas Contenido/Bibliografía (position:absolute
+           arriba a la derecha), para que un título largo (p. ej. el del ensayo HORIZON) envuelva
+           en vez de cortarse por debajo de ellas. En tablet/móvil las pestañas van en línea → se resetea. */
+        .h-caso { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 26px; color: #05BAEE; margin: 0 0 32px; padding-right: 300px; line-height: 130%; }
         .h-sec { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 27px; color: #fff; margin: 0 0 22px; }
 
         /* tabs (ocupan todo el ancho del contenido, repartidos) */
@@ -191,6 +194,10 @@
         .prueba-p { font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 16px; line-height: 150%; letter-spacing: 0.02em; color: #d3dee1; margin: 0; }
         .ecg-frame { position: relative; border-radius: 0; overflow: hidden; }
         .ecg-frame img { display: block; width: 100%; height: auto; }
+        /* Imagen CUADRADA (p. ej. TC craneal): centrada, tamaño acotado y fondo negro
+           (evita que un cuadrado ocupe todo el ancho y se vea enorme). */
+        .ecg-frame.is-cuadrada { background: #000; display: flex; align-items: center; justify-content: center; }
+        .ecg-frame.is-cuadrada img { width: auto; max-width: 100%; max-height: 460px; margin: 0 auto; }
         .ecg-icon { position: absolute; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; background: rgba(18,28,33,0.55); border: 1px solid rgba(255,255,255,0.18); border-radius: 0; color: #fff; cursor: pointer; -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
         .ecg-expand { top: 12px; right: 12px; }
         .ecg-download { bottom: 12px; right: 12px; text-decoration: none; }
@@ -349,9 +356,15 @@
         .rp-btn:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.45); }
         .rp-btn.cyan { background: #05BAEE; border-color: #05BAEE; color: #fff; }
         .rp-btn.cyan:hover { background: #04a3d1; border-color: #04a3d1; }
-        .rp-right { flex: 0 0 300px; position: relative; }
-        .rp-right .rp-juan { position: absolute; right: 0; bottom: 0; height: 106%; width: auto; max-width: none; object-fit: contain; object-position: bottom right; z-index: 2; }
-        .rp-rings { position: absolute; right: 22px; bottom: 4px; opacity: .45; z-index: 1; }
+        .rp-right { flex: 0 0 300px; position: relative; pointer-events: none; }
+        /* Juan y los anillos son DECORATIVOS: pointer-events:none para que no tapen el clic de
+           los botones (la imagen es muy ancha y su caja invadía "Mejorar puntuación"). */
+        .rp-right .rp-juan { position: absolute; right: 0; bottom: 0; height: 106%; width: auto; max-width: none; object-fit: contain; object-position: bottom right; z-index: 2; pointer-events: none; }
+        .rp-rings { position: absolute; right: 22px; bottom: 4px; opacity: .45; z-index: 1; pointer-events: none; }
+        /* Los botones del modal SIEMPRE por encima de la imagen y clicables. */
+        .rp-left { position: relative; z-index: 3; }
+        .rp-actions { position: relative; z-index: 3; }
+        .rp-actions .rp-btn { position: relative; z-index: 3; }
         @media (max-width: 720px) { .result-panel { flex-direction: column; min-height: 0; } .rp-left { padding: 38px 24px 24px; } .rp-right { flex: 0 0 230px; } }
 
         /* Pop-up de medalla alcanzada (durante el curso): mismo estilo que el final, centrado y sin Juan. */
@@ -521,7 +534,7 @@
             .tabs .tab { flex: 0 0 auto !important; }
 
             /* Tipografía tablet: entre mobile y desktop */
-            .h-caso { font-size: 28px !important; line-height: 130% !important; margin-bottom: 20px !important; }
+            .h-caso { font-size: 28px !important; line-height: 130% !important; margin-bottom: 20px !important; padding-right: 0 !important; }
             .h-sec:has(+ .motivo-p) { margin-top: -8px !important; margin-bottom: 10px !important; }
             #view-biblio .h-caso { display: none !important; }
             #view-biblio .biblio-list { overflow: visible !important; flex: none !important; padding-right: 0 !important; }
@@ -675,7 +688,7 @@
             .etapa-bg-glows span:nth-child(3) { width: 300px; height: 260px; bottom: 200px; left: -110px; background: rgba(130,225,252,0.10); filter: blur(120px); }
             .etapa-bg-glows span:nth-child(4) { width: 340px; height: 280px; bottom: -70px; right: -90px;  background: rgba(5,186,238,0.12);  filter: blur(120px); }
             /* Título "Presentación del caso" SemiBold 22/140% #05BAEE */
-            .h-caso { font-size: 22px !important; line-height: 140% !important; margin-bottom: 16px !important; }   /* menos espacio → sube el toggle */
+            .h-caso { font-size: 22px !important; line-height: 140% !important; margin-bottom: 16px !important; padding-right: 0 !important; }   /* menos espacio → sube el toggle */
             /* "Motivo de consulta" (h+p): lo subo un poco + gap interno 8 (img1) */
             .h-sec:has(+ .motivo-p) { margin-top: -16px !important; margin-bottom: 8px !important; }
             /* ===== Bibliografía: borrar "Presentación del caso" duplicado + texto Regular 14 + subir título ===== */
@@ -1268,7 +1281,17 @@
                 @php
                     $medLottie = 'medallas/medalla-' . $medalla['key'] . '.json';  // animación oficial (Lottie) bronce/plata/oro
                     $medImg  = 'images/medalla-' . $medalla['key'] . '.png';   // corazón de la medalla (respaldo)
-                    $juanImg = 'images/juan-' . $medalla['key'] . '.png';       // Juan según la medalla/expresión
+
+                    // Juan del modal según la medalla, POR INGRESO. Prioridad:
+                    //  1) juan-{N}-{medalla}.png  → expresión propia de ese ingreso por medalla (si se sube)
+                    //  2) Ingreso 1: juan-{medalla}.png → set de expresiones existente
+                    //  3) imagen base del paciente de ESE ingreso (así el Ingreso 3 muestra su Juan, no el del 1)
+                    $ingN = preg_match('/ingreso-(\d+)/', $ingreso, $mmJuan) ? (int) $mmJuan[1] : 1;
+                    $juanCandidatos = ['images/juan-' . $ingN . '-' . $medalla['key'] . '.png'];
+                    if ($ingN === 1) $juanCandidatos[] = 'images/juan-' . $medalla['key'] . '.png';
+                    $juanCandidatos[] = ($pacienteIngreso ?? $curso['paciente'])['imagen'];
+                    $juanImg = collect($juanCandidatos)->first(fn ($p) => file_exists(public_path($p)))
+                        ?? $curso['paciente']['imagen'];
                 @endphp
                 <div class="rp-left">
                     @if (file_exists(public_path($medLottie)))
@@ -1321,8 +1344,8 @@
                             <ellipse cx="140" cy="74" rx="{{ $r * 44 }}" ry="{{ $r * 10 }}" stroke="#7fa6b2" stroke-width="1" opacity="{{ 0.5 - $r * 0.12 }}"/>
                         @endfor
                     </svg>
-                    {{-- Juan de la medalla si existe; si no, el Juan normal --}}
-                    <img class="rp-juan" src="{{ file_exists(public_path($juanImg)) ? asset($juanImg) : asset($curso['paciente']['imagen']) }}" alt="{{ $curso['paciente']['nombre'] }}">
+                    {{-- Juan de la medalla, ya resuelto por ingreso (arriba) --}}
+                    <img class="rp-juan" src="{{ asset($juanImg) }}" alt="{{ $curso['paciente']['nombre'] }}">
                 </div>
             </div>
         </div>
@@ -1588,7 +1611,10 @@
             function formatCitas(t) {
                 t = (t || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
                 t = t.replace(/(PCSK)9(\d+(?:[-,]\d+)*)/g, '$19<sup>$2</sup>');                 // gen PCSK9 + cita: solo la cita
-                t = t.replace(/([^\s0-9>])(\d+(?:[-,]\d+)*)(?=[.,;]|$)/g, '$1<sup>$2</sup>');     // cita al final de frase
+                // Cita al final de frase. La coma solo cuenta como fin de cita si NO va seguida de
+                // un dígito; así no rompe rangos decimales como "1,7-2,1" (odds ratio) ni "20-25%".
+                t = t.replace(/([^\s0-9>])(\d+(?:[-,]\d+)*)(?=[.;]|,(?!\d)|$)/g, '$1<sup>$2</sup>');
+                t = t.replace(/\r?\n/g, '<br>');   // respeta los saltos de línea (listas numeradas del documento)
                 return t;
             }
 

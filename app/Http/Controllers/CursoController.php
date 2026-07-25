@@ -530,25 +530,35 @@ class CursoController extends Controller
         $completado = $progreso->status === 'completed';
         $etapasEstado = collect($etapas)->map(function ($e, $i) use ($etapaIndex, $viewIndex, $resultados, $completado) {
             $tieneError = (int) ($resultados[$e['key']]['rojo'] ?? 0) > 0;
-            // Etapa en REPETICIÓN ("Repetir etapa" pulsado, aún sin nueva respuesta): sin icono
-            // en el menú (ni ✓ ni ✗ ni reloj) hasta que se apruebe o se falle de nuevo.
+            // Etapa en RE-TRABAJO ("Repetir etapa" pulsado): mientras NO se haya respondido queda
+            // SIN icono ('pendiente'). En cuanto se comprueba una respuesta, el icono refleja el
+            // resultado igual que siempre: ✗ si falla (rojo>0) o ✓ si acierta. (La etapa sigue
+            // editable hasta "Siguiente etapa" gracias a $enReTrabajo, no por el icono.)
             $repitiendo = ! empty($resultados[$e['key']]['repitiendo']);
+            $tieneSel   = ! empty($resultados[$e['key']]['sel']);
             if ($i > $etapaIndex) {
                 $estado = 'bloqueada';
-            } elseif ($repitiendo && ! $completado) {
-                $estado = 'pendiente';
+            } elseif ($repitiendo && ! $tieneSel && ! $completado) {
+                $estado = 'pendiente';   // repetida y aún SIN responder → sin icono
             } elseif ($tieneError) {
-                $estado = 'error';
+                $estado = 'error';       // respondió mal → ✗ (al comprobar, aunque siga en re-trabajo)
             } elseif ($i === $etapaIndex && ! $completado) {
                 $estado = 'activa';
             } else {
-                $estado = 'perfecta';
+                $estado = 'perfecta';    // respondió bien → ✓
             }
             return array_merge($e, ['estado' => $estado, 'viendo' => $i === $viewIndex]);
         })->all();
 
         // "Repetir etapa" solo al VOLVER a una etapa ya superada (no en el primer intento, aunque haya error).
         $reevaluando = $viewIndex < $etapaIndex;
+
+        // Etapa en RE-TRABAJO (se pulsó "Repetir etapa" y aún no se confirmó con "Siguiente etapa"):
+        // debe quedar EDITABLE (no modo revisión) aunque se haya navegado a otra etapa y vuelto.
+        $enReTrabajo = ! empty($resultados[$etapaActual]['repitiendo']) && ! $completado;
+        if ($enReTrabajo) {
+            $reevaluando = false;   // sin modo revisión: se puede volver a comprobar
+        }
 
         // Caso FINALIZADO: SOLO cuando el ingreso se cerró de verdad ("Finalizar ingreso" → status
         // completed). Mientras el caso siga abierto, las etapas con fallo pueden repetirse aunque
@@ -596,7 +606,7 @@ class CursoController extends Controller
 
         return view('curso.etapa', compact(
             'user', 'curso', 'ingreso', 'ingresoData', 'etapaActual', 'etapasEstado', 'esUltimaEtapa', 'avance',
-            'exp', 'verdeBase', 'rojoBase', 'maxScore', 'score', 'medalla', 'mostrarResultado', 'preSel', 'reevaluando', 'etapaTieneError', 'casoFinalizado', 'pacienteIngreso', 'ultimaPreguntaKey'
+            'exp', 'verdeBase', 'rojoBase', 'maxScore', 'score', 'medalla', 'mostrarResultado', 'preSel', 'reevaluando', 'etapaTieneError', 'casoFinalizado', 'pacienteIngreso', 'ultimaPreguntaKey', 'enReTrabajo'
         ));
     }
 
@@ -700,6 +710,13 @@ class CursoController extends Controller
         $sentSel    = array_filter(array_map('trim', explode(',', (string) $request->input('sel', ''))));
         $union      = array_values(array_unique(array_merge($prevSel, $sentSel)));
         $resultado  = $this->puntuarEtapa($curso, $ingreso, $stageKey, $union, $rojoFloor);
+
+        // Mantener el estado de RE-TRABAJO ("Repetir etapa" pulsado) hasta que se confirme con
+        // "Siguiente etapa". Así, al responder y volver a la etapa por el menú, sigue ACTIVA
+        // (reloj + editable), no en modo revisión/bloqueada (error reportado por el cliente).
+        if (! empty($resultados[$stageKey]['repitiendo'])) {
+            $resultado['repitiendo'] = true;
+        }
 
         if ($resultado['sel'] || isset($resultados[$stageKey])) {
             $resultados[$stageKey] = $resultado;

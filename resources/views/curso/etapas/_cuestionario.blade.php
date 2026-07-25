@@ -10,9 +10,12 @@
     // Motivo: es la última decisión antes de "Finalizar caso", debe poder rectificar.
     // Varía por ingreso (en el 2 es "monitorizacion", no "monitorizacion-2").
     $esUltimaPregunta = $etapaActual === ($ultimaPreguntaKey ?? 'monitorizacion-2');
+    // Durante el RE-TRABAJO (repitiendo, aún sin confirmar) la etapa está activa/editable,
+    // así que "Repetir etapa" también sigue habilitado.
     $repetirHabilitado = empty($casoFinalizado) && !empty($preSel) && (
         (!empty($reevaluando) && !empty($etapaTieneError))
         || $esUltimaPregunta
+        || !empty($enReTrabajo ?? false)
     );
 
     // Cuando el usuario re-evalúa una etapa (típicamente tras "Repetir etapa"),

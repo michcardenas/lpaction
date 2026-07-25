@@ -16,13 +16,12 @@
     <div class="tab-panel prueba-panel" data-panel="tc">
         <div class="ecg-block">
             <h3 class="prueba-h">Tomografía computarizada (TC) craneal</h3>
-            <p class="prueba-p">{{ $d['tc_texto'] }}</p>
-            <div class="ecg-frame">
+            <div class="ecg-frame is-cuadrada">
                 <button type="button" class="ecg-icon ecg-expand" aria-label="Ampliar imagen">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>
                 </button>
-                <img src="{{ asset('images/tc-craneal-3.png') }}" onerror="this.onerror=null;this.src='{{ asset('images/ecg.png') }}'" alt="TC craneal sin contraste">
-                <a class="ecg-icon ecg-download" href="{{ asset('images/tc-craneal-3.png') }}" download aria-label="Descargar imagen">
+                <img src="{{ asset('images/tc-craneal-ingreso3.jpg') }}" onerror="this.onerror=null;this.src='{{ asset('images/ecg.png') }}'" alt="TC craneal sin contraste">
+                <a class="ecg-icon ecg-download" href="{{ asset('images/tc-craneal-ingreso3.jpg') }}" download aria-label="Descargar imagen">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 12 5 5 5-5"/><path d="M5 21h14"/></svg>
                 </a>
             </div>
