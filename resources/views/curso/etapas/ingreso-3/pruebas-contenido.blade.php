@@ -1,5 +1,8 @@
 {{-- Contenido de la etapa "Pruebas complementarias" — INGRESO 3 (ictus isquémico) --}}
-@php $d = $curso['datos_ingreso_3']; @endphp
+@php
+    $d = $curso['datos_ingreso_3'];
+    $tcImg = cms_img('curso.cont.ingreso-3.pruebas.img_tc', 'images/tc-craneal-ingreso3.jpg');
+@endphp
 <div class="pruebas tabs-scope">
     <h1 class="h-caso">Pruebas complementarias</h1>
 
@@ -20,8 +23,8 @@
                 <button type="button" class="ecg-icon ecg-expand" aria-label="Ampliar imagen">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>
                 </button>
-                <img src="{{ asset('images/tc-craneal-ingreso3.jpg') }}" onerror="this.onerror=null;this.src='{{ asset('images/ecg.png') }}'" alt="TC craneal sin contraste">
-                <a class="ecg-icon ecg-download" href="{{ asset('images/tc-craneal-ingreso3.jpg') }}" download aria-label="Descargar imagen">
+                <img src="{{ $tcImg }}" onerror="this.onerror=null;this.src='{{ asset('images/ecg.png') }}'" alt="TC craneal sin contraste">
+                <a class="ecg-icon ecg-download" href="{{ $tcImg }}" download aria-label="Descargar imagen">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 12 5 5 5-5"/><path d="M5 21h14"/></svg>
                 </a>
             </div>

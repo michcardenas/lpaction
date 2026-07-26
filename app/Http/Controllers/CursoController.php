@@ -394,21 +394,26 @@ class CursoController extends Controller
         CourseProgress::seedFor($user);
         $this->ingresoAbierto($user, $ingreso);   // 404 si el ingreso no está abierto para el usuario
 
-        // Cada ingreso tiene su documento oficial (ingreso-3 es Word; 1 y 2, PDF).
-        $mapa = [
-            'ingreso-1' => 'caso-ingreso-1.pdf',
-            'ingreso-2' => 'caso-ingreso-2.pdf',
-            'ingreso-3' => 'caso-ingreso-3.docx',
-        ];
-        $archivo = $mapa[$ingreso] ?? null;
-        abort_if($archivo === null, 404);
-
-        $ruta = public_path('casos/'.$archivo);
-        abort_unless(is_file($ruta), 404);
+        // Archivo subido desde el panel (override), si existe.
+        $ov = \App\Support\Cms::raw('curso.cont.'.$ingreso.'.resumen.archivo');
+        if ($ov && is_file(public_path($ov))) {
+            $ruta = public_path($ov);
+        } else {
+            // Documento oficial por defecto (ingreso-3 es Word; 1 y 2, PDF).
+            $mapa = [
+                'ingreso-1' => 'caso-ingreso-1.pdf',
+                'ingreso-2' => 'caso-ingreso-2.pdf',
+                'ingreso-3' => 'caso-ingreso-3.docx',
+            ];
+            $archivo = $mapa[$ingreso] ?? null;
+            abort_if($archivo === null, 404);
+            $ruta = public_path('casos/'.$archivo);
+            abort_unless(is_file($ruta), 404);
+        }
 
         // Nombre amigable de descarga.
         $n = str_replace('ingreso-', '', $ingreso);
-        $ext = pathinfo($archivo, PATHINFO_EXTENSION);
+        $ext = pathinfo($ruta, PATHINFO_EXTENSION);
         return response()->download($ruta, 'Caso clinico - Ingreso '.$n.'.'.$ext);
     }
 
@@ -495,10 +500,12 @@ class CursoController extends Controller
     {
         $user = Auth::user();
         CourseProgress::seedFor($user);
-        $curso = config('curso');
+        // Aplica los textos editados desde el panel (preguntas). Lo estructural no cambia.
+        $curso = \App\Support\CursoCms::aplicar(config('curso'));
 
         $progreso = $this->ingresoAbierto($user, $ingreso);
         $etapas   = $this->etapasDe($ingreso);
+        $etapas   = \App\Support\CursoCms::aplicarEtapas($ingreso, $etapas);   // títulos de menú editados
         $etapaIndex = (int) ($progreso->etapa_index ?? 0);   // etapa más lejana alcanzada
 
         // Etapa que se ve: la pedida (si está desbloqueada) o la actual.

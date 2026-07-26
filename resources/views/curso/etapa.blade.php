@@ -237,6 +237,11 @@
         .analitica-list li { font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 16px; line-height: 168%; color: #d3dee1; position: relative; padding-left: 20px; }
         .analitica-list li::before { content: '•'; position: absolute; left: 5px; color: #d3dee1; }
         .analitica-list b { color: #fff; }
+        /* Contenido editado con Quill dentro de Pruebas: que se vea como el nativo (no toca el default) */
+        .cat-block p:not(.prueba-p) { font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 16px; line-height: 150%; letter-spacing: 0.02em; color: #d3dee1; margin: 0 0 8px; }
+        .analitica-block ul:not(.analitica-list) { list-style: none; margin: 0; padding: 0; max-width: 1000px; }
+        .analitica-block ul:not(.analitica-list) li { font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 16px; line-height: 168%; color: #d3dee1; position: relative; padding-left: 20px; }
+        .analitica-block ul:not(.analitica-list) li::before { content: '•'; position: absolute; left: 5px; color: #d3dee1; }
         .analitica-sublist { list-style: none; margin: 2px 0 2px 24px; padding: 0; }
         .analitica-sublist li::before { content: '◦'; }
 
@@ -298,6 +303,10 @@
         .justif { display: flex; flex-direction: column; position: relative; padding: 22px 32px; border-top: 1px solid rgba(255,255,255,0.14); }
         .justif-h { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 15px; color: #fff; margin: 0 0 8px; }
         .justif-txt { font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 14px; line-height: 165%; color: rgba(255,255,255,0.75); margin: 0; }
+        /* Justificación editada con formato (Quill): normaliza bloques para que se vea igual */
+        .justif-txt p { margin: 0; }
+        .justif-txt p + p { margin-top: 0.7em; }
+        .justif-txt ul, .justif-txt ol { margin: 0.3em 0; padding-left: 1.4em; }
         /* Chevron para colapsar/expandir la justificación (abajo-derecha) */
         .justif-toggle { align-self: flex-end; margin-top: 12px; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.24); border-radius: 8px; color: rgba(255,255,255,0.78); cursor: pointer; transition: background .2s, border-color .2s; }
         .justif-toggle:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.28); }
@@ -1202,7 +1211,12 @@
                             <ellipse cx="230" cy="105" rx="{{ $r * 52 }}" ry="{{ $r * 13 }}" stroke="#7fa6b2" stroke-width="1" opacity="{{ 0.5 - $r * 0.1 }}"/>
                         @endfor
                     </svg>
-                    @php $pImg = ($pacienteIngreso ?? $curso['paciente'])['imagen']; @endphp
+                    @php
+                        $pImg = ($pacienteIngreso ?? $curso['paciente'])['imagen'];
+                        // Imagen del paciente editable desde el panel (por ingreso). Si no hay override, se mantiene la actual.
+                        $pImgOv = \App\Support\Cms::raw('curso.cont.'.$ingreso.'.presentacion.img_paciente');
+                        if ($pImgOv && file_exists(public_path($pImgOv))) $pImg = $pImgOv;
+                    @endphp
                     <img class="etapa-juan-d" src="{{ asset($pImg) }}" onerror="this.onerror=null;this.src='{{ asset($curso['paciente']['imagen']) }}'" alt="{{ $curso['paciente']['nombre'] }}">
                     <img class="etapa-juan-m" src="{{ asset($pImg) }}" onerror="this.onerror=null;this.src='{{ asset('images/paciente.png') }}'" alt="{{ $curso['paciente']['nombre'] }}">
                 </div>

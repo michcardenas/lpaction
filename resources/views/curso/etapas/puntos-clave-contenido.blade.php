@@ -1,10 +1,23 @@
-{{-- Contenido de la etapa "Puntos clave" (un "video" = imagen) --}}
+{{-- Contenido de la etapa "Puntos clave" — INGRESO 1 (vídeo editable desde el panel) --}}
+@php
+    $k = 'curso.cont.ingreso-1.puntos-clave.';
+    // 1) vídeo subido (override)  2) vídeo en disco  3) marcador de imagen.
+    $ov  = \App\Support\Cms::raw($k.'video');
+    $def = 'videos/puntos-clave-1.mp4';
+    $vid = ($ov && file_exists(public_path($ov)))
+        ? $ov
+        : (file_exists(public_path($def)) ? $def : null);
+@endphp
 <div class="riesgo">
-    <h1 class="h-caso">Puntos clave</h1>
+    <h1 class="h-caso">{{ cms($k.'h1', 'Puntos clave') }}</h1>
 
     <figure class="video-full">
         <div class="video-player">
-            <img src="{{ asset('images/puntos-clave.png') }}" alt="Video del Dr. José López Miranda">
+            @if ($vid)
+                <video src="{{ asset($vid) }}" preload="metadata" playsinline></video>
+            @else
+                <img src="{{ asset('images/puntos-clave.png') }}" alt="{{ cms($k.'video_cap', 'Video del Dr. José López Miranda.') }}">
+            @endif
             <div class="video-controls">
                 <button type="button" class="vid-btn vid-play" aria-label="Ver en grande">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
@@ -15,6 +28,6 @@
                 </button>
             </div>
         </div>
-        <figcaption class="video-cap">Video del Dr. José López Miranda.</figcaption>
+        <figcaption class="video-cap">{{ cms($k.'video_cap', 'Video del Dr. José López Miranda.') }}</figcaption>
     </figure>
 </div>

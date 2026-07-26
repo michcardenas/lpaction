@@ -45,7 +45,7 @@
     {{-- Justificación (tras comprobar) --}}
     <div class="justif" hidden>
         <p class="justif-h">Justificación</p>
-        <p class="justif-txt"></p>
+        <div class="justif-txt"></div>
         <button type="button" class="justif-toggle" aria-label="Colapsar justificación" aria-expanded="true">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
         </button>

@@ -1,5 +1,10 @@
 {{-- Contenido de la etapa "Pruebas complementarias" — INGRESO 2 --}}
-@php $d = $curso['datos_ingreso_2']; @endphp
+@php
+    $d = $curso['datos_ingreso_2'];
+    $k = 'curso.cont.ingreso-2.pruebas.';
+    $vsrc = function ($key, $def) { $ov = \App\Support\Cms::raw($key); return asset(($ov && file_exists(public_path($ov))) ? $ov : $def); };
+    $ecg = cms_img($k.'img_ecg', 'images/ecg-2.png');
+@endphp
 <div class="pruebas tabs-scope">
     <h1 class="h-caso">Pruebas complementarias</h1>
 
@@ -21,8 +26,8 @@
                 <button type="button" class="ecg-icon ecg-expand" aria-label="Ampliar imagen">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>
                 </button>
-                <img src="{{ asset('images/ecg-2.png') }}" onerror="this.onerror=null;this.src='{{ asset('images/ecg.png') }}'" alt="ECG SCASEST en ritmo sinusal">
-                <a class="ecg-icon ecg-download" href="{{ asset('images/ecg-2.png') }}" download aria-label="Descargar imagen">
+                <img src="{{ $ecg }}" onerror="this.onerror=null;this.src='{{ asset('images/ecg.png') }}'" alt="ECG SCASEST en ritmo sinusal">
+                <a class="ecg-icon ecg-download" href="{{ $ecg }}" download aria-label="Descargar imagen">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 12 5 5 5-5"/><path d="M5 21h14"/></svg>
                 </a>
             </div>
@@ -38,7 +43,7 @@
             <div class="videos-grid">
                 <figure class="video-item">
                     <div class="video-player">
-                        <video src="{{ asset('videos/cateterismo-2-1.mp4') }}" preload="metadata" playsinline
+                        <video src="{{ $vsrc($k.'video1', 'videos/cateterismo-2-1.mp4') }}" preload="metadata" playsinline
                                onerror="this.onerror=null;this.src='{{ asset('videos/cateterismo-1.mp4') }}'"></video>
                         <div class="video-controls">
                             <button type="button" class="vid-btn vid-play" aria-label="Reproducir/Pausar">
@@ -54,7 +59,7 @@
                 </figure>
                 <figure class="video-item">
                     <div class="video-player">
-                        <video src="{{ asset('videos/arteriografia-femoral.mp4') }}" preload="metadata" playsinline
+                        <video src="{{ $vsrc($k.'video2', 'videos/arteriografia-femoral.mp4') }}" preload="metadata" playsinline
                                onerror="this.onerror=null;this.src='{{ asset('videos/cateterismo-2.mp4') }}'"></video>
                         <div class="video-controls">
                             <button type="button" class="vid-btn vid-play" aria-label="Reproducir/Pausar">

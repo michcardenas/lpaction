@@ -85,6 +85,10 @@
       @if ($informeDisponible)
         <a class="btn btn-ghost" href="{{ route('admin.informe') }}" title="Maqueta con datos simulados">Maqueta</a>
       @endif
+      <a class="btn btn-ghost" href="{{ route('admin.contenido') }}" title="Editar textos e imágenes de la página de inicio">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+        Editar web
+      </a>
       <a class="btn btn-ghost" href="{{ route('curso') }}">Ver curso</a>
       <form method="POST" action="{{ route('logout') }}">@csrf
         <button class="btn btn-ghost" type="submit">Cerrar sesión</button>

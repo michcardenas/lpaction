@@ -1,10 +1,13 @@
 {{-- Etapa "Terapia de mantenimiento…" — INGRESO 3: vídeo explicativo (petición del cliente). --}}
 @php
-    $vid = 'videos/mantenimiento-3.mp4';
+    $k   = 'curso.cont.ingreso-3.mantenimiento.';
+    $ov  = \App\Support\Cms::raw($k.'video');
+    $def = 'videos/mantenimiento-3.mp4';
+    $vid = ($ov && file_exists(public_path($ov))) ? $ov : $def;
     $hayVid = file_exists(public_path($vid));
 @endphp
 <div class="riesgo">
-    <h1 class="h-caso">Terapia de mantenimiento al alta de rehabilitación cardiaca</h1>
+    <h1 class="h-caso">{{ cms($k.'h1', 'Terapia de mantenimiento al alta de rehabilitación cardiaca') }}</h1>
 
     <figure class="video-full">
         <div class="video-player">
@@ -23,6 +26,6 @@
                 </button>
             </div>
         </div>
-        <figcaption class="video-cap">Vídeo explicativo del caso.</figcaption>
+        <figcaption class="video-cap">{{ cms($k.'video_cap', 'Vídeo explicativo del caso.') }}</figcaption>
     </figure>
 </div>

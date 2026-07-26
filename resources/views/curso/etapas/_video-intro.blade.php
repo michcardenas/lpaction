@@ -2,11 +2,16 @@
      Usa videos/introduccion-{N}.mp4 cuando el cliente lo suba; mientras tanto muestra
      el marco con la imagen de respaldo, igual que "Puntos clave". --}}
 @php
-    $introVideo = 'videos/introduccion-'.$ingresoNum.'.mp4';
-    $hayVideo   = file_exists(public_path($introVideo));
+    // 1) vídeo subido desde el panel (override)  2) vídeo en disco  3) marcador de imagen.
+    $ovVideo    = \App\Support\Cms::raw('curso.cont.ingreso-'.$ingresoNum.'.introduccion.video');
+    $defVideo   = 'videos/introduccion-'.$ingresoNum.'.mp4';
+    $introVideo = ($ovVideo && file_exists(public_path($ovVideo)))
+        ? $ovVideo
+        : (file_exists(public_path($defVideo)) ? $defVideo : null);
+    $hayVideo   = $introVideo !== null;
 @endphp
 <div class="riesgo">
-    <h1 class="h-caso">Introducción</h1>
+    <h1 class="h-caso">{{ cms('curso.cont.ingreso-1.introduccion.h1', 'Introducción') }}</h1>
 
     <figure class="video-full">
         <div class="video-player">
@@ -25,6 +30,6 @@
                 </button>
             </div>
         </div>
-        <figcaption class="video-cap">Vídeo de introducción del módulo.</figcaption>
+        <figcaption class="video-cap">{{ cms('curso.cont.ingreso-1.introduccion.video_cap', 'Vídeo de introducción del módulo.') }}</figcaption>
     </figure>
 </div>

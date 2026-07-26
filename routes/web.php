@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CursoController;
 use App\Http\Controllers\PerfilController;
+use App\Http\Controllers\SiteContentController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -24,6 +25,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/admin/alumno/{user}/test', [AdminController::class, 'toggleTest'])->middleware('admin')->name('admin.toggle-test');
     Route::get('/admin/informe', [AdminController::class, 'informe'])->middleware('admin')->name('admin.informe');
     Route::get('/admin/informe-dinamico', [AdminController::class, 'informeDinamico'])->middleware('admin')->name('admin.informe.dinamico');
+    Route::get('/admin/contenido/{area?}', [SiteContentController::class, 'edit'])->middleware('admin')->name('admin.contenido');
+    Route::post('/admin/contenido', [SiteContentController::class, 'update'])->middleware('admin')->name('admin.contenido.update');
     Route::get('/curso', [CursoController::class, 'index'])->name('curso');
     Route::view('/tutoria', 'tutoria')->name('tutoria');
     Route::view('/autores', 'autores')->name('autores');

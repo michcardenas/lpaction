@@ -548,13 +548,13 @@
             {{-- Top: eyebrow + title --}}
             <div class="text-center hero-pad-top relative z-10">
                 <p class="hero-eyebrow hero-eyebrow-mb">
-                    ¿Qué cambia en tu práctica cuando la Lp(a) está elevada?
+                    {{ cms('hero.eyebrow') }}
                 </p>
 
                 <h1>
-                    <span class="block hero-title-1">Juan ingresa tres veces.</span>
+                    <span class="block hero-title-1">{{ cms('hero.titulo_1') }}</span>
                     <span class="block hero-title-gap hero-title-2">
-                        El tratamiento parece <em class="italic">correcto. La</em> evolución, no.</em>
+                        {!! cms('hero.titulo_2') !!}
                     </span>
                 </h1>
             </div>
@@ -562,11 +562,11 @@
             {{-- Molecule (in front of text, slightly overlapping title bottom and bar top) --}}
             <div class="hero-mol">
                 <img
-                    src="{{ asset('images/molecula-lpa.png') }}"
+                    src="{{ cms_img('hero.img_molecula') }}"
                     alt="Representación 3D de Lipoproteína(a)"
                 >
                 {{-- Sello 15 créditos (SEC) — abajo-derecha de la molécula --}}
-                <img class="hero-sello" src="{{ asset('images/sello-15-creditos.png') }}" alt="15 créditos — Sociedad Española de Cardiología">
+                <img class="hero-sello" src="{{ cms_img('hero.img_sello') }}" alt="15 créditos — Sociedad Española de Cardiología">
             </div>
 
             {{-- Spacer to push bar to bottom --}}
@@ -576,10 +576,10 @@
             <div class="hero-pad-bottom relative" style="z-index: 30;">
                 <div class="hero-bar flex flex-col md:flex-row items-start md:items-center justify-between">
                     <p class="text-neutral-600 max-w-2xl leading-relaxed hero-bar-text">
-                        Solicitada la acreditación del Consejo Profesional Médico Español para el DPC/FMC (SEAFORMEC-EACCME).
+                        {{ cms('hero.barra_texto') }}
                     </p>
                     <a href="{{ route('login') }}" class="inline-flex items-center gap-3 font-medium rounded-lg transition whitespace-nowrap hero-bar-cta">
-                        Accede al curso
+                        {{ cms('hero.cta') }}
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                             <path d="M7 17L17 7M17 7H8M17 7V16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
@@ -602,7 +602,7 @@
         <div class="intro-band-inner relative mx-auto flex items-center" style="max-width:1332px;">
             <div class="reveal w-full" style="border-left:1px solid #FFFFFF; padding:8px 16px;">
                 <p class="intro-band-p" style="font-family:'Montserrat',sans-serif; font-weight:600; font-size:16px; line-height:150%; letter-spacing:0; color:#FFFFFF; text-shadow:0 1px 3px rgba(0,0,0,.35);">
-                    Este curso online acreditado te sitúa ante el recorrido clínico de Juan para identificar cuándo la Lp(a) modifica la interpretación del riesgo residual y condiciona su pronóstico.
+                    {{ cms('banda.texto') }}
                 </p>
             </div>
         </div>
@@ -678,17 +678,17 @@
                 <div class="reveal-stagger order-1 caso-text">
                     <div class="flex items-center gap-3 mb-6">
                         <span style="display:inline-block; width:32px; height:0; border-top:0.5px solid #05BAEE; flex-shrink:0;"></span>
-                        <span style="font-family:'Montserrat',sans-serif; font-weight:500; font-size:12px; line-height:150%; letter-spacing:0.02em; color:#05BAEE;">Caso clínico</span>
+                        <span style="font-family:'Montserrat',sans-serif; font-weight:500; font-size:12px; line-height:150%; letter-spacing:0.02em; color:#05BAEE;">{{ cms('caso.eyebrow') }}</span>
                     </div>
 
                     <h2 class="mb-7 caso-titulo" style="font-family:'Montserrat',sans-serif; font-weight:600; font-size:22px; line-height:140%; letter-spacing:0; width:358px; max-width:100%;">
-                        <span class="block" style="color:#FFFFFF;">No es un caso teórico.</span>
-                        <span class="block" style="color:#05BAEE;">Es un paciente que vuelve.</span>
+                        <span class="block" style="color:#FFFFFF;">{{ cms('caso.titulo_1') }}</span>
+                        <span class="block" style="color:#05BAEE;">{{ cms('caso.titulo_2') }}</span>
                     </h2>
 
                     <div style="font-family:'Montserrat',sans-serif; font-weight:400; font-size:13px; line-height:150%; letter-spacing:0; color:#FFFFFF; width:358px; max-width:100%;">
-                        <p class="mb-4">A lo largo de tres ingresos hospitalarios, seguirás la evolución de Juan en distintos momentos clave.</p>
-                        <p>En cada contacto clínico con el paciente tendrás la oportunidad de tomar decisiones que impacten en su pronóstico.</p>
+                        <p class="mb-4">{{ cms('caso.parrafo_1') }}</p>
+                        <p>{{ cms('caso.parrafo_2') }}</p>
                     </div>
                 </div>
 
@@ -699,7 +699,7 @@
                     <div class="lg:hidden relative w-full" style="margin-top:-120px;">
                         {{-- Juan image --}}
                         <div class="relative" style="width:160%; margin-left:-30%; margin-right:-30%; height:auto;">
-                            <img src="{{ asset('images/juan.png') }}" alt="Juan, paciente del caso clínico"
+                            <img src="{{ cms_img('caso.img_juan') }}" alt="Juan, paciente del caso clínico"
                                  style="width:100%; height:auto; aspect-ratio:358/480; object-fit:contain; display:block; opacity:0.95;">
                             {{-- Etiqueta "Juan" retirada a petición del cliente (la imagen ya identifica al paciente). --}}
                         </div>
@@ -712,7 +712,7 @@
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.6"><rect x="2.5" y="6" width="19" height="13" rx="2"/><path d="M7 6V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1"/></svg>
                                     <span style="font-family:'Montserrat',sans-serif; font-weight:500; font-size:12px; color:rgba(255,255,255,0.85); letter-spacing:0.02em;">Edad</span>
                                 </span>
-                                <span style="font-family:'Montserrat',sans-serif; font-weight:700; font-size:16px; color:#FFFFFF;">52</span>
+                                <span style="font-family:'Montserrat',sans-serif; font-weight:700; font-size:16px; color:#FFFFFF;">{{ cms('caso.dato_edad') }}</span>
                             </div>
                             {{-- Peso --}}
                             <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; border-bottom:1px solid rgba(255,255,255,0.08);">
@@ -720,7 +720,7 @@
                                     <svg width="16" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="3"/><rect x="7" y="6" width="10" height="6" rx="1.5"/><line x1="8" y1="16" x2="16" y2="16"/></svg>
                                     <span style="font-family:'Montserrat',sans-serif; font-weight:500; font-size:12px; color:rgba(255,255,255,0.85); letter-spacing:0.02em;">Peso</span>
                                 </span>
-                                <span style="font-family:'Montserrat',sans-serif; font-weight:700; font-size:16px; color:#FFFFFF;">82 kg</span>
+                                <span style="font-family:'Montserrat',sans-serif; font-weight:700; font-size:16px; color:#FFFFFF;">{{ cms('caso.dato_peso') }}</span>
                             </div>
                             {{-- Índice paquetes-año --}}
                             <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; border-bottom:1px solid rgba(255,255,255,0.08);">
@@ -728,7 +728,7 @@
                                     <svg width="18" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.6"><rect x="2" y="11" width="15" height="5" rx="1"/><path d="M13 11v5M6 11v5"/><path d="M20 5.5c1 .6 1 1.6.6 2.4M17 4.5c1.2.7 1.2 2 .7 3"/><path d="M19 11v5h3v-5z"/></svg>
                                     <span style="font-family:'Montserrat',sans-serif; font-weight:500; font-size:12px; color:rgba(255,255,255,0.85); letter-spacing:0.02em;">Índice paquetes-año</span>
                                 </span>
-                                <span style="font-family:'Montserrat',sans-serif; font-weight:700; font-size:16px; color:#FFFFFF;">42</span>
+                                <span style="font-family:'Montserrat',sans-serif; font-weight:700; font-size:16px; color:#FFFFFF;">{{ cms('caso.dato_indice') }}</span>
                             </div>
                             {{-- Estilo de vida --}}
                             <div style="padding:10px 14px;">
@@ -736,7 +736,7 @@
                                     <svg width="18" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.6"><path d="M20.5 8.5c0-2.2-1.8-4-4-4-1.6 0-3 .9-3.7 2.3C12.1 5.4 10.7 4.5 9 4.5c-2.2 0-4 1.8-4 4 0 4.5 7.5 9 7.5 9s8-4.5 8-9Z"/><polyline points="7,12 10,9 13,13 16,10"/></svg>
                                     <span style="font-family:'Montserrat',sans-serif; font-weight:500; font-size:12px; color:rgba(255,255,255,0.85); letter-spacing:0.02em;">Estilo de vida</span>
                                 </span>
-                                <span style="font-family:'Montserrat',sans-serif; font-weight:700; font-size:16px; color:#FFFFFF; display:block;">Vida sedentaria, alto nivel de estrés</span>
+                                <span style="font-family:'Montserrat',sans-serif; font-weight:700; font-size:16px; color:#FFFFFF; display:block;">{{ cms('caso.dato_estilo') }}</span>
                             </div>
                         </div>
                     </div>
@@ -744,7 +744,7 @@
                     {{-- Desktop: Juan figure (sin efecto de ondas, solo la imagen — a petición del cliente) --}}
                     <div class="hidden lg:flex relative z-30 justify-start" style="margin-left:-130px;">
                         <div class="relative">
-                            <img src="{{ asset('images/juan.png') }}" alt="Juan, paciente del caso clínico"
+                            <img src="{{ cms_img('caso.img_juan') }}" alt="Juan, paciente del caso clínico"
                                  class="h-[520px] w-auto object-contain">
                         </div>
                     </div>
@@ -760,7 +760,7 @@
                                 <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.5" y="6" width="19" height="13" rx="2"/><path d="M7 6V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1"/></svg>
                                 Edad
                             </span>
-                            <span class="text-white card-txt font-semibold">52</span>
+                            <span class="text-white card-txt font-semibold">{{ cms('caso.dato_edad') }}</span>
                         </div>
                         {{-- Peso --}}
                         <div class="flex items-center justify-between card-row" style="padding:14px 18px; border-bottom:1px solid rgba(255,255,255,0.10);">
@@ -768,7 +768,7 @@
                                 <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="3"/><rect x="7" y="6" width="10" height="6" rx="1.5"/><line x1="8" y1="16" x2="16" y2="16"/></svg>
                                 Peso
                             </span>
-                            <span class="text-white card-txt font-semibold">82 kg</span>
+                            <span class="text-white card-txt font-semibold">{{ cms('caso.dato_peso') }}</span>
                         </div>
                         {{-- Índice paquetes-año --}}
                         <div class="flex items-center justify-between card-row" style="padding:14px 18px; border-bottom:1px solid rgba(255,255,255,0.10);">
@@ -776,7 +776,7 @@
                                 <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="11" width="15" height="5" rx="1"/><path d="M13 11v5M6 11v5"/><path d="M20 5.5c1 .6 1 1.6.6 2.4M17 4.5c1.2.7 1.2 2 .7 3"/><path d="M19 11v5h3v-5z"/></svg>
                                 Índice paquetes-año
                             </span>
-                            <span class="text-white card-txt font-semibold">42</span>
+                            <span class="text-white card-txt font-semibold">{{ cms('caso.dato_indice') }}</span>
                         </div>
                         {{-- Estilo de vida --}}
                         <div class="card-row" style="padding:14px 18px;">
@@ -784,7 +784,7 @@
                                 <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20.5 8.5c0-2.2-1.8-4-4-4-1.6 0-3 .9-3.7 2.3C12.1 5.4 10.7 4.5 9 4.5c-2.2 0-4 1.8-4 4 0 4.5 7.5 9 7.5 9s8-4.5 8-9Z"/><polyline points="7,12 10,9 13,13 16,10"/></svg>
                                 Estilo de vida
                             </span>
-                            <span class="block text-white card-estilo leading-snug pl-[30px]">Vida sedentaria, alto nivel de estrés</span>
+                            <span class="block text-white card-estilo leading-snug pl-[30px]">{{ cms('caso.dato_estilo') }}</span>
                         </div>
                     </div>
                 </div>
@@ -865,23 +865,23 @@
             {{-- Eyebrow --}}
             <div class="reveal flex items-center gap-3 mb-7">
                 <span class="h-px w-12 bg-gradient-to-r from-transparent via-[#22d3ee]/50 to-[#22d3ee]"></span>
-                <span class="text-[#22d3ee] text-sm tracking-wide">Metodología</span>
+                <span class="text-[#22d3ee] text-sm tracking-wide">{{ cms('metodologia.eyebrow') }}</span>
             </div>
 
             {{-- Title --}}
             <h2 class="reveal metod-title text-white text-4xl md:text-5xl font-normal tracking-tight mb-12 lg:mb-16">
-                Cómo trabajarás el caso
+                {{ cms('metodologia.titulo') }}
             </h2>
 
             {{-- Table I–V --}}
             <div class="reveal-stagger border border-white/20">
                 @php
                     $steps = [
-                        ['n' => 'I',   't' => 'Evolución clínica',        'd' => 'Accedes a cada episodio con los datos relevantes del paciente.'],
-                        ['n' => 'II',  't' => 'Toma de decisiones',       'd' => 'Seleccionas la opción que consideras más adecuada en cada escenario.'],
-                        ['n' => 'III', 't' => 'Validación experta',       'd' => 'Contrastas tu decisión con el análisis en vídeo de especialistas.'],
-                        ['n' => 'IV',  't' => 'Recursos complementarios', 'd' => 'Consultas materiales descargables y contenidos de apoyo actualizados.'],
-                        ['n' => 'V',   't' => 'Cierre',                   'd' => 'El avance en el caso depende de tus decisiones y de la validación de los aspectos clave del manejo clínico.'],
+                        ['n' => 'I',   't' => cms('metodologia.paso_1_titulo'), 'd' => cms('metodologia.paso_1_desc')],
+                        ['n' => 'II',  't' => cms('metodologia.paso_2_titulo'), 'd' => cms('metodologia.paso_2_desc')],
+                        ['n' => 'III', 't' => cms('metodologia.paso_3_titulo'), 'd' => cms('metodologia.paso_3_desc')],
+                        ['n' => 'IV',  't' => cms('metodologia.paso_4_titulo'), 'd' => cms('metodologia.paso_4_desc')],
+                        ['n' => 'V',   't' => cms('metodologia.paso_5_titulo'), 'd' => cms('metodologia.paso_5_desc')],
                     ];
                 @endphp
 
@@ -991,23 +991,22 @@
         <div class="relative max-w-7xl mx-auto px-6 lg:px-12 py-16 lg:py-20">
             <h2 class="reveal dec-title text-white text-4xl md:text-5xl font-normal tracking-tight mb-4"
                 style="text-shadow:0 2px 14px rgba(0,0,0,.4);">
-                Qué decisiones podrás mejorar
+                {{ cms('decisiones.titulo') }}
             </h2>
             <p class="reveal dec-subtitle text-white/90 text-base lg:text-lg max-w-2xl mb-10 leading-relaxed"
                style="text-shadow:0 1px 10px rgba(0,0,0,.35);">
-                El curso se organiza en tres bloques con un recorrido progresivo, desde la base
-                clínica de la Lp(a) hasta la actualización en terapias dirigidas.
+                {{ cms('decisiones.subtitulo') }}
             </p>
 
             {{-- Orden = lectura por filas del desktop (col-izq, col-der) → coincide con móvil --}}
             @php
                 $decisiones = [
-                    'Identificar cuándo medir Lp(a) en práctica real',
-                    'Interpretar resultados (mg/dL vs. nmol/L) en contexto clínico',
-                    'Reconocer riesgo vascular residual no explicado',
-                    'Ajustar el manejo en pacientes con eventos recurrentes',
-                    'Integrar la Lp(a) en la estratificación del riesgo',
-                    'Anticipar el impacto de terapias dirigidas',
+                    cms('decisiones.item_1'),
+                    cms('decisiones.item_2'),
+                    cms('decisiones.item_3'),
+                    cms('decisiones.item_4'),
+                    cms('decisiones.item_5'),
+                    cms('decisiones.item_6'),
                 ];
             @endphp
             <div class="reveal-stagger grid grid-cols-1 lg:grid-cols-2 gap-3.5">
@@ -1113,13 +1112,13 @@
             <div class="cont-band-inner max-w-7xl mx-auto px-6 lg:px-12 py-16 lg:py-20">
                 <div class="reveal flex items-center gap-3 mb-7">
                     <span class="cont-eyebrow-line h-px w-12 bg-gradient-to-r from-transparent to-white/50"></span>
-                    <span class="cont-eyebrow-text text-slate-300 text-sm tracking-wide">Contenidos</span>
+                    <span class="cont-eyebrow-text text-slate-300 text-sm tracking-wide">{{ cms('contenidos.eyebrow') }}</span>
                 </div>
                 <h2 class="reveal cont-title text-white text-4xl md:text-5xl font-normal tracking-tight mb-4">
-                    Contenidos formativos
+                    {{ cms('contenidos.titulo') }}
                 </h2>
                 <p class="reveal cont-copete text-slate-200/90 text-base lg:text-lg max-w-md">
-                    Mantén una visión completa de la evolución clínica del paciente.
+                    {{ cms('contenidos.copete') }}
                 </p>
             </div>
         </div>
@@ -1127,9 +1126,9 @@
         {{-- 3 module cards --}}
         @php
             $modules = [
-                ['title' => 'Módulo 1', 'desc' => 'Lp(a): una lipoproteína única y distinta, heredada y conductora causal de enfermedad cardiovascular'],
-                ['title' => 'Módulo 2', 'desc' => 'Manejo de pacientes con enfermedad cardiovascular y elevada Lp(a)'],
-                ['title' => 'Módulo 3', 'desc' => 'Terapias dirigidas a la Lp(a): panorama actual de su desarrollo'],
+                ['title' => cms('contenidos.mod_1_titulo'), 'desc' => cms('contenidos.mod_1_desc')],
+                ['title' => cms('contenidos.mod_2_titulo'), 'desc' => cms('contenidos.mod_2_desc')],
+                ['title' => cms('contenidos.mod_3_titulo'), 'desc' => cms('contenidos.mod_3_desc')],
             ];
         @endphp
         <div class="reveal-stagger contenidos-cards grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-white/40">
@@ -1352,21 +1351,21 @@
 
             {{-- Title + subtitle --}}
             <h2 class="reveal comite-title text-white text-4xl md:text-5xl font-normal tracking-tight mb-4">
-                Comité científico
+                {{ cms('comite.titulo') }}
             </h2>
             <p class="reveal text-slate-200/90 text-base lg:text-lg mb-12 lg:mb-16">
-                Dirección y contenido avalados por especialistas en riesgo cardiovascular
+                {{ cms('comite.subtitulo') }}
             </p>
 
             {{-- Members grid --}}
             @php
                 $members = [
-                    ['name' => 'Dra. Almudena Castro Conde',        'org' => 'Hospital Universitario La Paz, Madrid',                'role' => 'coordinador y autor'],
-                    ['name' => 'Dr. David Crémer Luengos',          'org' => 'Hospital Universitario Son Llàtzer, Palma de Mallorca', 'role' => 'coordinador y autor'],
-                    ['name' => 'Dr. Abel García del Egido',         'org' => 'Complejo Asistencial Universitario de León',           'role' => 'coordinador y autor'],
-                    ['name' => 'Dr. José Luis Zamorano Gómez',      'org' => 'Hospital Universitario Ramón y Cajal, Madrid',         'role' => 'Autor'],
-                    ['name' => 'Dr. José López Miranda',            'org' => 'Hospital Universitario Reina Sofía, Córdoba',          'role' => 'Autor'],
-                    ['name' => 'Dr. José Ramón González Juanatey',  'org' => 'Universidad de Santiago de Compostela',                'role' => 'Autor'],
+                    ['name' => cms('comite.miembro_1_nombre'), 'org' => cms('comite.miembro_1_org'), 'role' => 'coordinador y autor'],
+                    ['name' => cms('comite.miembro_2_nombre'), 'org' => cms('comite.miembro_2_org'), 'role' => 'coordinador y autor'],
+                    ['name' => cms('comite.miembro_3_nombre'), 'org' => cms('comite.miembro_3_org'), 'role' => 'coordinador y autor'],
+                    ['name' => cms('comite.miembro_4_nombre'), 'org' => cms('comite.miembro_4_org'), 'role' => 'Autor'],
+                    ['name' => cms('comite.miembro_5_nombre'), 'org' => cms('comite.miembro_5_org'), 'role' => 'Autor'],
+                    ['name' => cms('comite.miembro_6_nombre'), 'org' => cms('comite.miembro_6_org'), 'role' => 'Autor'],
                 ];
             @endphp
 
