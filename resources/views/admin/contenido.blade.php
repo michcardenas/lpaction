@@ -88,6 +88,12 @@
   .rich-wrap .ql-toolbar.ql-snow { border: 0; border-bottom: 1px solid rgba(0,0,0,.12); }
   .rich-wrap .ql-container.ql-snow { border: 0; min-height: 100px; font-family: inherit; font-size: 14px; }
   .rich-wrap .ql-editor { color: #14232c; }
+  .rich-tools { margin-top: 6px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .rich-html-toggle { background: transparent; border: 1px solid rgba(255,255,255,.18); color: #b9c8d0; border-radius: 6px;
+                      padding: 4px 10px; font-size: 12px; cursor: pointer; white-space: nowrap; }
+  .rich-html-toggle:hover { color: #fff; border-color: rgba(255,255,255,.4); }
+  .rich-html { width: 100%; font-family: ui-monospace, "Consolas", "Courier New", monospace; font-size: 13px; line-height: 1.55;
+               color: #eaf2f6; background: rgba(0,0,0,.30); border: 1px solid rgba(255,255,255,.16); border-radius: 9px; padding: 10px 12px; resize: vertical; }
 </style>
 <link rel="stylesheet" href="{{ asset('vendor/quill/quill.snow.css') }}">
 </head>
@@ -200,11 +206,17 @@
                     </div>
                   </div>
                 @elseif ($field['type'] === 'richtext')
-                  <div class="rich-wrap">
-                    <div class="rich">{!! $valor !!}</div>
-                    <input type="hidden" name="text[{{ $key }}]" class="rich-input">
+                  <div class="rich-group">
+                    <div class="rich-wrap">
+                      <div class="rich">{!! $valor !!}</div>
+                      <input type="hidden" name="text[{{ $key }}]" class="rich-input">
+                    </div>
+                    <textarea class="rich-html" rows="7" spellcheck="false" style="display:none">{{ $valor }}</textarea>
+                    <div class="rich-tools">
+                      <button type="button" class="rich-html-toggle">&lt;/&gt; Editar HTML</button>
+                      <span class="hint" style="display:inline;">Negrita, listas, <b>x²/x₂</b> (superíndice/subíndice), enlaces… o edita el HTML directamente.</span>
+                    </div>
                   </div>
-                  <div class="hint">Editor con formato (negrita, listas…): sustituye a todo este bloque en el curso.</div>
                 @elseif ($field['type'] === 'textarea')
                   <textarea name="text[{{ $key }}]">{{ $valor }}</textarea>
                   @if (!empty($field['html']))
@@ -234,22 +246,55 @@
     // Inicializa un editor Quill por cada bloque richtext y vuelca su HTML al input oculto al enviar.
     (function () {
       if (typeof Quill === 'undefined') return;
-      var toolbar = [['bold', 'italic', 'underline'], [{ list: 'ordered' }, { list: 'bullet' }], ['link'], ['clean']];
+      // Toolbar con superíndice (x²) y subíndice (x₂).
+      var toolbar = [
+        ['bold', 'italic', 'underline'],
+        [{ script: 'super' }, { script: 'sub' }],
+        [{ list: 'ordered' }, { list: 'bullet' }],
+        ['link'], ['clean']
+      ];
+      // Quita párrafos vacíos que Quill deja al pulsar Enter (causaban espacios de más).
+      function limpiar(html) {
+        html = html.replace(/<p>(?:\s|&nbsp;|<br\s*\/?>)*<\/p>/gi, '');
+        if (html === '<p></p>') html = '';
+        return html;
+      }
       var editores = [];
-      document.querySelectorAll('.rich-wrap').forEach(function (wrap) {
-        var el = wrap.querySelector('.rich');
-        var input = wrap.querySelector('.rich-input');
+      document.querySelectorAll('.rich-group').forEach(function (group) {
+        var el = group.querySelector('.rich');
+        var input = group.querySelector('.rich-input');
+        var ta = group.querySelector('.rich-html');
+        var wrap = group.querySelector('.rich-wrap');
+        var btn = group.querySelector('.rich-html-toggle');
         if (!el || !input) return;
         var q = new Quill(el, { theme: 'snow', modules: { toolbar: toolbar } });
-        input.value = q.root.innerHTML;              // valor inicial (por si se guarda sin tocar)
-        editores.push({ q: q, input: input });
+        input.value = limpiar(q.root.innerHTML);
+        var reg = { q: q, input: input, ta: ta, htmlMode: false };
+        editores.push(reg);
+
+        // Alternar entre editor visual y edición del HTML en crudo.
+        if (btn && ta && wrap) {
+          btn.addEventListener('click', function () {
+            if (!reg.htmlMode) {
+              ta.value = limpiar(q.root.innerHTML);
+              wrap.style.display = 'none';
+              ta.style.display = 'block';
+              btn.textContent = 'Volver al editor visual';
+              reg.htmlMode = true;
+            } else {
+              q.root.innerHTML = ta.value;       // aplica el HTML editado al editor visual
+              wrap.style.display = '';
+              ta.style.display = 'none';
+              btn.innerHTML = '&lt;/&gt; Editar HTML';
+              reg.htmlMode = false;
+            }
+          });
+        }
       });
       var form = document.querySelector('form');
       if (form) form.addEventListener('submit', function () {
-        editores.forEach(function (e) {
-          var html = e.q.root.innerHTML;
-          if (html === '<p><br></p>') html = '';     // vacío real
-          e.input.value = html;
+        editores.forEach(function (r) {
+          r.input.value = r.htmlMode ? r.ta.value : limpiar(r.q.root.innerHTML);
         });
       });
     })();
