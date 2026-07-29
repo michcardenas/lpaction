@@ -4,7 +4,7 @@
 <div class="riesgo">
     <h1 class="h-caso">{{ cms($k.'h1', 'Monitorización y seguimiento') }}</h1>
 
-    <p class="prueba-p riesgo-p" style="margin: 0 0 12px;">{{ cms($k.'p1') }}</p>
+    <div class="prueba-p riesgo-p rich-p" style="margin: 0 0 12px;">{!! cms($k.'p1') !!}</div>
 
     {{-- Pregunta 5 del Ingreso 2 (ventajas de inclisirán vs iPCSK9). 3 correctas. --}}
     @include('curso.etapas._cuestionario', ['pregunta' => $curso['pregunta_monitorizacion_2']])

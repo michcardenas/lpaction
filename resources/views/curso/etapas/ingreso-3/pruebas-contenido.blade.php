@@ -36,7 +36,7 @@
     <div class="tab-panel prueba-panel" data-panel="angiotc" style="display:none">
         <div class="cat-block">
             <h3 class="prueba-h">{{ cms($k.'angiotc_h', 'Angio-TC de vasos intracraneales y supraaórticos') }}</h3>
-            <p class="prueba-p">{{ cms($k.'angiotc_p') }}</p>
+            <div class="prueba-p rich-p">{!! cms($k.'angiotc_p') !!}</div>
         </div>
     </div>
 
@@ -44,7 +44,7 @@
     <div class="tab-panel prueba-panel" data-panel="rm" style="display:none">
         <div class="cat-block">
             <h3 class="prueba-h">{{ cms($k.'rm_h', 'Resonancia magnética (RM) cerebral a las 48 horas') }}</h3>
-            <p class="prueba-p">{{ cms($k.'rm_p') }}</p>
+            <div class="prueba-p rich-p">{!! cms($k.'rm_p') !!}</div>
         </div>
     </div>
 
@@ -52,7 +52,7 @@
     <div class="tab-panel prueba-panel" data-panel="revasc" style="display:none">
         <div class="cat-block">
             <h3 class="prueba-h">{{ cms($k.'revasc_h', 'Revascularización') }}</h3>
-            <p class="prueba-p">{{ cms($k.'revasc_p') }}</p>
+            <div class="prueba-p rich-p">{!! cms($k.'revasc_p') !!}</div>
         </div>
     </div>
 

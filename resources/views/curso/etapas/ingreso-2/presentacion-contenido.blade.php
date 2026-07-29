@@ -24,10 +24,10 @@
             {!! cms($k.'medicacion') !!}
         </div>
         <div class="tab-panel" data-panel="alergias" style="display:none">
-            <p>{{ cms($k.'alergias_p', 'Sin alergias medicamentosas conocidas.') }}</p>
+            {!! cms($k.'alergias_p', '<p>Sin alergias medicamentosas conocidas.</p>') !!}
         </div>
     </div>
 
     <h2 class="h-sec">{{ cms($k.'h_motivo', 'Motivo de consulta') }}</h2>
-    <p class="motivo-p">{{ cms($k.'motivo') }}</p>
+    <div class="motivo-p rich-p">{!! cms($k.'motivo') !!}</div>
 </div>

@@ -20,7 +20,7 @@
     <div class="tab-panel prueba-panel" data-panel="ecg">
         <div class="ecg-block">
             <h3 class="prueba-h">{{ cms($k.'ecg_h', 'Electrocardiograma (ECG)') }}</h3>
-            <p class="prueba-p">{{ cms($k.'ecg_p') }}</p>
+            <div class="prueba-p rich-p">{!! cms($k.'ecg_p') !!}</div>
             <div class="ecg-frame">
                 <button type="button" class="ecg-icon ecg-expand" aria-label="Ampliar imagen">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>
@@ -38,7 +38,7 @@
     <div class="tab-panel prueba-panel" data-panel="cateterismo" style="display:none">
         <div class="cat-block">
             <h3 class="prueba-h">{{ cms($k.'cat_h', 'Cateterismo cardíaco') }}</h3>
-            <p class="prueba-p">{{ cms($k.'cat_p') }}</p>
+            <div class="prueba-p rich-p">{!! cms($k.'cat_p') !!}</div>
             <div class="videos-grid">
                 <figure class="video-item">
                     <div class="video-player">
@@ -80,7 +80,7 @@
     <div class="tab-panel prueba-panel" data-panel="eco" style="display:none">
         <div class="cat-block">
             <h3 class="prueba-h">{{ cms($k.'eco_h', 'Ecocardiograma transtorácico') }}</h3>
-            <p class="prueba-p">{{ cms($k.'eco_p') }}</p>
+            <div class="prueba-p rich-p">{!! cms($k.'eco_p') !!}</div>
         </div>
     </div>
 
@@ -88,7 +88,7 @@
     <div class="tab-panel prueba-panel" data-panel="itb" style="display:none">
         <div class="cat-block">
             <h3 class="prueba-h">{{ cms($k.'itb_h', 'Índice tobillo brazo (ITB)') }}</h3>
-            <p class="prueba-p">{{ cms($k.'itb_p') }}</p>
+            <div class="prueba-p rich-p">{!! cms($k.'itb_p') !!}</div>
         </div>
     </div>
 

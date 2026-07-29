@@ -22,7 +22,7 @@
     <div class="tab-panel prueba-panel" data-panel="ecg">
         <div class="ecg-block">
             <h3 class="prueba-h">{{ cms($k.'ecg_h', 'Electrocardiograma (ECG)') }}</h3>
-            <p class="prueba-p">{{ cms($k.'ecg_p', 'Los servicios de emergencias extrahospitalarias realizan un ECG donde se evidencia una elevación del segmento ST en la cara inferoposterior (Figura 1), por lo que proceden a la administración inmediata de doble antiagregación.') }}</p>
+            <div class="prueba-p rich-p">{!! cms($k.'ecg_p') !!}</div>
 
             <div class="ecg-frame">
                 <button type="button" class="ecg-icon ecg-expand" aria-label="Ampliar imagen">

@@ -42,12 +42,12 @@ return [
                 . '<p><b>Ocupación:</b> empresario.</p>'
                 . '<p><b>Estilo de vida:</b> vida sedentaria, alto nivel de estrés.</p>'],
 
-            'historia_p'   => ['label' => 'Historia médica (texto)', 'type' => 'textarea', 'default' => 'Hipertensión arterial (HTA) ligera de 7 años de evolución.'],
+            'historia_p'   => ['label' => 'Historia médica (contenido)', 'type' => 'richtext', 'default' => '<p>Hipertensión arterial (HTA) ligera de 7 años de evolución.</p>'],
             'medicacion'   => ['label' => 'Medicación (contenido)',  'type' => 'richtext', 'default' => '<p><b>Telmisartán:</b> 80 mg/24 h.</p>'],
-            'alergias_p'   => ['label' => 'Alergias (texto)',        'type' => 'textarea', 'default' => 'Sin alergias medicamentosas conocidas.'],
+            'alergias_p'   => ['label' => 'Alergias (contenido)',        'type' => 'richtext', 'default' => '<p>Sin alergias medicamentosas conocidas.</p>'],
 
             'h_motivo' => ['label' => 'Subtítulo — Motivo de consulta', 'type' => 'text',     'default' => 'Motivo de consulta'],
-            'motivo'   => ['label' => 'Motivo de consulta (texto)',     'type' => 'textarea', 'default' => 'Paciente que es traído a Urgencias de nuestro hospital por los servicios de emergencias debido a un cuadro de 2 h de evolución de dolor torácico retroesternal muy intenso que irradia hacia región epigástrica y base del cuello. El paciente refiere clínica acompañante de sudoración profusa y náuseas asociadas, aunque no ha presentado ningún vómito.'],
+            'motivo'   => ['label' => 'Motivo de consulta (texto)',     'type' => 'richtext', 'default' => 'Paciente que es traído a Urgencias de nuestro hospital por los servicios de emergencias debido a un cuadro de 2 h de evolución de dolor torácico retroesternal muy intenso que irradia hacia región epigástrica y base del cuello. El paciente refiere clínica acompañante de sudoración profusa y náuseas asociadas, aunque no ha presentado ningún vómito.'],
         ],
 
         'pruebas' => [
@@ -57,7 +57,7 @@ return [
             'tab_analitica' => ['label' => 'Pestaña 3 (nombre)', 'type' => 'text', 'default' => 'Analítica sanguínea'],
 
             'ecg_h'   => ['label' => 'ECG — subtítulo', 'type' => 'text',     'default' => 'Electrocardiograma (ECG)'],
-            'ecg_p'   => ['label' => 'ECG — texto',     'type' => 'textarea', 'default' => 'Los servicios de emergencias extrahospitalarias realizan un ECG donde se evidencia una elevación del segmento ST en la cara inferoposterior (Figura 1), por lo que proceden a la administración inmediata de doble antiagregación.'],
+            'ecg_p'   => ['label' => 'ECG — texto',     'type' => 'richtext', 'default' => 'Los servicios de emergencias extrahospitalarias realizan un ECG donde se evidencia una elevación del segmento ST en la cara inferoposterior (Figura 1), por lo que proceden a la administración inmediata de doble antiagregación.'],
             'img_ecg' => ['label' => 'ECG — imagen',    'type' => 'image',    'default' => 'images/ecg.png'],
             'ecg_cap' => ['label' => 'ECG — pie de figura', 'type' => 'text', 'default' => 'Figura 1. Electrocardiograma con elevación del segmento ST en la cara inferoposterior.'],
 
@@ -95,8 +95,8 @@ return [
         'riesgo' => [
             'h1' => ['label' => 'Título de la sección', 'type' => 'text', 'default' => 'Evaluación del riesgo cardiovascular'],
             'h2' => ['label' => 'Subtítulo',            'type' => 'text', 'default' => 'Al paciente no se le determinaron apoB ni Lp(a)'],
-            'p1' => ['label' => 'Párrafo 1',            'type' => 'textarea', 'default' => 'En la práctica clínica habitual esto es muy frecuente. Solo en un bajo porcentaje de la población se realiza determinación de Lp(a).'],
-            'p2' => ['label' => 'Párrafo 2 (admite <sup>… para citas)', 'type' => 'textarea', 'html' => true, 'default' => 'A pesar de que las guías internacionales recomiendan su medición en este grupo de alto riesgo, en la práctica clínica el porcentaje de pacientes con enfermedad cardiovascular en los que se determina Lp(a) es muy bajo (&lt;1%–14%)<sup>2,3</sup>. Estudios recientes en redes de Atención Primaria y Cardiología muestran que solo el 1,55% de los pacientes que cumplen criterios de RCV, incluyendo SCA, tienen la Lp(a) medida, y la proporción es similar en pacientes con enfermedad cardiovascular establecida.'],
+            'p1' => ['label' => 'Párrafo 1',            'type' => 'richtext', 'default' => 'En la práctica clínica habitual esto es muy frecuente. Solo en un bajo porcentaje de la población se realiza determinación de Lp(a).'],
+            'p2' => ['label' => 'Párrafo 2 (admite <sup>… para citas)', 'type' => 'richtext', 'html' => true, 'default' => 'A pesar de que las guías internacionales recomiendan su medición en este grupo de alto riesgo, en la práctica clínica el porcentaje de pacientes con enfermedad cardiovascular en los que se determina Lp(a) es muy bajo (&lt;1%–14%)<sup>2,3</sup>. Estudios recientes en redes de Atención Primaria y Cardiología muestran que solo el 1,55% de los pacientes que cumplen criterios de RCV, incluyendo SCA, tienen la Lp(a) medida, y la proporción es similar en pacientes con enfermedad cardiovascular establecida.'],
         ],
 
         'terapeutico' => [
@@ -203,9 +203,9 @@ return [
                 . '<p>Atorvastatina/ezetimiba: 80/10 mg/24 h.</p>'
                 . '<p>Ácido bempedoico: 180 mg/24 h.</p>'
                 . '<p>Semaglutida: 2,4 mg/semana.</p>'],
-            'alergias_p' => ['label' => 'Alergias (texto)', 'type' => 'textarea', 'default' => 'Sin alergias medicamentosas conocidas.'],
+            'alergias_p' => ['label' => 'Alergias (texto)', 'type' => 'richtext', 'default' => '<p>Sin alergias medicamentosas conocidas.</p>'],
             'h_motivo'   => ['label' => 'Subtítulo — Motivo de consulta', 'type' => 'text',     'default' => 'Motivo de consulta'],
-            'motivo'     => ['label' => 'Motivo de consulta (texto)',     'type' => 'textarea', 'default' => 'El paciente vuelve a acudir al servicio de Urgencias de nuestro hospital, 10 meses después del primer evento, por un cuadro de dolor retroesternal opresivo y sensación de ahogo asociada a pequeños esfuerzos rápidamente progresivos hasta alcanzar el reposo de 15 días de evolución.'],
+            'motivo'     => ['label' => 'Motivo de consulta (texto)',     'type' => 'richtext', 'default' => 'El paciente vuelve a acudir al servicio de Urgencias de nuestro hospital, 10 meses después del primer evento, por un cuadro de dolor retroesternal opresivo y sensación de ahogo asociada a pequeños esfuerzos rápidamente progresivos hasta alcanzar el reposo de 15 días de evolución.'],
         ],
 
         'pruebas' => [
@@ -217,22 +217,22 @@ return [
             'tab_analitica' => ['label' => 'Pestaña 5 (nombre)', 'type' => 'text', 'default' => 'Analítica sanguínea'],
 
             'ecg_h'   => ['label' => 'ECG — subtítulo', 'type' => 'text',     'default' => 'Electrocardiograma (ECG)'],
-            'ecg_p'   => ['label' => 'ECG — texto',     'type' => 'textarea', 'default' => 'A su llegada al servicio de Urgencias, se le realiza ECG en ritmo sinusal y se orienta como síndrome coronario agudo sin elevación del segmento ST (SCASEST).'],
+            'ecg_p'   => ['label' => 'ECG — texto',     'type' => 'richtext', 'default' => 'A su llegada al servicio de Urgencias, se le realiza ECG en ritmo sinusal y se orienta como síndrome coronario agudo sin elevación del segmento ST (SCASEST).'],
             'img_ecg' => ['label' => 'ECG — imagen',    'type' => 'image',    'default' => 'images/ecg-2.png'],
             'ecg_cap' => ['label' => 'ECG — pie de figura', 'type' => 'text', 'default' => 'Figura 1. Electrocardiograma al ingreso en ritmo sinusal, orientativo de síndrome coronario agudo sin elevación del segmento ST.'],
 
             'cat_h'    => ['label' => 'Cateterismo — subtítulo', 'type' => 'text',     'default' => 'Cateterismo cardíaco'],
-            'cat_p'    => ['label' => 'Cateterismo — texto',     'type' => 'textarea', 'default' => 'Se realiza coronariografía emergente observando stents permeables en arteria coronaria derecha (CD) y progresión de lesión en DA, revascularizada con stent DES en DA media/D1. Además, en acceso femoral se aprecian placas de ateroma con estenosis arterial.'],
+            'cat_p'    => ['label' => 'Cateterismo — texto',     'type' => 'richtext', 'default' => 'Se realiza coronariografía emergente observando stents permeables en arteria coronaria derecha (CD) y progresión de lesión en DA, revascularizada con stent DES en DA media/D1. Además, en acceso femoral se aprecian placas de ateroma con estenosis arterial.'],
             'video1'     => ['label' => 'Cateterismo — vídeo',       'type' => 'video', 'default' => 'videos/cateterismo-2-1.mp4'],
             'video1_cap' => ['label' => 'Cateterismo — pie vídeo',   'type' => 'text',  'default' => 'Vídeo 4. Cateterismo cardíaco. Se puede apreciar revascularización DAm-D1.'],
             'video2'     => ['label' => 'Arteriografía femoral — vídeo',     'type' => 'video', 'default' => 'videos/arteriografia-femoral.mp4'],
             'video2_cap' => ['label' => 'Arteriografía femoral — pie vídeo', 'type' => 'text',  'default' => 'Vídeo 5. Arteriografía femoral. Placas de ateroma que condicionan estenosis.'],
 
             'eco_h' => ['label' => 'Ecocardiograma — subtítulo', 'type' => 'text',     'default' => 'Ecocardiograma transtorácico'],
-            'eco_p' => ['label' => 'Ecocardiograma — texto',     'type' => 'textarea', 'default' => 'Ecocardiograma transtorácico: fracción de eyección del ventrículo izquierdo (FEVI) conservada: 56%. Hipocinesia ligera inferobasal.'],
+            'eco_p' => ['label' => 'Ecocardiograma — texto',     'type' => 'richtext', 'default' => 'Ecocardiograma transtorácico: fracción de eyección del ventrículo izquierdo (FEVI) conservada: 56%. Hipocinesia ligera inferobasal.'],
 
             'itb_h' => ['label' => 'ITB — subtítulo', 'type' => 'text',     'default' => 'Índice tobillo brazo (ITB)'],
-            'itb_p' => ['label' => 'ITB — texto',     'type' => 'textarea', 'default' => 'Índice tobillo brazo (ITB) <0,9 = enfermedad arterial periférica.'],
+            'itb_p' => ['label' => 'ITB — texto',     'type' => 'richtext', 'default' => 'Índice tobillo brazo (ITB) &lt;0,9 = enfermedad arterial periférica.'],
 
             'ana_h'     => ['label' => 'Analítica — subtítulo', 'type' => 'text', 'default' => 'Analítica sanguínea'],
             'ana_intro' => ['label' => 'Analítica — intro',     'type' => 'text', 'default' => 'Realizamos analítica en el servicio de Urgencias:'],
@@ -264,7 +264,7 @@ return [
         'riesgo' => [
             'h1'    => ['label' => 'Título de la sección', 'type' => 'text',     'default' => 'Evaluación del riesgo cardiovascular'],
             'h2'    => ['label' => 'Subtítulo',            'type' => 'text',     'default' => 'Tras la reevaluación se solicita la determinación de Lp(a)'],
-            'p1'    => ['label' => 'Texto introductorio',  'type' => 'textarea', 'default' => 'Tras el diagnóstico de SCASEST tipo angina inestable y revascularización, por fin se solicitó determinación de lipoproteína (a) [Lp(a)]:'],
+            'p1'    => ['label' => 'Texto introductorio',  'type' => 'richtext', 'default' => 'Tras el diagnóstico de SCASEST tipo angina inestable y revascularización, por fin se solicitó determinación de lipoproteína (a) [Lp(a)]:'],
             'lista' => ['label' => 'Analítica con Lp(a) (lista con formato)', 'type' => 'richtext', 'default' =>
                 '<ul class="analitica-list">'
                 . '<li>GLU: 104 mg/dL.</li>'
@@ -286,7 +286,7 @@ return [
 
         'terapeutico' => [
             'h1'     => ['label' => 'Título de la sección', 'type' => 'text',     'default' => 'Planteamiento terapéutico'],
-            'p1'     => ['label' => 'Texto introductorio',  'type' => 'textarea', 'default' => 'Tras buena evolución clínica, Juan fue dado de alta para seguimiento estricto en consultas.'],
+            'p1'     => ['label' => 'Texto introductorio',  'type' => 'richtext', 'default' => 'Tras buena evolución clínica, Juan fue dado de alta para seguimiento estricto en consultas.'],
             'h_trat' => ['label' => 'Subtítulo — tratamiento', 'type' => 'text',  'default' => 'Tratamiento farmacológico:'],
             'lista'  => ['label' => 'Tratamiento (lista con formato)', 'type' => 'richtext', 'default' =>
                 '<ul class="analitica-list">'
@@ -301,12 +301,12 @@ return [
 
         'monitorizacion' => [
             'h1' => ['label' => 'Título de la sección', 'type' => 'text',     'default' => 'Monitorización y seguimiento'],
-            'p1' => ['label' => 'Texto introductorio',  'type' => 'textarea', 'default' => 'Tras la reevaluación del paciente y obtener el valor de Lp(a), se solicitó a farmacia tratamiento con inclisirán por evento recurrente en paciente polivascular con terapia hipolipemiante óptima, que fue aceptado por parte de la farmacia hospitalaria.'],
+            'p1' => ['label' => 'Texto introductorio',  'type' => 'richtext', 'default' => 'Tras la reevaluación del paciente y obtener el valor de Lp(a), se solicitó a farmacia tratamiento con inclisirán por evento recurrente en paciente polivascular con terapia hipolipemiante óptima, que fue aceptado por parte de la farmacia hospitalaria.'],
         ],
 
         'monitorizacion-2' => [
             'h1'         => ['label' => 'Título de la sección', 'type' => 'text',     'default' => 'Monitorización y seguimiento 2'],
-            'p1'         => ['label' => 'Texto introductorio',  'type' => 'textarea', 'default' => 'Una vez optimizado el tratamiento con inclisirán, al mes se repite la analítica. Perfil lipídico completo (tras 1 mes de inclisirán, 1.ª dosis):'],
+            'p1'         => ['label' => 'Texto introductorio',  'type' => 'richtext', 'default' => 'Una vez optimizado el tratamiento con inclisirán, al mes se repite la analítica. Perfil lipídico completo (tras 1 mes de inclisirán, 1.ª dosis):'],
             'lista'      => ['label' => 'Perfil lipídico tras inclisirán (lista con formato)', 'type' => 'richtext', 'default' =>
                 '<ul class="analitica-list">'
                 . '<li>CT: 103 mg/dL.</li>'
@@ -322,17 +322,17 @@ return [
                 . '<li>HbA1c: 5,9%.</li>'
                 . '<li>GLU: 91 mg/dL.</li>'
                 . '</ul>'],
-            'comentario' => ['label' => 'Comentario del perfil', 'type' => 'textarea', 'default' => 'Ha alcanzado el objetivo de cLDL y ApoB tras inclisirán; el colesterol no-HDL queda en 71 mg/dL, ligeramente por encima del objetivo <70 mg/dL de la categoría de riesgo extremo. La Lp(a) disminuye modestamente, pero permanece marcadamente elevada.'],
-            'screening1' => ['label' => 'Screening — párrafo 1', 'type' => 'textarea', 'default' => 'Juan es consciente de que su riesgo cardiovascular es excepcionalmente alto y de que es portador de un factor sobre el que el tratamiento actual solo tiene un efecto parcial. Asume que debe extremar su autocuidado y la cumplimentación farmacológica.'],
-            'screening2' => ['label' => 'Screening — párrafo 2', 'type' => 'textarea', 'default' => 'De acuerdo con sus resultados, se recomienda screening familiar.'],
-            'screening3' => ['label' => 'Screening — párrafo 3', 'type' => 'textarea', 'default' => 'Screening familiar: dado que se determina Lp(a) >90% por factores genéticos, los hijos de Juan tienen una probabilidad del 50% de heredar niveles elevados. Se recomienda medir la Lp(a) al menos una vez en la vida a todos los familiares de primer grado (hijos, hermanos) a partir de los 18 años.'],
-            'cierre'     => ['label' => 'Texto de cierre', 'type' => 'textarea', 'default' => 'Aquí es donde surge la verdadera incógnita: ¿hemos hecho todo lo posible... o solo hemos tratado una parte del problema? Tal vez la respuesta pueda estar más cerca de lo que pensamos, marcando el siguiente capítulo en el manejo del riesgo cardiovascular residual.'],
+            'comentario' => ['label' => 'Comentario del perfil', 'type' => 'richtext', 'default' => 'Ha alcanzado el objetivo de cLDL y ApoB tras inclisirán; el colesterol no-HDL queda en 71 mg/dL, ligeramente por encima del objetivo &lt;70 mg/dL de la categoría de riesgo extremo. La Lp(a) disminuye modestamente, pero permanece marcadamente elevada.'],
+            'screening1' => ['label' => 'Screening — párrafo 1', 'type' => 'richtext', 'default' => 'Juan es consciente de que su riesgo cardiovascular es excepcionalmente alto y de que es portador de un factor sobre el que el tratamiento actual solo tiene un efecto parcial. Asume que debe extremar su autocuidado y la cumplimentación farmacológica.'],
+            'screening2' => ['label' => 'Screening — párrafo 2', 'type' => 'richtext', 'default' => 'De acuerdo con sus resultados, se recomienda screening familiar.'],
+            'screening3' => ['label' => 'Screening — párrafo 3', 'type' => 'richtext', 'default' => 'Screening familiar: dado que se determina Lp(a) &gt;90% por factores genéticos, los hijos de Juan tienen una probabilidad del 50% de heredar niveles elevados. Se recomienda medir la Lp(a) al menos una vez en la vida a todos los familiares de primer grado (hijos, hermanos) a partir de los 18 años.'],
+            'cierre'     => ['label' => 'Texto de cierre', 'type' => 'richtext', 'default' => 'Aquí es donde surge la verdadera incógnita: ¿hemos hecho todo lo posible... o solo hemos tratado una parte del problema? Tal vez la respuesta pueda estar más cerca de lo que pensamos, marcando el siguiente capítulo en el manejo del riesgo cardiovascular residual.'],
         ],
 
         'mantenimiento' => [
             'h1'         => ['label' => 'Título de la sección', 'type' => 'text', 'default' => 'Terapia de mantenimiento al alta de rehabilitación cardiaca'],
             'h_perfil'   => ['label' => 'Subtítulo — perfil lipídico', 'type' => 'text',     'default' => 'Perfil lipídico tras 1 mes de inclisirán (1.ª dosis)'],
-            'p1'         => ['label' => 'Intro del perfil', 'type' => 'textarea', 'default' => 'Una vez optimizado el tratamiento con inclisirán, al mes se repite la analítica. Perfil lipídico completo (tras 1 mes de inclisirán, 1.ª dosis):'],
+            'p1'         => ['label' => 'Intro del perfil', 'type' => 'richtext', 'default' => 'Una vez optimizado el tratamiento con inclisirán, al mes se repite la analítica. Perfil lipídico completo (tras 1 mes de inclisirán, 1.ª dosis):'],
             'lista'      => ['label' => 'Perfil lipídico (lista con formato)', 'type' => 'richtext', 'default' =>
                 '<ul class="analitica-list">'
                 . '<li>CT: 103 mg/dL.</li>'
@@ -348,12 +348,12 @@ return [
                 . '<li>HbA1c: 5,9%.</li>'
                 . '<li>GLU: 91 mg/dL.</li>'
                 . '</ul>'],
-            'comentario' => ['label' => 'Comentario del perfil', 'type' => 'textarea', 'default' => 'Ha alcanzado el objetivo de cLDL y ApoB tras inclisirán; el colesterol no-HDL queda en 71 mg/dL, ligeramente por encima del objetivo <70 mg/dL de la categoría de riesgo extremo. La Lp(a) disminuye modestamente, pero permanece marcadamente elevada.'],
+            'comentario' => ['label' => 'Comentario del perfil', 'type' => 'richtext', 'default' => 'Ha alcanzado el objetivo de cLDL y ApoB tras inclisirán; el colesterol no-HDL queda en 71 mg/dL, ligeramente por encima del objetivo &lt;70 mg/dL de la categoría de riesgo extremo. La Lp(a) disminuye modestamente, pero permanece marcadamente elevada.'],
             'h_reco'     => ['label' => 'Subtítulo — recomendaciones', 'type' => 'text', 'default' => 'Recomendaciones y screening familiar'],
-            'reco1'      => ['label' => 'Recomendaciones — párrafo 1', 'type' => 'textarea', 'default' => 'Juan es consciente de que su riesgo cardiovascular es excepcionalmente alto y de que es portador de un factor sobre el que el tratamiento actual solo tiene un efecto parcial. Asume que debe extremar su autocuidado y la cumplimentación farmacológica.'],
-            'reco2'      => ['label' => 'Recomendaciones — párrafo 2', 'type' => 'textarea', 'default' => 'De acuerdo con sus resultados, se recomienda screening familiar.'],
-            'screening'  => ['label' => 'Screening familiar (texto tras la negrita)', 'type' => 'textarea', 'default' => 'dado que se determina Lp(a) >90% por factores genéticos, los hijos de Juan tienen una probabilidad del 50% de heredar niveles elevados. Se recomienda medir la Lp(a) al menos una vez en la vida a todos los familiares de primer grado (hijos, hermanos) a partir de los 18 años.'],
-            'cierre'     => ['label' => 'Texto de cierre', 'type' => 'textarea', 'default' => 'Aquí es donde surge la verdadera incógnita: ¿hemos hecho todo lo posible... o solo hemos tratado una parte del problema? Tal vez la respuesta pueda estar más cerca de lo que pensamos, marcando el siguiente capítulo en el manejo del riesgo cardiovascular residual.'],
+            'reco1'      => ['label' => 'Recomendaciones — párrafo 1', 'type' => 'richtext', 'default' => 'Juan es consciente de que su riesgo cardiovascular es excepcionalmente alto y de que es portador de un factor sobre el que el tratamiento actual solo tiene un efecto parcial. Asume que debe extremar su autocuidado y la cumplimentación farmacológica.'],
+            'reco2'      => ['label' => 'Recomendaciones — párrafo 2', 'type' => 'richtext', 'default' => 'De acuerdo con sus resultados, se recomienda screening familiar.'],
+            'screening'  => ['label' => 'Screening familiar (párrafo)', 'type' => 'richtext', 'default' => '<p><b>Screening familiar:</b> dado que se determina Lp(a) &gt;90% por factores genéticos, los hijos de Juan tienen una probabilidad del 50% de heredar niveles elevados. Se recomienda medir la Lp(a) al menos una vez en la vida a todos los familiares de primer grado (hijos, hermanos) a partir de los 18 años.</p>'],
+            'cierre'     => ['label' => 'Texto de cierre', 'type' => 'richtext', 'default' => 'Aquí es donde surge la verdadera incógnita: ¿hemos hecho todo lo posible... o solo hemos tratado una parte del problema? Tal vez la respuesta pueda estar más cerca de lo que pensamos, marcando el siguiente capítulo en el manejo del riesgo cardiovascular residual.'],
         ],
 
         'puntos-clave' => [
@@ -392,9 +392,9 @@ return [
                 . '<p>Atorvastatina/ezetimiba: 80/10 mg/24 h.</p>'
                 . '<p>Semaglutida: 2,4 mg/semana.</p>'
                 . '<p>Inclisirán: dosis semestral (última dosis hace 3 meses) con buena tolerancia.</p>'],
-            'alergias_p' => ['label' => 'Alergias (texto)', 'type' => 'textarea', 'default' => 'Sin alergias medicamentosas conocidas.'],
+            'alergias_p' => ['label' => 'Alergias (texto)', 'type' => 'richtext', 'default' => '<p>Sin alergias medicamentosas conocidas.</p>'],
             'h_motivo'   => ['label' => 'Subtítulo — Motivo de consulta', 'type' => 'text',     'default' => 'Motivo de consulta'],
-            'motivo'     => ['label' => 'Motivo de consulta (texto)',     'type' => 'textarea', 'default' => 'Juan acude al servicio de Urgencias del hospital acompañado por su esposa tras presentar, 3 horas antes, un cuadro de aparición brusca de debilidad en hemicuerpo izquierdo con inestabilidad y leve confusión. Los síntomas se han mantenido estables desde el inicio. No refiere cefalea, pérdida de conocimiento ni convulsiones. Se le realiza un electrocardiograma (ECG) en el que se observa taquicardia sinusal. Dado su historial de enfermedad cardiovascular (ECV) polivascular y Lp(a) elevada, la sospecha de ictus isquémico es alta.'],
+            'motivo'     => ['label' => 'Motivo de consulta (texto)',     'type' => 'richtext', 'default' => 'Juan acude al servicio de Urgencias del hospital acompañado por su esposa tras presentar, 3 horas antes, un cuadro de aparición brusca de debilidad en hemicuerpo izquierdo con inestabilidad y leve confusión. Los síntomas se han mantenido estables desde el inicio. No refiere cefalea, pérdida de conocimiento ni convulsiones. Se le realiza un electrocardiograma (ECG) en el que se observa taquicardia sinusal. Dado su historial de enfermedad cardiovascular (ECV) polivascular y Lp(a) elevada, la sospecha de ictus isquémico es alta.'],
         ],
 
         'pruebas' => [
@@ -410,13 +410,13 @@ return [
             'tc_cap' => ['label' => 'TC craneal — pie de figura', 'type' => 'text', 'default' => 'Figura 1. TC craneal sin contraste: ausencia de hemorragia intracraneal y de signos de infarto agudo en territorio arterial definido.'],
 
             'angiotc_h' => ['label' => 'Angio-TC — subtítulo', 'type' => 'text',     'default' => 'Angio-TC de vasos intracraneales y supraaórticos'],
-            'angiotc_p' => ['label' => 'Angio-TC — texto',     'type' => 'textarea', 'default' => 'Lesión grave (90%) de la arteria carótida interna derecha. Placas de ateroma en bulbo carotídeo izquierdo con estenosis <50%. Signos de enfermedad aterosclerótica difusa en arco aórtico y arterias supraaórticas.'],
+            'angiotc_p' => ['label' => 'Angio-TC — texto',     'type' => 'richtext', 'default' => 'Lesión grave (90%) de la arteria carótida interna derecha. Placas de ateroma en bulbo carotídeo izquierdo con estenosis &lt;50%. Signos de enfermedad aterosclerótica difusa en arco aórtico y arterias supraaórticas.'],
 
             'rm_h' => ['label' => 'RM cerebral — subtítulo', 'type' => 'text',     'default' => 'Resonancia magnética (RM) cerebral a las 48 horas'],
-            'rm_p' => ['label' => 'RM cerebral — texto',     'type' => 'textarea', 'default' => 'Infarto isquémico agudo hemisférico derecho de localización subinsular y capsular que se extiende a corona radiada. Sin transformación hemorrágica. Leucoaraiosis periventricular ligera.'],
+            'rm_p' => ['label' => 'RM cerebral — texto',     'type' => 'richtext', 'default' => 'Infarto isquémico agudo hemisférico derecho de localización subinsular y capsular que se extiende a corona radiada. Sin transformación hemorrágica. Leucoaraiosis periventricular ligera.'],
 
             'revasc_h' => ['label' => 'Revascularización — subtítulo', 'type' => 'text',     'default' => 'Revascularización'],
-            'revasc_p' => ['label' => 'Revascularización — texto',     'type' => 'textarea', 'default' => 'Se realiza endarterectomía carotídea derecha emergente con buen resultado y sin complicaciones.'],
+            'revasc_p' => ['label' => 'Revascularización — texto',     'type' => 'richtext', 'default' => 'Se realiza endarterectomía carotídea derecha emergente con buen resultado y sin complicaciones.'],
 
             'ana_h'    => ['label' => 'Analítica — subtítulo', 'type' => 'text', 'default' => 'Analítica sanguínea'],
             'ana_list' => ['label' => 'Analítica — valores (lista con formato)', 'type' => 'richtext', 'default' =>
@@ -451,9 +451,9 @@ return [
 
         'monitorizacion-2' => [
             'h1'   => ['label' => 'Título de la sección',   'type' => 'text',     'default' => 'Evolución'],
-            'evo1' => ['label' => 'Evolución — párrafo 1', 'type' => 'textarea', 'default' => 'Juan evoluciona favorablemente durante su estancia en el hospital, iniciando neurorrehabilitación precoz en la Unidad de Ictus con recuperación progresiva de la paresia.'],
-            'evo2' => ['label' => 'Evolución — párrafo 2', 'type' => 'textarea', 'default' => 'Atribuye su último evento a transgresiones dietéticas muy ocasionales y a una reducción reciente de su nivel de ejercicio aeróbico. Es extremadamente consciente de que la dieta, el ejercicio y el cumplimiento estricto de su tratamiento son claves a partir de ahora para minimizar su riesgo cardiovascular y añadir cantidad y calidad de vida.'],
-            'evo3' => ['label' => 'Evolución — párrafo 3', 'type' => 'textarea', 'default' => 'El mayor de sus tres hijos se ha realizado una revisión cardiovascular completa con hallazgo de un cLDL de 135 mg/dL y una Lp(a) de 269 nmol/L. Ha dejado de fumar y comenzado a modificar sus hábitos con dieta cardiosaludable y ejercicio físico aeróbico, combinado con un programa específico de fuerza (en total >300 minutos por semana), pendiente de evolución y analítica para valorar la necesidad de tratamiento farmacológico. Ni él ni Juan quieren que se repita su historia.'],
+            'evo1' => ['label' => 'Evolución — párrafo 1', 'type' => 'richtext', 'default' => 'Juan evoluciona favorablemente durante su estancia en el hospital, iniciando neurorrehabilitación precoz en la Unidad de Ictus con recuperación progresiva de la paresia.'],
+            'evo2' => ['label' => 'Evolución — párrafo 2', 'type' => 'richtext', 'default' => 'Atribuye su último evento a transgresiones dietéticas muy ocasionales y a una reducción reciente de su nivel de ejercicio aeróbico. Es extremadamente consciente de que la dieta, el ejercicio y el cumplimiento estricto de su tratamiento son claves a partir de ahora para minimizar su riesgo cardiovascular y añadir cantidad y calidad de vida.'],
+            'evo3' => ['label' => 'Evolución — párrafo 3', 'type' => 'richtext', 'default' => 'El mayor de sus tres hijos se ha realizado una revisión cardiovascular completa con hallazgo de un cLDL de 135 mg/dL y una Lp(a) de 269 nmol/L. Ha dejado de fumar y comenzado a modificar sus hábitos con dieta cardiosaludable y ejercicio físico aeróbico, combinado con un programa específico de fuerza (en total &gt;300 minutos por semana), pendiente de evolución y analítica para valorar la necesidad de tratamiento farmacológico. Ni él ni Juan quieren que se repita su historia.'],
         ],
 
         'mantenimiento' => [

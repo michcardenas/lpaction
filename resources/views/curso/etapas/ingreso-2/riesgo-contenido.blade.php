@@ -4,7 +4,7 @@
     <h1 class="h-caso">{{ cms($k.'h1', 'Evaluación del riesgo cardiovascular') }}</h1>
 
     <h2 class="h-sec riesgo-h">{{ cms($k.'h2', 'Tras la reevaluación se solicita la determinación de Lp(a)') }}</h2>
-    <p class="prueba-p riesgo-p">{{ cms($k.'p1') }}</p>
+    <div class="prueba-p riesgo-p rich-p">{!! cms($k.'p1') !!}</div>
     <div style="margin-top:16px;">{!! cms($k.'lista') !!}</div>
 
     {{-- Pregunta 3 del Ingreso 2 (unidades de medición de Lp(a): nmol/L vs mg/dL) --}}

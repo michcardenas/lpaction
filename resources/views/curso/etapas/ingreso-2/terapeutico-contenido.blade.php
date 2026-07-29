@@ -4,7 +4,7 @@
 <div class="riesgo">
     <h1 class="h-caso">{{ cms($k.'h1', 'Planteamiento terapéutico') }}</h1>
 
-    <p class="prueba-p riesgo-p" style="margin: 0 0 16px;">{{ cms($k.'p1') }}</p>
+    <div class="prueba-p riesgo-p rich-p" style="margin: 0 0 16px;">{!! cms($k.'p1') !!}</div>
 
     <h3 class="prueba-h" style="margin: 0 0 12px;">{{ cms($k.'h_trat', 'Tratamiento farmacológico:') }}</h3>
     {!! cms($k.'lista') !!}
