@@ -89,7 +89,7 @@ class SiteContentController extends Controller
 
         // --- Vídeos ---
         $request->validate(
-            collect($request->file('video', []))->mapWithKeys(fn ($f, $k) => ["video.$k" => 'nullable|file|mimetypes:video/mp4,video/webm,video/ogg,video/quicktime|max:40960'])->all(),
+            collect($request->file('video', []))->mapWithKeys(fn ($f, $k) => ["video.$k" => 'nullable|file|mimetypes:video/mp4,video/webm,video/ogg,video/quicktime|max:1048576'])->all(),
             [],
             ['video.*' => 'vídeo']
         );

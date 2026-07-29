@@ -188,7 +188,7 @@
                     </div>
                     <div class="img-ctl">
                       <input type="file" name="video[{{ $key }}]" accept="video/mp4,video/webm,video/ogg">
-                      <div class="hint">Sube el vídeo de la introducción (MP4/WebM, máx. 40 MB). Se verá en el curso al guardar.</div>
+                      <div class="hint">Sube el vídeo (MP4/WebM). Admite vídeos largos (hasta ~1 GB). Se ve en el curso al guardar.</div>
                     </div>
                   </div>
                 @elseif ($field['type'] === 'doc')
