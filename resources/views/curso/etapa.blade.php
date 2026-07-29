@@ -1623,7 +1623,13 @@
             // Citas bibliográficas -> superíndice. Solo el número pegado a una palabra al final de la frase.
             // NO toca medidas (≥50%, 4 g/día, 1-3 meses) ni nombres de gen (PCSK9 se maneja aparte).
             function formatCitas(t) {
-                t = (t || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                t = t || '';
+                // Si el texto YA es HTML del editor (Quill: <p>, <sup>, <b>, <li>…) no se escapa
+                // (Quill ya escapó el texto). Si es texto plano, se escapa para no romper "<1%", ">55".
+                var esHtml = /<\/?(p|sup|sub|strong|b|em|i|u|ul|ol|li|br|a)\b/i.test(t);
+                if (!esHtml) {
+                    t = t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                }
                 t = t.replace(/(PCSK)9(\d+(?:[-,]\d+)*)/g, '$19<sup>$2</sup>');                 // gen PCSK9 + cita: solo la cita
                 // Cita al final de frase. La coma solo cuenta como fin de cita si NO va seguida de
                 // un dígito; así no rompe rangos decimales como "1,7-2,1" (odds ratio) ni "20-25%".

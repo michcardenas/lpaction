@@ -92,6 +92,13 @@ return [
                 . '</ul>'],
         ],
 
+        'riesgo' => [
+            'h1' => ['label' => 'Título de la sección', 'type' => 'text', 'default' => 'Evaluación del riesgo cardiovascular'],
+            'h2' => ['label' => 'Subtítulo',            'type' => 'text', 'default' => 'Al paciente no se le determinaron apoB ni Lp(a)'],
+            'p1' => ['label' => 'Párrafo 1',            'type' => 'textarea', 'default' => 'En la práctica clínica habitual esto es muy frecuente. Solo en un bajo porcentaje de la población se realiza determinación de Lp(a).'],
+            'p2' => ['label' => 'Párrafo 2 (admite <sup>… para citas)', 'type' => 'textarea', 'html' => true, 'default' => 'A pesar de que las guías internacionales recomiendan su medición en este grupo de alto riesgo, en la práctica clínica el porcentaje de pacientes con enfermedad cardiovascular en los que se determina Lp(a) es muy bajo (&lt;1%–14%)<sup>2,3</sup>. Estudios recientes en redes de Atención Primaria y Cardiología muestran que solo el 1,55% de los pacientes que cumplen criterios de RCV, incluyendo SCA, tienen la Lp(a) medida, y la proporción es similar en pacientes con enfermedad cardiovascular establecida.'],
+        ],
+
         'puntos-clave' => [
             'h1'        => ['label' => 'Título de la sección', 'type' => 'text',  'default' => 'Puntos clave'],
             'video'     => ['label' => 'Vídeo de puntos clave (MP4/WebM)', 'type' => 'video', 'default' => 'videos/puntos-clave-1.mp4'],
