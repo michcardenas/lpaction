@@ -27,7 +27,10 @@ class CursoController extends Controller
         // - En Ingreso 3 (cuando exista): idem.
         $pacienteActivo = $this->pacienteActivo($curso, $progress);
 
-        return view('curso.index', compact('user', 'curso', 'progress', 'pacienteActivo'));
+        // Admin (corrector): acceso total en el portal para validar todo el contenido.
+        $esAdmin = $user->isAdmin();
+
+        return view('curso.index', compact('user', 'curso', 'progress', 'pacienteActivo', 'esAdmin'));
     }
 
     /**
@@ -96,7 +99,8 @@ class CursoController extends Controller
         CourseProgress::seedFor($user);
 
         // La evaluación final exige TODOS los ingresos completados al 100% (incluido el 3).
-        if (! $this->todosLosIngresosCompletados($user)) {
+        // El admin (corrector) puede previsualizarla para validar el contenido.
+        if (! $user->isAdmin() && ! $this->todosLosIngresosCompletados($user)) {
             return redirect()->route('curso');
         }
 
@@ -126,7 +130,8 @@ class CursoController extends Controller
         CourseProgress::seedFor($user);
 
         // Guard: no se puede empezar la evaluación sin tener TODOS los ingresos completados.
-        if (! $this->todosLosIngresosCompletados($user)) {
+        // El admin (corrector) puede iniciarla igualmente para validar las preguntas.
+        if (! $user->isAdmin() && ! $this->todosLosIngresosCompletados($user)) {
             return redirect()->route('curso');
         }
 
@@ -136,8 +141,9 @@ class CursoController extends Controller
         $maxInt  = (int) ($cfg['max_intentos'] ?? 2);
 
         // Guard: la encuesta de satisfacción es OBLIGATORIA antes de comenzar la evaluación.
+        // El admin (corrector) la puede saltar para previsualizar la evaluación.
         $encuestaProg = $user->progress()->where('module_key', 'encuesta')->first();
-        if (! ($encuestaProg && $encuestaProg->status === 'completed')) {
+        if (! $user->isAdmin() && ! ($encuestaProg && $encuestaProg->status === 'completed')) {
             return redirect()->route('encuesta');
         }
 
@@ -351,8 +357,9 @@ class CursoController extends Controller
         CourseProgress::seedFor($user);
 
         // Guard: el diploma solo está disponible tras aprobar la evaluación (status ≠ locked).
+        // El admin (corrector) puede previsualizarlo para validar la plantilla.
         $prog = $user->progress()->where('module_key', 'diploma')->first();
-        if (! $prog || $prog->status === 'locked') {
+        if (! $user->isAdmin() && (! $prog || $prog->status === 'locked')) {
             return redirect()->route('curso')->with('diploma_error', 'Aún no has desbloqueado el diploma. Aprueba la evaluación final para obtenerlo.');
         }
 
@@ -508,8 +515,14 @@ class CursoController extends Controller
         $etapas   = \App\Support\CursoCms::aplicarEtapas($ingreso, $etapas);   // títulos de menú editados
         $etapaIndex = (int) ($progreso->etapa_index ?? 0);   // etapa más lejana alcanzada
 
-        // Etapa que se ve: la pedida (si está desbloqueada) o la actual.
-        $viewIndex = $etapaIndex;
+        // Admin (corrector): acceso total → todas las etapas del ingreso desbloqueadas para validar.
+        $adminPreview = $user->isAdmin();
+        if ($adminPreview) {
+            $etapaIndex = count($etapas) - 1;
+        }
+
+        // Etapa que se ve: la pedida (si está desbloqueada) o la actual (para el admin, la primera).
+        $viewIndex = $adminPreview ? 0 : $etapaIndex;
         if ($etapa !== null) {
             $req = array_search($etapa, array_column($etapas, 'key'), true);
             if ($req === false) abort(404);
@@ -897,10 +910,21 @@ class CursoController extends Controller
         }
     }
 
-    /** Devuelve el progreso del ingreso si está desbloqueado; si no, 404. */
+    /** Devuelve el progreso del ingreso si está desbloqueado; si no, 404.
+     *  Los administradores (correctores) tienen acceso total para validar el contenido:
+     *  pueden abrir cualquier ingreso aunque no lo hayan desbloqueado como alumnos. */
     private function ingresoAbierto($user, $ingreso): CourseProgress
     {
         $progreso = $user->progress()->where('module_key', $ingreso)->first();
+
+        if ($user->isAdmin()) {
+            // Sin fila de progreso (no debería, seedFor la crea): devuelve una sintética no persistida.
+            return $progreso ?: new CourseProgress([
+                'user_id' => $user->id, 'module_key' => $ingreso,
+                'status' => 'available', 'percent' => 0, 'etapa_index' => 0, 'etapas' => [],
+            ]);
+        }
+
         abort_unless(
             $progreso && in_array($progreso->status, ['available', 'in_progress', 'completed']),
             404
