@@ -99,6 +99,73 @@ return [
             'p2' => ['label' => 'Párrafo 2 (admite <sup>… para citas)', 'type' => 'textarea', 'html' => true, 'default' => 'A pesar de que las guías internacionales recomiendan su medición en este grupo de alto riesgo, en la práctica clínica el porcentaje de pacientes con enfermedad cardiovascular en los que se determina Lp(a) es muy bajo (&lt;1%–14%)<sup>2,3</sup>. Estudios recientes en redes de Atención Primaria y Cardiología muestran que solo el 1,55% de los pacientes que cumplen criterios de RCV, incluyendo SCA, tienen la Lp(a) medida, y la proporción es similar en pacientes con enfermedad cardiovascular establecida.'],
         ],
 
+        'terapeutico' => [
+            'h1'     => ['label' => 'Título de la sección', 'type' => 'text',     'default' => 'Planteamiento terapéutico'],
+            'p1'     => ['label' => 'Texto introductorio',  'type' => 'richtext', 'default' => 'El paciente es dado de alta con el siguiente tratamiento farmacológico y se realiza derivación al programa de rehabilitación cardíaca.'],
+            'h_trat' => ['label' => 'Subtítulo — tratamiento', 'type' => 'text',  'default' => 'Tratamiento al alta:'],
+            'lista'  => ['label' => 'Tratamiento al alta (lista con formato)', 'type' => 'richtext', 'default' =>
+                '<ul class="analitica-list">'
+                . '<li>Ácido acetilsalicílico (AAS): 100 mg/24 h.</li>'
+                . '<li>Prasugrel: 10 mg/24 h.</li>'
+                . '<li>Carvedilol: 6,25 mg/12 h.</li>'
+                . '<li>Ramipril: 5 mg/24 h.</li>'
+                . '<li>Atorvastatina/ezetimiba: 80/10 mg/24 h.</li>'
+                . '</ul>'],
+        ],
+
+        'monitorizacion' => [
+            'h1'              => ['label' => 'Título de la sección', 'type' => 'text',     'default' => 'Monitorización y seguimiento'],
+            'p1'              => ['label' => 'Texto introductorio',  'type' => 'richtext', 'default' => 'El paciente realiza el programa de rehabilitación cardiaca con buena adherencia y presenta una mejoría de los parámetros antropométricos.'],
+            'situacion_intro' => ['label' => 'Intro — situación 10 semanas', 'type' => 'text', 'default' => 'Su situación 10 semanas después del evento isquémico es:'],
+            'situacion_list'  => ['label' => 'Situación 10 semanas (lista con formato)', 'type' => 'richtext', 'default' =>
+                '<ul class="analitica-list">'
+                . '<li><b>Peso:</b> inicial: 82 kg; final: 77 kg.</li>'
+                . '<li><b>Talla:</b> 167 cm.</li>'
+                . '<li><b>IMC:</b> inicial: 29,4 kg/m²; final: 27,6 kg/m².</li>'
+                . '<li><b>Composición corporal:</b>'
+                . '<ul class="analitica-sublist"><li>Grasa total (inicial: 32%; final: 24%);</li><li>Masa muscular (inicial: 31%; final: 36%);</li><li>Grasa visceral (inicial: 16%; final: 14,5%).</li></ul>'
+                . '</li>'
+                . '<li><b>Hábitos:</b> deshabituación tabáquica; realización de ejercicio físico (aeróbico + fuerza).</li>'
+                . '<li><b>Exploración:</b> presión arterial (PA): 120/76 mmHg; frecuencia cardiaca (FC): 65 lpm.</li>'
+                . '</ul>'],
+            'h_pruebas'  => ['label' => 'Subtítulo — Pruebas complementarias', 'type' => 'text', 'default' => 'Pruebas complementarias'],
+            'ana_intro'  => ['label' => 'Intro — analítica', 'type' => 'text', 'default' => 'Analítica sanguínea:'],
+            'ana_list'   => ['label' => 'Analítica (lista con formato)', 'type' => 'richtext', 'default' =>
+                '<ul class="analitica-list">'
+                . '<li>CT: 136 mg/dL.</li>'
+                . '<li>cHDL: 31 mg/dL.</li>'
+                . '<li>cLDL: 83 mg/dL.</li>'
+                . '<li>TG: 107 mg/dL.</li>'
+                . '<li>TG/cHDL: 3,45.</li>'
+                . '<li>Colesterol remanente: 22 mg/dL.</li>'
+                . '<li>cVLDL: 21,4 mg/dL.</li>'
+                . '<li>GLU: 109 mg/dL.</li>'
+                . '<li>Índice TyG: 4,68.</li>'
+                . '<li>PCR ultrasensible: 2,1 mg/L.</li>'
+                . '</ul>'],
+        ],
+
+        'monitorizacion-2' => [
+            'h1' => ['label' => 'Título de la sección', 'type' => 'text', 'default' => 'Monitorización y seguimiento 2'],
+        ],
+
+        'mantenimiento' => [
+            'h1'    => ['label' => 'Título de la sección', 'type' => 'text',     'default' => 'Terapia de mantenimiento al alta de rehabilitación cardiaca'],
+            'p1'    => ['label' => 'Texto introductorio',  'type' => 'richtext', 'default' => 'A lo largo del programa de rehabilitación cardiaca se establece el siguiente tratamiento dirigido a la prevención secundaria cardiovascular:'],
+            'lista' => ['label' => 'Tratamiento de mantenimiento (lista con formato)', 'type' => 'richtext', 'default' =>
+                '<ul class="analitica-list">'
+                . '<li>AAS: 100 mg/24 h.</li>'
+                . '<li>Prasugrel: 10 mg/24 h hasta completar 1 año tras el evento.</li>'
+                . '<li>Ramipril: 5 mg/24 h.</li>'
+                . '<li>Atorvastatina/ezetimiba: 80/10 mg/24 h.</li>'
+                . '<li>Ácido bempedoico: 180 mg/24 h.</li>'
+                . '<li>Semaglutida semanal (titulación).</li>'
+                . '</ul>'],
+            'reflexion1' => ['label' => 'Reflexión — párrafo 1', 'type' => 'richtext', 'default' => 'Juan, impresionado por todo lo que ha pasado, asume su situación y se muestra colaborador y motivado para cambiar su situación potenciando hábitos saludables y cumpliendo estrictamente con el tratamiento.'],
+            'reflexion2' => ['label' => 'Reflexión — párrafo 2', 'type' => 'richtext', 'default' => 'Al finalizar su última sesión de rehabilitación, expresa su preocupación por la posibilidad de tener futuras complicaciones («¿Puede sucederme de nuevo?») y plantea la posibilidad de que exista un componente genético que se haya podido transmitir a sus dos hijos («¿Tendrían que hacerse algo?»).'],
+            'pregunta_final' => ['label' => 'Pregunta destacada (final)', 'type' => 'text', 'default' => '¿Podemos asegurarles que hemos estudiado todo lo que importa?'],
+        ],
+
         'puntos-clave' => [
             'h1'        => ['label' => 'Título de la sección', 'type' => 'text',  'default' => 'Puntos clave'],
             'video'     => ['label' => 'Vídeo de puntos clave (MP4/WebM)', 'type' => 'video', 'default' => 'videos/puntos-clave-1.mp4'],

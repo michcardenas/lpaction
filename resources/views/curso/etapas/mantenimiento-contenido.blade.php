@@ -1,27 +1,12 @@
-{{-- Contenido de la etapa "Terapia de mantenimiento al alta de rehabilitación cardiaca" --}}
+{{-- Contenido de la etapa "Terapia de mantenimiento al alta de rehabilitación cardiaca" — INGRESO 1 (editable) --}}
+@php $k = 'curso.cont.ingreso-1.mantenimiento.'; @endphp
 <div class="riesgo">
-    <h1 class="h-caso">Terapia de mantenimiento al alta de rehabilitación cardiaca</h1>
+    <h1 class="h-caso">{{ cms($k.'h1', 'Terapia de mantenimiento al alta de rehabilitación cardiaca') }}</h1>
 
-    <p class="analitica-intro">A lo largo del programa de rehabilitación cardiaca se establece el siguiente tratamiento dirigido a la prevención secundaria cardiovascular:</p>
-    <ul class="analitica-list">
-        <li>AAS: 100 mg/24 h.</li>
-        <li>Prasugrel: 10 mg/24 h hasta completar 1 año tras el evento.</li>
-        <li>Ramipril: 5 mg/24 h.</li>
-        <li>Atorvastatina/ezetimiba: 80/10 mg/24 h.</li>
-        <li>Ácido bempedoico: 180 mg/24 h.</li>
-        <li>Semaglutida semanal (titulación).</li>
-    </ul>
+    <div class="analitica-intro rich-p">{!! cms($k.'p1') !!}</div>
+    {!! cms($k.'lista') !!}
 
-    <p class="prueba-p riesgo-p" style="margin-top:20px;">
-        Juan, impresionado por todo lo que ha pasado, asume su situación y se muestra colaborador y motivado
-        para cambiar su situación potenciando hábitos saludables y cumpliendo estrictamente con el tratamiento.
-    </p>
-    <p class="prueba-p riesgo-p" style="margin-top:14px;">
-        Al finalizar su última sesión de rehabilitación, expresa su preocupación por la posibilidad de tener
-        futuras complicaciones («¿Puede sucederme de nuevo?») y plantea la posibilidad de que exista un
-        componente genético que se haya podido transmitir a sus dos hijos («¿Tendrían que hacerse algo?»).
-    </p>
-    <p class="prueba-p riesgo-p" style="margin-top:14px; font-weight:600; color:#fff;">
-        ¿Podemos asegurarles que hemos estudiado todo lo que importa?
-    </p>
+    <div class="prueba-p riesgo-p rich-p" style="margin-top:20px;">{!! cms($k.'reflexion1') !!}</div>
+    <div class="prueba-p riesgo-p rich-p" style="margin-top:14px;">{!! cms($k.'reflexion2') !!}</div>
+    <p class="prueba-p riesgo-p" style="margin-top:14px; font-weight:600; color:#fff;">{{ cms($k.'pregunta_final', '¿Podemos asegurarles que hemos estudiado todo lo que importa?') }}</p>
 </div>

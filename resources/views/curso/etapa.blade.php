@@ -245,6 +245,15 @@
         .analitica-sublist { list-style: none; margin: 2px 0 2px 24px; padding: 0; }
         .analitica-sublist li::before { content: '◦'; }
 
+        /* Párrafos/bloques editables con Quill: el contenedor lleva la clase de
+           estilo (prueba-p, motivo-p, analitica-intro…) y los <p>/<ul> que Quill
+           genera al editar heredan el estilo, sin margen extra ni doble viñeta.
+           Con el default (texto plano) el bloque se ve idéntico a un <p>. */
+        .rich-p > p { margin: 0; }
+        .rich-p > p + p { margin-top: 0.8em; }
+        .rich-p > ul, .rich-p > ol { margin: 0.3em 0 0; padding-left: 1.4em; }
+        .rich-p b, .rich-p strong { color: #fff; }
+
         /* Cuestionario — specs: 1016px, #2A2A2A, borde 1px #FFFFFF66, blur(40px) */
         .pregunta-card {
             width: 100%;
