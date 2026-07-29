@@ -371,13 +371,21 @@
                 </label>
                 @error('accepted_privacy')<p class="field-error">{{ $message }}</p>@enderror
 
-                {{-- No soy un robot --}}
-                <label class="flex items-start gap-3 mt-3 cursor-pointer">
-                    <input type="checkbox" name="not_robot" value="1" {{ old('not_robot') ? 'checked' : '' }} required
-                           class="w-[18px] h-[18px] mt-0.5 rounded-[4px] border border-[#c3ced3] accent-[#05BAEE] cursor-pointer shrink-0">
-                    <span class="text-[14px] text-[#3a4a52]">No soy un robot</span>
-                </label>
-                @error('not_robot')<p class="field-error">{{ $message }}</p>@enderror
+                {{-- No soy un robot: reCAPTCHA v2 si hay claves; si no, casilla simple --}}
+                @if (config('services.recaptcha.site_key'))
+                    <div class="mt-3" id="recaptcha-wrap">
+                        <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.site_key') }}"></div>
+                    </div>
+                    <p id="recaptcha-error" class="field-error" style="display:none">Confirma que no eres un robot.</p>
+                    @error('g-recaptcha-response')<p class="field-error">{{ $message }}</p>@enderror
+                @else
+                    <label class="flex items-start gap-3 mt-3 cursor-pointer">
+                        <input type="checkbox" name="not_robot" value="1" {{ old('not_robot') ? 'checked' : '' }} required
+                               class="w-[18px] h-[18px] mt-0.5 rounded-[4px] border border-[#c3ced3] accent-[#05BAEE] cursor-pointer shrink-0">
+                        <span class="text-[14px] text-[#3a4a52]">No soy un robot</span>
+                    </label>
+                    @error('not_robot')<p class="field-error">{{ $message }}</p>@enderror
+                @endif
 
                 {{-- Honeypot anti-bots: oculto para humanos; si llega relleno se descarta el registro --}}
                 <div aria-hidden="true" style="position:absolute; left:-9999px; top:auto; width:1px; height:1px; overflow:hidden;">
@@ -508,6 +516,14 @@
                     if (perfilErr && perfilErr.scrollIntoView) perfilErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     return;
                 }
+                // reCAPTCHA (si está activo): debe estar marcado
+                var rWrap = document.getElementById('recaptcha-wrap');
+                if (rWrap && typeof grecaptcha !== 'undefined') {
+                    var rOk = grecaptcha.getResponse().length > 0;
+                    var rErr = document.getElementById('recaptcha-error');
+                    if (rErr) rErr.style.display = rOk ? 'none' : '';
+                    if (!rOk) { rWrap.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+                }
                 // Todo válido → ahora sí, loader y envío real
                 runLoader();
             });
@@ -554,5 +570,8 @@
             sync();
         })();
     </script>
+    @if (config('services.recaptcha.site_key'))
+        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    @endif
 </body>
 </html>

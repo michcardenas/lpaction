@@ -35,4 +35,11 @@ return [
         ],
     ],
 
+    // reCAPTCHA v2 ("No soy un robot") en el registro. Si no hay claves, se usa
+    // el fallback (casilla simple + honeypot). Configúralas en .env cuando las tengas.
+    'recaptcha' => [
+        'site_key'   => env('RECAPTCHA_SITE_KEY'),
+        'secret_key' => env('RECAPTCHA_SECRET_KEY'),
+    ],
+
 ];
