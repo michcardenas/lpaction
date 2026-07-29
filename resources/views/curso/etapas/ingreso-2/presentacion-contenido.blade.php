@@ -1,41 +1,33 @@
-{{-- Contenido de la etapa "Presentación del caso" — INGRESO 2 (Juan, 53 años, 10 meses después) --}}
-@php $d = $curso['datos_ingreso_2']; @endphp
+{{-- Contenido de la etapa "Presentación del caso" — INGRESO 2 (editable desde el panel) --}}
+@php $k = 'curso.cont.ingreso-2.presentacion.'; @endphp
 <div class="content-col">
-    <h1 class="h-caso">Presentación del caso</h1>
+    <h1 class="h-caso">{{ cms($k.'h1', 'Presentación del caso') }}</h1>
 
-    <h2 class="h-sec">Historia clínica</h2>
+    <h2 class="h-sec">{{ cms($k.'h_historia', 'Historia clínica') }}</h2>
 
     {{-- Tabs --}}
     <div class="tabs">
-        <button type="button" class="tab on" data-tab="perfil">Perfil del paciente</button>
-        <button type="button" class="tab" data-tab="historia">Historia médica</button>
-        <button type="button" class="tab" data-tab="medicacion">Medicación</button>
-        <button type="button" class="tab" data-tab="alergias">Alergias</button>
+        <button type="button" class="tab on" data-tab="perfil">{{ cms($k.'tab_perfil', 'Perfil del paciente') }}</button>
+        <button type="button" class="tab" data-tab="historia">{{ cms($k.'tab_historia', 'Historia médica') }}</button>
+        <button type="button" class="tab" data-tab="medicacion">{{ cms($k.'tab_medicacion', 'Medicación') }}</button>
+        <button type="button" class="tab" data-tab="alergias">{{ cms($k.'tab_alergias', 'Alergias') }}</button>
     </div>
 
     <div class="perfil-card">
         <div class="tab-panel" data-panel="perfil">
-            <p><b>Edad y sexo:</b> {{ $d['perfil']['edad_sexo'] }}</p>
-            <p><b>Peso, estatura:</b> {{ $d['perfil']['peso_estatura'] }}</p>
-            <p><b>Hábitos:</b> {{ $d['perfil']['habitos'] }}</p>
-            <p><b>Ocupación:</b> {{ $d['perfil']['ocupacion'] }}</p>
-            <p><b>Estilo de vida:</b> {{ $d['perfil']['estilo_vida'] }}</p>
+            {!! cms($k.'perfil') !!}
         </div>
         <div class="tab-panel" data-panel="historia" style="display:none">
-            @foreach ($d['historia'] as $item)
-                <p>{{ $item }}</p>
-            @endforeach
+            {!! cms($k.'historia') !!}
         </div>
         <div class="tab-panel" data-panel="medicacion" style="display:none">
-            @foreach ($d['medicacion'] as $item)
-                <p>{{ $item }}</p>
-            @endforeach
+            {!! cms($k.'medicacion') !!}
         </div>
         <div class="tab-panel" data-panel="alergias" style="display:none">
-            <p>{{ $d['alergias'] }}</p>
+            <p>{{ cms($k.'alergias_p', 'Sin alergias medicamentosas conocidas.') }}</p>
         </div>
     </div>
 
-    <h2 class="h-sec">Motivo de consulta</h2>
-    <p class="motivo-p">{{ $d['motivo_consulta'] }}</p>
+    <h2 class="h-sec">{{ cms($k.'h_motivo', 'Motivo de consulta') }}</h2>
+    <p class="motivo-p">{{ cms($k.'motivo') }}</p>
 </div>

@@ -1,8 +1,8 @@
-{{-- Contenido de la etapa "Monitorización y seguimiento" — INGRESO 3
+{{-- Contenido de la etapa "Monitorización y seguimiento" — INGRESO 3 (editable desde el panel)
      (Terapias emergentes anti-Lp(a): pelacarsen y ensayo HORIZON.) --}}
-@php $d = $curso['datos_ingreso_3']; @endphp
+@php $k = 'curso.cont.ingreso-3.monitorizacion.'; @endphp
 <div class="riesgo">
-    <h1 class="h-caso">Terapias emergentes anti-Lp(a): pelacarsen y ensayo HORIZON</h1>
+    <h1 class="h-caso">{{ cms($k.'h1', 'Terapias emergentes anti-Lp(a): pelacarsen y ensayo HORIZON') }}</h1>
 
     {{-- El documento va directo a la pregunta (sin texto introductorio). --}}
 

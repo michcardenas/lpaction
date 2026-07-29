@@ -1,7 +1,7 @@
-{{-- Contenido de la etapa "Planteamiento terapéutico" — INGRESO 3 (terapias para la Lp(a) elevada post-ictus) --}}
-@php $d = $curso['datos_ingreso_3']; @endphp
+{{-- Contenido de la etapa "Planteamiento terapéutico" — INGRESO 3 (editable desde el panel) --}}
+@php $k = 'curso.cont.ingreso-3.terapeutico.'; @endphp
 <div class="riesgo">
-    <h1 class="h-caso">Planteamiento terapéutico</h1>
+    <h1 class="h-caso">{{ cms($k.'h1', 'Planteamiento terapéutico') }}</h1>
 
     {{-- El documento va directo a la pregunta (sin texto introductorio). --}}
 
