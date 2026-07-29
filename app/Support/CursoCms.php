@@ -176,7 +176,8 @@ class CursoCms
             }
             $pk = self::preguntaKeyDe($ingreso, $etapa);
             if ($pk && isset($editables[$pk])) {
-                foreach (self::camposDe($pk, $ingreso === 'ingreso-1') as $k => $d) {
+                // Justificaciones siempre con editor Quill (formato + superíndices) en los 3 ingresos.
+                foreach (self::camposDe($pk, true) as $k => $d) {
                     $fields[$k] = $d;
                 }
             }
