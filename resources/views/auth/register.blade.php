@@ -276,38 +276,40 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-3 mb-3">
                     <div>
                         <label class="login-label block mb-1">Nombre <span class="req">*</span></label>
-                        <input name="name" value="{{ old('name') }}" placeholder="Ej: María" class="login-input w-full px-4 py-2">
+                        <input name="name" value="{{ old('name') }}" placeholder="Ej: María" class="login-input w-full px-4 py-2" required>
                         @error('name')<p class="field-error">{{ $message }}</p>@enderror
                     </div>
                     <div>
                         <label class="login-label block mb-1">Apellidos <span class="req">*</span></label>
-                        <input name="last_name" value="{{ old('last_name') }}" placeholder="Ej: García López" class="login-input w-full px-4 py-2">
+                        <input name="last_name" value="{{ old('last_name') }}" placeholder="Ej: García López" class="login-input w-full px-4 py-2" required>
                         @error('last_name')<p class="field-error">{{ $message }}</p>@enderror
                     </div>
                     <div>
                         <label class="login-label block mb-1">Documento de identificación (DNI/NIE) <span class="req">*</span></label>
-                        <input name="document_id" value="{{ old('document_id') }}" placeholder="Ej: 12345678A" class="login-input w-full px-4 py-2">
+                        <input name="document_id" value="{{ old('document_id') }}" placeholder="Ej: 12345678A" class="login-input w-full px-4 py-2" required>
                         @error('document_id')<p class="field-error">{{ $message }}</p>@enderror
                     </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-x-4 gap-y-3">
                     <div>
                         <label class="login-label block mb-1">Correo electrónico <span class="req">*</span></label>
-                        <input name="email" type="email" value="{{ old('email') }}" placeholder="Ej: correo@ejemplo.com" class="login-input w-full px-4 py-2">
+                        <input name="email" type="email" value="{{ old('email') }}" placeholder="Ej: correo@ejemplo.com" class="login-input w-full px-4 py-2"
+                               required pattern="[^@\s]+@[^@\s]+\.[^@\s]{2,}" title="Introduce un correo válido con dominio, p. ej. nombre@dominio.com">
                         @error('email')<p class="field-error">{{ $message }}</p>@enderror
                     </div>
                     <div>
                         <label class="login-label block mb-1">Repetir correo electrónico <span class="req">*</span></label>
-                        <input name="email_confirmation" type="email" placeholder="Repite tu correo" class="login-input w-full px-4 py-2">
+                        <input name="email_confirmation" type="email" placeholder="Repite tu correo" class="login-input w-full px-4 py-2"
+                               required pattern="[^@\s]+@[^@\s]+\.[^@\s]{2,}" title="Repite el mismo correo electrónico.">
                     </div>
                     <div>
                         <label class="login-label block mb-1">Contraseña <span class="req">*</span></label>
-                        <input name="password" type="password" placeholder="Mínimo 8 caracteres" class="login-input w-full px-4 py-2">
+                        <input name="password" type="password" placeholder="Mínimo 8 caracteres" class="login-input w-full px-4 py-2" required minlength="8">
                         @error('password')<p class="field-error">{{ $message }}</p>@enderror
                     </div>
                     <div>
                         <label class="login-label block mb-1">Repetir contraseña <span class="req">*</span></label>
-                        <input name="password_confirmation" type="password" placeholder="Repite tu contraseña" class="login-input w-full px-4 py-2">
+                        <input name="password_confirmation" type="password" placeholder="Repite tu contraseña" class="login-input w-full px-4 py-2" required minlength="8">
                     </div>
                 </div>
                 </div>{{-- /bloque Datos personales --}}
@@ -317,7 +319,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-3">
                     <div>
                         <label class="login-label block mb-1">Especialidad <span class="req">*</span></label>
-                        <select name="specialty" id="specialty-select" class="login-input w-full px-4 py-2 appearance-none">
+                        <select name="specialty" id="specialty-select" class="login-input w-full px-4 py-2 appearance-none" required>
                             <option value="" {{ old('specialty') ? '' : 'selected' }} disabled>Selecciona tu especialidad</option>
                             @foreach (array_keys(config('curso.especialidades', [])) as $s)
                                 <option value="{{ $s }}" {{ old('specialty') === $s ? 'selected' : '' }}>{{ $s }}</option>
@@ -358,15 +360,31 @@
                         </label>
                     @endforeach
                 </div>
+                <p id="perfil-error" class="field-error" style="display:none">Selecciona tu perfil profesional.</p>
                 @error('experience_level')<p class="field-error">{{ $message }}</p>@enderror
 
                 {{-- Consentimientos --}}
                 <label class="flex items-start gap-3 mt-4 cursor-pointer">
-                    <input type="checkbox" name="accepted_privacy" value="1" {{ old('accepted_privacy') ? 'checked' : '' }}
+                    <input type="checkbox" name="accepted_privacy" value="1" {{ old('accepted_privacy') ? 'checked' : '' }} required
                            class="w-[18px] h-[18px] mt-0.5 rounded-[4px] border border-[#c3ced3] accent-[#05BAEE] cursor-pointer shrink-0">
                     <span class="text-[14px] text-[#3a4a52]">He leído y acepto política de privacidad y aviso legal</span>
                 </label>
                 @error('accepted_privacy')<p class="field-error">{{ $message }}</p>@enderror
+
+                {{-- No soy un robot --}}
+                <label class="flex items-start gap-3 mt-3 cursor-pointer">
+                    <input type="checkbox" name="not_robot" value="1" {{ old('not_robot') ? 'checked' : '' }} required
+                           class="w-[18px] h-[18px] mt-0.5 rounded-[4px] border border-[#c3ced3] accent-[#05BAEE] cursor-pointer shrink-0">
+                    <span class="text-[14px] text-[#3a4a52]">No soy un robot</span>
+                </label>
+                @error('not_robot')<p class="field-error">{{ $message }}</p>@enderror
+
+                {{-- Honeypot anti-bots: oculto para humanos; si llega relleno se descarta el registro --}}
+                <div aria-hidden="true" style="position:absolute; left:-9999px; top:auto; width:1px; height:1px; overflow:hidden;">
+                    <label>Deja este campo vacío
+                        <input type="text" name="website" tabindex="-1" autocomplete="off" value="">
+                    </label>
+                </div>
 
                 {{-- Acciones --}}
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-5">
@@ -470,22 +488,27 @@
             if (pwdC)   pwdC.addEventListener('input', clearPwdValidity);
 
             form.addEventListener('submit', function (e) {
+                e.preventDefault();   // el envío lo controlamos nosotros: nada sale hasta que TODO es válido
+
+                // Limpiar validez personalizada
                 if (emailC) emailC.setCustomValidity('');
                 if (pwdC) pwdC.setCustomValidity('');
-                if (email && emailC && email.value !== emailC.value) {
-                    e.preventDefault();
-                    emailC.setCustomValidity('Los correos electrónicos no coinciden.');
-                    emailC.reportValidity();
+                // Coincidencia de correos y contraseñas
+                if (email && emailC && email.value !== emailC.value) emailC.setCustomValidity('Los correos electrónicos no coinciden.');
+                if (pwd && pwdC && pwd.value !== pwdC.value) pwdC.setCustomValidity('Las contraseñas no coinciden.');
+
+                // Perfil profesional (radios ocultos → validación manual con mensaje visible)
+                var perfilOk = [].some.call(form.querySelectorAll('[name="experience_level"]'), function (r) { return r.checked; });
+                var perfilErr = document.getElementById('perfil-error');
+                if (perfilErr) perfilErr.style.display = perfilOk ? 'none' : '';
+
+                // Validación nativa de TODO: required, formato del correo, contraseñas, casillas.
+                if (!form.checkValidity()) { form.reportValidity(); return; }
+                if (!perfilOk) {
+                    if (perfilErr && perfilErr.scrollIntoView) perfilErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     return;
                 }
-                if (pwd && pwdC && pwd.value !== pwdC.value) {
-                    e.preventDefault();
-                    pwdC.setCustomValidity('Las contraseñas no coinciden.');
-                    pwdC.reportValidity();
-                    return;
-                }
-                // Todo OK → mostrar el loader y enviar el formulario real al final
-                e.preventDefault();
+                // Todo válido → ahora sí, loader y envío real
                 runLoader();
             });
 

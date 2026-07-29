@@ -20,12 +20,18 @@ class RegisterController extends Controller
     /** Procesar el registro */
     public function store(Request $request)
     {
+        // Honeypot anti-bots: campo oculto que un humano nunca rellena. Si viene con algo, se descarta.
+        if (filled($request->input('website'))) {
+            return back()->withInput($request->except(['password', 'password_confirmation']));
+        }
+
         $data = $request->validate([
             // 1. Datos personales
             'name'             => ['required', 'string', 'max:255'],
             'last_name'        => ['required', 'string', 'max:255'],
             'document_id'      => ['required', 'string', 'max:50'],
-            'email'            => ['required', 'email', 'max:255', 'confirmed', 'unique:users,email'],
+            // 'email:rfc' + regex: exige dominio con punto y TLD (rechaza "prueba@ejemplo").
+            'email'            => ['required', 'email:rfc', 'regex:/^[^@\s]+@[^@\s]+\.[A-Za-z]{2,}$/', 'max:255', 'confirmed', 'unique:users,email'],
             'password'         => ['required', 'confirmed', Password::min(8)],
             // 2. Datos profesionales
             'specialty'        => ['required', 'string', 'max:150'],
@@ -33,10 +39,14 @@ class RegisterController extends Controller
             'specialty_other'  => ['nullable', 'required_if:specialty,Otra', 'string', 'max:150'],
             // 3. Perfil profesional
             'experience_level' => ['required', 'in:0-7,8-15,16+'],
-            // Consentimiento
+            // Consentimientos
             'accepted_privacy' => ['accepted'],
+            'not_robot'        => ['accepted'],
         ], [
             'accepted_privacy.accepted'   => 'Debes aceptar la política de privacidad y el aviso legal.',
+            'not_robot.accepted'          => 'Confirma que no eres un robot.',
+            'email.email'                 => 'Introduce un correo electrónico válido.',
+            'email.regex'                 => 'El correo debe incluir un dominio válido (p. ej. nombre@dominio.com).',
             'email.confirmed'             => 'Los correos electrónicos no coinciden.',
             'password.confirmed'          => 'Las contraseñas no coinciden.',
             'password.min'                => 'La contraseña debe tener al menos 8 caracteres.',
