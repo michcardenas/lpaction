@@ -1241,9 +1241,11 @@
                         // Imagen del paciente editable desde el panel (por ingreso). Si no hay override, se mantiene la actual.
                         $pImgOv = \App\Support\Cms::raw('curso.cont.'.$ingreso.'.presentacion.img_paciente');
                         if ($pImgOv && file_exists(public_path($pImgOv))) $pImg = $pImgOv;
+                        // Cache-busting por fecha del archivo: al cambiar la imagen (mismo nombre), el navegador la vuelve a pedir.
+                        $pImgSrc = asset($pImg) . (file_exists(public_path($pImg)) ? '?v=' . filemtime(public_path($pImg)) : '');
                     @endphp
-                    <img class="etapa-juan-d" src="{{ asset($pImg) }}" onerror="this.onerror=null;this.src='{{ asset($curso['paciente']['imagen']) }}'" alt="{{ $curso['paciente']['nombre'] }}">
-                    <img class="etapa-juan-m" src="{{ asset($pImg) }}" onerror="this.onerror=null;this.src='{{ asset('images/paciente.png') }}'" alt="{{ $curso['paciente']['nombre'] }}">
+                    <img class="etapa-juan-d" src="{{ $pImgSrc }}" onerror="this.onerror=null;this.src='{{ asset($curso['paciente']['imagen']) }}'" alt="{{ $curso['paciente']['nombre'] }}">
+                    <img class="etapa-juan-m" src="{{ $pImgSrc }}" onerror="this.onerror=null;this.src='{{ asset('images/paciente.png') }}'" alt="{{ $curso['paciente']['nombre'] }}">
                 </div>
                 @endif
 
