@@ -254,6 +254,19 @@
         .rich-p > ul, .rich-p > ol { margin: 0.3em 0 0; padding-left: 1.4em; }
         .rich-p b, .rich-p strong { color: #fff; }
 
+        /* --- Robustez del contenido editable con Quill ---
+           Al editar/guardar una lista en el editor, Quill quita la clase original
+           (p. ej. "analitica-list"), dejando los <li> con color por defecto (negro)
+           e invisibles sobre el fondo oscuro. Se fuerza color claro + viñeta para
+           CUALQUIER lista/párrafo del contenido, tenga o no la clase. Los títulos y
+           el cuestionario conservan su propio estilo. */
+        #view-contenido li { color: #d3dee1; }
+        #view-contenido li b, #view-contenido li strong { color: #fff; }
+        #view-contenido p:not([class]) { color: #d3dee1; }
+        #view-contenido ul:not(.analitica-list):not(.analitica-sublist) { list-style: none; margin: 0; padding: 0; max-width: 1000px; }
+        #view-contenido ul:not(.analitica-list):not(.analitica-sublist) > li { position: relative; padding-left: 20px; line-height: 168%; }
+        #view-contenido ul:not(.analitica-list):not(.analitica-sublist) > li::before { content: '•'; position: absolute; left: 5px; color: #d3dee1; }
+
         /* Cuestionario — specs: 1016px, #2A2A2A, borde 1px #FFFFFF66, blur(40px) */
         .pregunta-card {
             width: 100%;
