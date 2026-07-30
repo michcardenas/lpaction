@@ -583,7 +583,14 @@ return [
             ],
             [
                 'key' => 'obj_d', 'texto' => 'cLDL <40 mg/dL, colesterol no-HDL <65 mg/dL, apoB <55 mg/dL.', 'correcta' => true, 'puntos' => 100,
-                'justificacion' => 'Estos valores definen adecuadamente los objetivos terapéuticos según el riesgo cardiovascular, de acuerdo con el consenso actual de las principales guías internacionales17. En pacientes con enfermedad coronaria y eventos recurrentes (riesgo extremo), se recomiendan objetivos más intensivos: cLDL <40 mg/dL, colesterol no-HDL <65 mg/dL y apoB <55 mg/dL. ApoB y colesterol no-HDL son mejores marcadores de riesgo residual y su reducción se asocia a menor incidencia de eventos cardiovasculares2,17.',
+                'justificacion' => 'Estos valores definen adecuadamente los objetivos terapéuticos según el riesgo cardiovascular, de acuerdo con el consenso actual de las principales guías internacionales17. En pacientes con enfermedad coronaria y eventos recurrentes (riesgo extremo), se recomiendan objetivos más intensivos: cLDL <40 mg/dL, colesterol no-HDL <65 mg/dL y apoB <55 mg/dL.
+OBJETIVOS
+Riesgo bajo: cLDL <116 mg/dL.
+Riesgo intermedio: cLDL <100 mg/dL, colesterol no-HDL <130 mg/dL y ApoB <110 mg/dL.
+Riesgo alto: cLDL <70 mg/dL, colesterol no-HDL <100 mg/dL y apoB <80 mg/dL.
+Riesgo muy alto: cLDL <55 mg/dL, colesterol no-HDL <85 mg/dL y apoB 65 mg/dL.
+Riesgo extremo: cLDL <40 mg/dL, colesterol no-HDL <70 mg/dL y apoB <55 mg/dL.
+ApoB y colesterol no-HDL son mejores marcadores de riesgo residual y su reducción se asocia a menor incidencia de eventos cardiovasculares2,17.',
             ],
         ],
     ],

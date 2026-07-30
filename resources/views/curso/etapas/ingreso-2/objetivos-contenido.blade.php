@@ -4,8 +4,7 @@
 <div class="riesgo">
     <h1 class="h-caso">{{ cms($k.'h1', 'Objetivos lipídicos adicionales') }}</h1>
 
-    <p class="prueba-p riesgo-p" style="margin: 0 0 16px;">{!! cms($k.'p1') !!}</p>
-
+    {{-- El documento va directo a la pregunta (sin texto introductorio). --}}
     {{-- Pregunta 2 del Ingreso 2 (objetivos cLDL / no-HDL / apoB en riesgo extremo) --}}
     @include('curso.etapas._cuestionario', ['pregunta' => $curso['pregunta_objetivos_2']])
 </div>

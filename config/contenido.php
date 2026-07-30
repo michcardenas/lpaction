@@ -257,13 +257,10 @@ return [
 
         'objetivos' => [
             'h1' => ['label' => 'Título de la sección', 'type' => 'text', 'default' => 'Objetivos lipídicos adicionales'],
-            'p1' => ['label' => 'Párrafo introductorio (con formato)', 'type' => 'richtext', 'default' =>
-                'Más allá del cLDL, el <b>colesterol no-HDL</b> y la <b>apoB</b> reflejan mejor la carga aterogénica total y el riesgo residual. En un paciente con evento recurrente y enfermedad polivascular (<b>riesgo extremo</b>), los objetivos son más exigentes que los habituales.'],
         ],
 
         'riesgo' => [
             'h1'    => ['label' => 'Título de la sección', 'type' => 'text',     'default' => 'Evaluación del riesgo cardiovascular'],
-            'h2'    => ['label' => 'Subtítulo',            'type' => 'text',     'default' => 'Tras la reevaluación se solicita la determinación de Lp(a)'],
             'p1'    => ['label' => 'Texto introductorio',  'type' => 'richtext', 'default' => 'Tras el diagnóstico de SCASEST tipo angina inestable y revascularización, por fin se solicitó determinación de lipoproteína (a) [Lp(a)]:'],
             'lista' => ['label' => 'Analítica con Lp(a) (lista con formato)', 'type' => 'richtext', 'default' =>
                 '<ul class="analitica-list">'
