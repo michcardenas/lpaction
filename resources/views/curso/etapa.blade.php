@@ -255,17 +255,20 @@
         .rich-p b, .rich-p strong { color: #fff; }
 
         /* --- Robustez del contenido editable con Quill ---
-           Al editar/guardar una lista en el editor, Quill quita la clase original
-           (p. ej. "analitica-list"), dejando los <li> con color por defecto (negro)
-           e invisibles sobre el fondo oscuro. Se fuerza color claro + viñeta para
-           CUALQUIER lista/párrafo del contenido, tenga o no la clase. Los títulos y
-           el cuestionario conservan su propio estilo. */
-        #view-contenido li { color: #d3dee1; }
+           Al guardar una etapa en el editor, Quill quita las clases originales
+           (analitica-list, prueba-p…) y los <li>/<p>/<ul> tomaban el TIPO DE LETRA
+           y el COLOR por defecto del navegador (Times, negro) — invisibles/distintos
+           sobre el fondo oscuro. Se replica el estilo original (Montserrat, color
+           claro, viñeta) para el contenido, tenga o no la clase, de modo que se vea
+           EXACTO como antes por más que se edite. El cuestionario/justificaciones
+           conservan su propio estilo (regla al final). */
+        #view-contenido li { font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 16px; line-height: 168%; color: #d3dee1; }
         #view-contenido li b, #view-contenido li strong { color: #fff; }
-        #view-contenido p:not([class]) { color: #d3dee1; }
+        #view-contenido p:not([class]) { font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 16px; line-height: 150%; color: #d3dee1; }
         #view-contenido ul:not(.analitica-list):not(.analitica-sublist) { list-style: none; margin: 0; padding: 0; max-width: 1000px; }
-        #view-contenido ul:not(.analitica-list):not(.analitica-sublist) > li { position: relative; padding-left: 20px; line-height: 168%; }
+        #view-contenido ul:not(.analitica-list):not(.analitica-sublist) > li { position: relative; padding-left: 20px; }
         #view-contenido ul:not(.analitica-list):not(.analitica-sublist) > li::before { content: '•'; position: absolute; left: 5px; color: #d3dee1; }
+        #view-contenido .justif-txt li { font-size: 14px; line-height: 165%; color: rgba(255,255,255,0.75); }
 
         /* Cuestionario — specs: 1016px, #2A2A2A, borde 1px #FFFFFF66, blur(40px) */
         .pregunta-card {
