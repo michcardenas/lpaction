@@ -1328,6 +1328,7 @@
                     $ingN = preg_match('/ingreso-(\d+)/', $ingreso, $mmJuan) ? (int) $mmJuan[1] : 1;
                     $juanCandidatos = ['images/juan-' . $ingN . '-' . $medalla['key'] . '.png'];
                     if ($ingN === 1) $juanCandidatos[] = 'images/juan-' . $medalla['key'] . '.png';
+                    $juanCandidatos[] = 'images/juan-' . $ingN . '.png';   // expresión única (feliz) del ingreso para cualquier medalla
                     $juanCandidatos[] = ($pacienteIngreso ?? $curso['paciente'])['imagen'];
                     $juanImg = collect($juanCandidatos)->first(fn ($p) => file_exists(public_path($p)))
                         ?? $curso['paciente']['imagen'];
