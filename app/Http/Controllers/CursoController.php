@@ -90,6 +90,22 @@ class CursoController extends Controller
             }
             $activo = $variante;
         }
+
+        // === Juan "sano" (chaqueta) en el HOME desde que el Ingreso 2 está al 100% y en adelante ===
+        // Petición del cliente: al aprobar el Ingreso 2 (y durante/después del Ingreso 3), el home
+        // —tanto en desktop como en móvil— muestra al Juan sano de la chaqueta. Es SOLO el home:
+        // las etapas del curso usan pacienteDeIngreso(), que no pasa por esta función, así que el
+        // Juan serio del caso clínico se mantiene dentro del curso.
+        $ing2Key = $ingresos[1]['key'] ?? null;
+        $ing2    = $ing2Key ? ($progress[$ing2Key] ?? null) : null;
+        if ($ing2 && $ing2->status === 'completed') {
+            $sano = $curso['paciente_2']['imagen_completado'] ?? ($activo['imagen'] ?? null);
+            if ($sano) {
+                $activo['imagen']        = $sano;   // desktop
+                $activo['imagen_mobile'] = $sano;   // móvil idéntico al desktop
+            }
+        }
+
         return $activo;
     }
 

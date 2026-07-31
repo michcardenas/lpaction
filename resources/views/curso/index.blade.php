@@ -509,6 +509,7 @@
                 display: block; position: absolute;
                 left: 0; top: -108px;                                            /* Juan más arriba */
                 width: 390px; max-width: none; height: auto;
+                transform: translateX(38px);                                     /* la cabeza queda a ~0.38 del ancho → correr a la derecha para centrarla (solo la imagen, no los datos) */
             }
             /* Imagen del ingreso ACTIVO (Ingreso 2/3, 555×746 → 524px de alto): con top:-54 llena
                justo el contenedor de 470px, sin hueco abajo ni recorte de la cabeza. El paciente
