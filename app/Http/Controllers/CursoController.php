@@ -563,6 +563,10 @@ class CursoController extends Controller
         $etapas   = $this->etapasDe($ingreso);
         $etapas   = \App\Support\CursoCms::aplicarEtapas($ingreso, $etapas);   // títulos de menú editados
         $etapaIndex = (int) ($progreso->etapa_index ?? 0);   // etapa más lejana alcanzada
+        // Un etapa_index guardado puede exceder el nº de etapas ACTUAL del ingreso (p. ej. usuarios
+        // que avanzaron cuando el ingreso tenía más etapas, antes de colapsar su estructura). Se acota
+        // al rango válido para no acceder a un índice inexistente ("Undefined array key").
+        $etapaIndex = max(0, min($etapaIndex, count($etapas) - 1));
 
         // Admin (corrector): acceso total → todas las etapas del ingreso desbloqueadas para validar.
         $adminPreview = $user->isAdmin();
@@ -580,6 +584,7 @@ class CursoController extends Controller
             }
             $viewIndex = $req;
         }
+        $viewIndex   = max(0, min($viewIndex, count($etapas) - 1));   // seguro ante índices fuera de rango
         $etapaActual = $etapas[$viewIndex]['key'];
 
         // Resultados por etapa: { key: { verde, rojo, sel } }. estado del sidebar = error si rojo>0.
@@ -700,6 +705,7 @@ class CursoController extends Controller
         if ($desde === false) {
             $desde = (int) ($progreso->etapa_index ?? 0);
         }
+        $desde = max(0, min((int) $desde, count($etapas) - 1));   // acota índices heredados de estructuras con más etapas
 
         // Guarda el resultado de la etapa que se deja. Las opciones marcadas se ACUMULAN (unión)
         // con las de intentos previos: así el rojo es permanente (mide lo errado) y al volver a una
@@ -771,7 +777,8 @@ class CursoController extends Controller
 
         $next = min($desde + 1, count($etapas) - 1);
         $progreso->update([
-            'etapa_index' => max((int) ($progreso->etapa_index ?? 0), $next),
+            // Acotado a count-1: además de avanzar, auto-sana un etapa_index heredado fuera de rango.
+            'etapa_index' => min(max((int) ($progreso->etapa_index ?? 0), $next), count($etapas) - 1),
             'status'      => 'in_progress',
             'etapas'      => $resultados,
         ]);
