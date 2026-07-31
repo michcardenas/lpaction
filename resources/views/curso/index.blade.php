@@ -682,13 +682,19 @@
                 @php
                     $pAct = $pacienteActivo ?? $curso['paciente'];
                     $esPacienteBase = ($pAct['imagen'] ?? '') === ($curso['paciente']['imagen'] ?? '');
+                    // Cache-bust: añade ?v=filemtime para que el CDN de Hostinger (hcdn, cachea 7 días)
+                    // sirva la imagen nueva en cuanto se actualiza, sin que el usuario tenga que refrescar.
+                    $imgv = function ($p) {
+                        $full = public_path($p);
+                        return asset($p) . (is_file($full) ? '?v=' . filemtime($full) : '');
+                    };
                 @endphp
                 <div class="juan-col">
-                    <img class="juan-img" src="{{ asset($pAct['imagen']) }}" onerror="this.onerror=null;this.src='{{ asset($curso['paciente']['imagen']) }}';" alt="{{ $pAct['nombre'] }}">
+                    <img class="juan-img" src="{{ $imgv($pAct['imagen']) }}" onerror="this.onerror=null;this.src='{{ $imgv($curso['paciente']['imagen']) }}';" alt="{{ $pAct['nombre'] }}">
                     {{-- Móvil: MISMO paciente que el desktop (usa imagen_mobile si existe; si no, la imagen del
                          ingreso activo). Antes caía siempre a paciente.png = Juan del Ingreso 1, con lo que en
                          móvil salía un perfil distinto al de desktop/tablet (reportado por el cliente). --}}
-                    <img class="juan-img-mobile{{ $esPacienteBase ? '' : ' juan-img-mobile--activo' }}" src="{{ asset($pAct['imagen_mobile'] ?? $pAct['imagen']) }}" onerror="this.onerror=null;this.src='{{ asset($curso['paciente']['imagen']) }}'" alt="{{ $pAct['nombre'] }}">
+                    <img class="juan-img-mobile{{ $esPacienteBase ? '' : ' juan-img-mobile--activo' }}" src="{{ $imgv($pAct['imagen_mobile'] ?? $pAct['imagen']) }}" onerror="this.onerror=null;this.src='{{ $imgv($curso['paciente']['imagen']) }}'" alt="{{ $pAct['nombre'] }}">
                     <div class="juan-cards">
                         @foreach ($pAct['datos'] as $dato)
                             <div class="juan-card">
