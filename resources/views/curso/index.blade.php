@@ -716,7 +716,11 @@
                             // Avance real del módulo: etapa alcanzada / total de etapas (igual que la barra de la etapa).
                             // Cada ingreso puede tener su propia lista (el 2 lleva "Objetivos lipídicos adicionales"),
                             // así que el total se toma de `etapas_N` si existe.
-                            $nIng = (int) filter_var($ing['key'], FILTER_SANITIZE_NUMBER_INT);
+                            // OJO: filter_var(FILTER_SANITIZE_NUMBER_INT) sobre 'ingreso-2' devolvía "-2"
+                            // (mantiene el guion como signo menos) → 'etapas_-2' no existe y caía a las
+                            // etapas generales (9), dando un % distinto al de la propia etapa. Se extrae
+                            // solo el dígito para usar SIEMPRE las etapas reales del ingreso (igual que etapasDe()).
+                            $nIng = preg_replace('/\D/', '', $ing['key']);   // 'ingreso-2' -> '2'
                             $etapasIng = $curso['etapas_'.$nIng] ?? $curso['etapas'];
                             $etapasTotal = count($etapasIng);
                             $idx = (int) ($p->etapa_index ?? 0);
