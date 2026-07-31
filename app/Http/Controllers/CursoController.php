@@ -573,7 +573,10 @@ class CursoController extends Controller
         $preSel = $resultados[$etapaActual]['sel'] ?? [];
 
         // ¿Esta etapa tiene un fallo guardado? → se muestra "Reiniciar capítulo" (en perfecta queda bloqueado).
-        $etapaTieneError = (int) ($resultados[$etapaActual]['rojo'] ?? 0) > 0;
+        // Es "error" si hay rojo (marcó alguna incorrecta) O si NO marcó todas las correctas (verde < máximo).
+        $etapaTieneError = (int) ($resultados[$etapaActual]['rojo'] ?? 0) > 0
+            || (! empty($resultados[$etapaActual]['sel'])
+                && (int) ($resultados[$etapaActual]['verde'] ?? 0) < $this->maxVerdeEtapa($curso, $ingreso, $etapaActual));
 
         // Estados del sidebar: perfecta (check) / error (cruz) / activa (reloj) / bloqueada (candado).
         // La cruz (error) aparece en cuanto la etapa tiene rojo>0, AUNQUE siga siendo la activa
@@ -581,8 +584,12 @@ class CursoController extends Controller
         // Cuando el ingreso está COMPLETADO, ya no hay etapa "activa": todas las superadas
         // quedan con check verde (perfecta), incluida la última (Resumen del caso).
         $completado = $progreso->status === 'completed';
-        $etapasEstado = collect($etapas)->map(function ($e, $i) use ($etapaIndex, $viewIndex, $resultados, $completado) {
-            $tieneError = (int) ($resultados[$e['key']]['rojo'] ?? 0) > 0;
+        $etapasEstado = collect($etapas)->map(function ($e, $i) use ($etapaIndex, $viewIndex, $resultados, $completado, $curso, $ingreso) {
+            // Error (✗) si marcó alguna incorrecta (rojo>0) O si NO marcó todas las correctas (verde < máximo).
+            $verdeE = (int) ($resultados[$e['key']]['verde'] ?? 0);
+            $maxVE  = $this->maxVerdeEtapa($curso, $ingreso, $e['key']);
+            $tieneError = (int) ($resultados[$e['key']]['rojo'] ?? 0) > 0
+                || (! empty($resultados[$e['key']]['sel']) && $maxVE > 0 && $verdeE < $maxVE);
             // Etapa en RE-TRABAJO ("Repetir etapa" pulsado): mientras NO se haya respondido queda
             // SIN icono ('pendiente'). En cuanto se comprueba una respuesta, el icono refleja el
             // resultado igual que siempre: ✗ si falla (rojo>0) o ✓ si acierta. (La etapa sigue
@@ -797,11 +804,16 @@ class CursoController extends Controller
         $totalVerde = array_sum(array_map(fn ($r) => (int) ($r['verde'] ?? 0), $resultados));
         $totalRojo  = array_sum(array_map(fn ($r) => (int) ($r['rojo']  ?? 0), $resultados));
 
+        // La etapa es "error" (✗) si marcó alguna incorrecta O si aún NO ha marcado todas las correctas.
+        $maxVerde = $this->maxVerdeEtapa($curso, $ingreso, $stageKey);
+        $etapaError = ($resultado['rojo'] ?? 0) > 0
+            || (! empty($resultado['sel']) && $maxVerde > 0 && (int) ($resultado['verde'] ?? 0) < $maxVerde);
+
         return response()->json([
             'verde' => $totalVerde,
             'rojo'  => $totalRojo,
             'score' => $totalVerde - $totalRojo,
-            'etapaError' => ($resultado['rojo'] ?? 0) > 0,
+            'etapaError' => $etapaError,
         ]);
     }
 
@@ -942,6 +954,19 @@ class CursoController extends Controller
 
         // El rojo de intentos previos (rfloor) es PERMANENTE: se suma al de este intento.
         return ['verde' => $verde, 'rojo' => $rojoFloor + $rojo, 'sel' => array_values($clean), 'rfloor' => $rojoFloor];
+    }
+
+    /** Máximo verde de una etapa = suma de los puntos de TODAS sus opciones correctas.
+     *  Una etapa solo es "perfecta" (✓) si el verde alcanza este máximo (se marcaron TODAS las
+     *  correctas) y no hay rojo. Si faltan correctas por marcar, queda en error (✗). */
+    private function maxVerdeEtapa(array $curso, string $ingreso, string $etapaKey): int
+    {
+        $pk = $this->preguntaKey($ingreso, $etapaKey);
+        $max = 0;
+        foreach (($curso[$pk]['opciones'] ?? []) as $op) {
+            if (($op['puntos'] ?? 0) > 0) $max += (int) $op['puntos'];
+        }
+        return $max;
     }
 
     /**

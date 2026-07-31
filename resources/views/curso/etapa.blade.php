@@ -1250,7 +1250,7 @@
                 @endif
 
                 {{-- Siguiente etapa (botón flotante; las etapas con cuestionario llevan el suyo dentro) --}}
-                @unless (in_array($etapaActual, ['pruebas', 'riesgo', 'terapeutico', 'monitorizacion', 'monitorizacion-2', 'resumen']))
+                @unless (in_array($etapaActual, ['pruebas', 'objetivos', 'riesgo', 'terapeutico', 'monitorizacion', 'monitorizacion-2', 'resumen']))
                 <form method="POST" action="{{ route('curso.avanzar', $ingreso) }}" id="form-avanzar" style="display:contents;">
                     @csrf
                     <input type="hidden" name="desde" value="{{ $etapaActual }}">
@@ -1878,9 +1878,19 @@
                 pintarBarra();
                 sincronizarSel();
                 persistir();                        // guarda al instante (no espera a "Siguiente etapa")
-                if (!correcta) marcarCruzMenu();     // solo pinta la X en el menu; el botón "Reiniciar capítulo"
-                                                     // aparece al VOLVER al capítulo (render del servidor), no al fallar
-                else marcarCheckMenu();              // en repetición (pendiente): al aprobar, check verde al instante
+                // El menú muestra ✓ (perfecta) SOLO si están marcadas TODAS las opciones correctas y
+                // ninguna incorrecta; si aún faltan correctas por marcar, queda con ✗ (petición del
+                // cliente: marcar solo 1 de varias correctas debe salir como cruz, no como check).
+                var totalCorrectas = 0, correctasMarcadas = 0;
+                card.querySelectorAll('.opt').forEach(function (o) {
+                    if ((parseInt(o.getAttribute('data-puntos'), 10) || 0) > 0) {
+                        totalCorrectas++;
+                        var inp = o.querySelector('input[name="pregunta"]');
+                        if (inp && marcadas[inp.value]) correctasMarcadas++;
+                    }
+                });
+                if (correctasMarcadas >= totalCorrectas && (baseRojo + liveRojo) === 0) marcarCheckMenu();
+                else marcarCruzMenu();
                 if (window.checkMedalUnlock) window.checkMedalUnlock((baseVerde + liveVerde) - (baseRojo + liveRojo));
 
                 if (correcta) {
