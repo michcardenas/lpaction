@@ -12,10 +12,12 @@
     $esUltimaPregunta = $etapaActual === ($ultimaPreguntaKey ?? 'monitorizacion-2');
     // Durante el RE-TRABAJO (repitiendo, aún sin confirmar) la etapa está activa/editable,
     // así que "Repetir etapa" también sigue habilitado.
-    $repetirHabilitado = empty($casoFinalizado) && !empty($preSel) && (
+    // "Mejorar puntuación": una etapa YA superada que tiene un fallo (rojo) se puede repetir
+    // SIEMPRE para subir la medalla, aunque el caso ya esté completado (petición del cliente).
+    // El resto de casos (última pregunta antes de finalizar / re-trabajo en curso) solo con el caso abierto.
+    $repetirHabilitado = !empty($preSel) && (
         (!empty($reevaluando) && !empty($etapaTieneError))
-        || $esUltimaPregunta
-        || !empty($enReTrabajo ?? false)
+        || (empty($casoFinalizado) && ($esUltimaPregunta || !empty($enReTrabajo ?? false)))
     );
 
     // Cuando el usuario re-evalúa una etapa (típicamente tras "Repetir etapa"),

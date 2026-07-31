@@ -62,9 +62,27 @@
         .ev-comenzar { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px; background: #05BAEE; color: #fff; border: 0; padding: 16px 42px; border-radius: 6px; cursor: pointer; transition: background .2s; }
         .ev-comenzar:hover { background: #04a3d1; }
 
-        @media (max-width: 880px) {
-            .ev-main { padding: 28px 22px; }
-            .ev-grid { grid-template-columns: 1fr; }
+        /* ===== Móvil y tablet: layout FLUIDO (sin el escenario fijo de 1320px escalado) ===== */
+        @media (max-width: 1024px) {
+            .ev-main { align-items: flex-start; overflow: visible; padding: 26px 16px 40px; }
+            .ev-stage { width: 100% !important; max-width: 660px; margin: 0 auto; transform: none !important; }
+            .ev-title { font-size: 28px; }
+            .ev-subtitle { margin: 12px 0 26px; }
+            .ev-card { padding: 22px 18px; max-width: 100%; }
+            .ev-h { font-size: 20px; }
+            .ev-grid { grid-template-columns: 1fr; gap: 16px; }
+            .ev-info, .ev-stat { padding: 18px 20px; }
+            .ev-info-head { font-size: 16px; }
+            .ev-foot { display: block; margin-top: 22px; }
+            .ev-foot form { margin: 0; }
+            .ev-comenzar { display: block; width: 100%; text-align: center; }
+        }
+        @media (max-width: 560px) {
+            .ev-top { padding: 0 16px; }
+            .ev-title { font-size: 24px; }
+            .ev-h { font-size: 18px; }
+            .ev-card { padding: 18px 14px; }
+            .ev-info, .ev-stat { padding: 16px; }
         }
 
         /* Footer (mismo que el resto del sitio) */
@@ -172,6 +190,7 @@
             if (!main || !stage) return;
             function scaleEv() {
                 stage.style.transform = 'none';
+                if (window.innerWidth <= 1024) return;   // móvil/tablet: layout fluido, no se escala
                 var sw = stage.offsetWidth, sh = stage.offsetHeight;
                 if (!main.clientWidth || !sw) { requestAnimationFrame(scaleEv); return; }
                 // Descontar el padding del main para que el contenido NO llene los bordes

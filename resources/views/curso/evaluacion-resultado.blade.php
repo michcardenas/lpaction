@@ -174,10 +174,10 @@
             </div>
         @endforeach
 
-        {{-- Pie: finalizar revisión + encuesta de satisfacción --}}
-        <div class="rv-foot">
-            <a href="{{ route('curso') }}" class="rv-foot-btn ghost">Finalizar revisión</a>
-            <a href="{{ route('encuesta') }}" class="rv-foot-btn cyan">Completar encuesta de satisfacción</a>
+        {{-- Pie: solo "Finalizar revisión" en la posición prominente. Se eliminó "Completar encuesta
+             de satisfacción" (la encuesta es obligatoria ANTES de la evaluación, no aquí). Petición del cliente. --}}
+        <div class="rv-foot" style="justify-content: flex-end;">
+            <a href="{{ route('curso') }}" class="rv-foot-btn cyan">Finalizar revisión</a>
         </div>
     </main>
 

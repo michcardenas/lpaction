@@ -29,6 +29,17 @@ return [
         'registro_seaformec' => '',                     // COMPLETAR: Registro SEAFORMEC-SMPAC
     ],
 
+    // Certificado CASEC (Comité de Acreditación de la SEC) — el que reciben TODOS por defecto.
+    // El diploma ICOMEM/SEAFORMEC de arriba lo reciben solo los "médicos seleccionados"
+    // (usuarios marcados con cert_icomem en el panel admin). Reutiliza fecha_inicio/fin/horas del 'diploma'.
+    'diploma_casec' => [
+        'expediente' => '2980',
+        'creditos'   => '15',
+        'lugar'      => 'online',
+        'rol'        => 'discente',   // «Docente/discente»: los alumnos son discentes
+        'presidente' => 'Ignacio Fernández Lozano',
+    ],
+
     // Especialidades del registro y el CERTIFICADO que obtiene cada una:
     //   'cases_uems' → Certificado CASES + UEMS
     //   'casec'      → únicamente Certificado CASEC
@@ -190,9 +201,13 @@ return [
         ['key' => 'objetivos',        'titulo' => 'Objetivos lipídicos adicionales'],
         ['key' => 'riesgo',           'titulo' => 'Evaluación del riesgo cardiovascular'],
         ['key' => 'terapeutico',      'titulo' => 'Planteamiento terapéutico'],
-        ['key' => 'monitorizacion',   'titulo' => 'Monitorización y seguimiento'],
-        ['key' => 'monitorizacion-2', 'titulo' => 'Monitorización y seguimiento 2'],
-        ['key' => 'mantenimiento',    'titulo' => 'Terapia de mantenimiento al alta de rehabilitación cardiaca'],
+        // Colapsada a una sola etapa (petición del cliente): la etapa con la pregunta de inclisirán
+        // se renombra a "Optimización de control lipídico…" y se elimina la antigua "Monitorización
+        // y seguimiento 2" (su contenido ya vive íntegro en "Terapia de mantenimiento").
+        // "Terapia de mantenimiento al alta de rehabilitación cardiaca" ELIMINADA del Ingreso 2:
+        // ese capítulo NO existe en el Módulo 2 (es del Módulo 1). Su contenido real (perfil lipídico
+        // tras inclisirán + screening + cierre) se trasladó a la etapa "Optimización…" (su sección 6).
+        ['key' => 'monitorizacion',   'titulo' => 'Optimización de control lipídico tras evento recurrente'],
         ['key' => 'puntos-clave',     'titulo' => 'Puntos clave'],
         ['key' => 'resumen',          'titulo' => 'Resumen del caso'],
     ],
@@ -206,7 +221,8 @@ return [
         ['key' => 'terapeutico',      'titulo' => 'Planteamiento terapéutico'],
         ['key' => 'monitorizacion',   'titulo' => 'Terapias emergentes anti-Lp(a): pelacarsen y ensayo HORIZON'],
         ['key' => 'monitorizacion-2', 'titulo' => 'Evolución'],
-        ['key' => 'mantenimiento',    'titulo' => 'Terapia de mantenimiento al alta de rehabilitación cardiaca'],
+        // En el Ingreso 3 esta etapa es un vídeo explicativo (no la terapia de mantenimiento del Módulo 1).
+        ['key' => 'mantenimiento',    'titulo' => 'Vídeo explicativo'],
         ['key' => 'puntos-clave',     'titulo' => 'Puntos clave'],
         ['key' => 'resumen',          'titulo' => 'Resumen del caso'],
     ],

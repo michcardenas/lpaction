@@ -23,6 +23,7 @@ Route::post('/registro', [RegisterController::class, 'store']);
 Route::middleware('auth')->group(function () {
     Route::get('/admin', [AdminController::class, 'dashboard'])->middleware('admin')->name('admin');
     Route::post('/admin/alumno/{user}/test', [AdminController::class, 'toggleTest'])->middleware('admin')->name('admin.toggle-test');
+    Route::post('/admin/alumno/{user}/cert-icomem', [AdminController::class, 'toggleCertIcomem'])->middleware('admin')->name('admin.toggle-cert-icomem');
     Route::get('/admin/informe', [AdminController::class, 'informe'])->middleware('admin')->name('admin.informe');
     Route::get('/admin/informe-dinamico', [AdminController::class, 'informeDinamico'])->middleware('admin')->name('admin.informe.dinamico');
     Route::get('/admin/contenido/{area?}', [SiteContentController::class, 'edit'])->middleware('admin')->name('admin.contenido');

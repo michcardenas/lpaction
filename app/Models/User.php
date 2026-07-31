@@ -36,6 +36,7 @@ class User extends Authenticatable
         'accepted_novartis',
         'is_admin',
         'is_test',
+        'cert_icomem',
     ];
 
     /**
@@ -62,6 +63,7 @@ class User extends Authenticatable
             'accepted_novartis' => 'boolean',
             'is_admin' => 'boolean',
             'is_test' => 'boolean',
+            'cert_icomem' => 'boolean',
         ];
     }
 

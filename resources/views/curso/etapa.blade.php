@@ -394,7 +394,7 @@
         /* Juan y los anillos son DECORATIVOS: pointer-events:none para que no tapen el clic de
            los botones (la imagen es muy ancha y su caja invadía "Mejorar puntuación"). */
         .rp-right .rp-juan { position: absolute; right: 0; bottom: 0; height: 106%; width: auto; max-width: none; object-fit: contain; object-position: bottom right; z-index: 2; pointer-events: none; }
-        .rp-rings { position: absolute; right: 22px; bottom: 4px; opacity: .45; z-index: 1; pointer-events: none; }
+        /* (Regla .rp-rings eliminada: los aros SVG se quitaron por duplicar el piso de la imagen — "círculo inventado".) */
         /* Los botones del modal SIEMPRE por encima de la imagen y clicables. */
         .rp-left { position: relative; z-index: 3; }
         .rp-actions { position: relative; z-index: 3; }
@@ -1323,17 +1323,23 @@
                     $medLottie = 'medallas/medalla-' . $medalla['key'] . '.json';  // animación oficial (Lottie) bronce/plata/oro
                     $medImg  = 'images/medalla-' . $medalla['key'] . '.png';   // corazón de la medalla (respaldo)
 
-                    // Juan del modal según la medalla, POR INGRESO. Prioridad:
-                    //  1) juan-{N}-{medalla}.png  → expresión propia de ese ingreso por medalla (si se sube)
-                    //  2) Ingreso 1: juan-{medalla}.png → set de expresiones existente
-                    //  3) imagen base del paciente de ESE ingreso (así el Ingreso 3 muestra su Juan, no el del 1)
+                    // Juan del modal SEGÚN LA MEDALLA (petición del cliente):
+                    //   · sin / bronce (insuficiente) → Juan TRISTE, común a todos los ingresos (juan-sin.png).
+                    //   · plata / oro  (suficiente)   → Juan FELIZ del ingreso (juan-{N}.png / juan-{medalla} en Ingreso 1 / paciente sano).
+                    // Prioridad, primero lo más específico por si algún día se suben expresiones propias.
                     $ingN = preg_match('/ingreso-(\d+)/', $ingreso, $mmJuan) ? (int) $mmJuan[1] : 1;
+                    $esAprobado = in_array($medalla['key'], ['plata', 'oro'], true);
                     $juanCandidatos = ['images/juan-' . $ingN . '-' . $medalla['key'] . '.png'];
-                    if ($ingN === 1) $juanCandidatos[] = 'images/juan-' . $medalla['key'] . '.png';
-                    $juanCandidatos[] = 'images/juan-' . $ingN . '.png';   // expresión única (feliz) del ingreso para cualquier medalla
-                    $juanCandidatos[] = ($pacienteIngreso ?? $curso['paciente'])['imagen'];
+                    if ($ingN === 1) $juanCandidatos[] = 'images/juan-' . $medalla['key'] . '.png';   // Ingreso 1 tiene set por medalla
+                    if ($esAprobado) {
+                        $juanCandidatos[] = 'images/juan-' . $ingN . '.png';                 // Juan feliz del ingreso
+                        if (! empty($pacienteIngreso['imagen_completado'])) $juanCandidatos[] = $pacienteIngreso['imagen_completado'];  // paciente sano
+                        $juanCandidatos[] = ($pacienteIngreso ?? $curso['paciente'])['imagen'];
+                    } else {
+                        $juanCandidatos[] = 'images/juan-sin.png';   // sin / bronce → Juan triste (universal)
+                    }
                     $juanImg = collect($juanCandidatos)->first(fn ($p) => file_exists(public_path($p)))
-                        ?? $curso['paciente']['imagen'];
+                        ?? 'images/juan-sin.png';
                 @endphp
                 <div class="rp-left">
                     @if (file_exists(public_path($medLottie)))
@@ -1381,11 +1387,8 @@
                     </div>
                 </div>
                 <div class="rp-right">
-                    <svg class="rp-rings" width="280" height="84" viewBox="0 0 280 84" fill="none" aria-hidden="true">
-                        @for ($r = 1; $r <= 3; $r++)
-                            <ellipse cx="140" cy="74" rx="{{ $r * 44 }}" ry="{{ $r * 10 }}" stroke="#7fa6b2" stroke-width="1" opacity="{{ 0.5 - $r * 0.12 }}"/>
-                        @endfor
-                    </svg>
+                    {{-- Sin aros SVG: la propia imagen del Juan ya trae su sombra de piso; dibujarlos
+                         encima creaba círculos duplicados ("círculo inventado", reportado por el cliente). --}}
                     {{-- Juan de la medalla, ya resuelto por ingreso (arriba) --}}
                     <img class="rp-juan" src="{{ asset($juanImg) }}" alt="{{ $curso['paciente']['nombre'] }}">
                 </div>

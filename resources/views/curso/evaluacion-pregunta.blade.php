@@ -66,11 +66,25 @@
         .ev-footer-links a { font-weight: 500; font-size: 13px; color: #fff; text-decoration: none; transition: color .2s; }
         .ev-footer-links a:hover { color: #05BAEE; }
 
-        @media (max-width: 880px) {
-            .ev-main { padding: 28px 18px; }
+        /* ===== Móvil y tablet: layout FLUIDO (sin el escenario fijo de 1320px escalado) ===== */
+        @media (max-width: 1024px) {
+            .ev-main { align-items: flex-start; overflow: visible; padding: 26px 16px 40px; }
+            .ev-stage { width: 100% !important; max-width: 660px; margin: 0 auto; transform: none !important; }
+            .ev-title { font-size: 28px; }
+            .ev-subtitle { margin: 12px 0 24px; }
             .pregunta-opts { grid-template-columns: 1fr; }
             .opt:nth-child(odd) { border-right: 0; }
-            .opt { border-bottom: 1px solid rgba(255,255,255,0.14); }
+            .opt { border-bottom: 1px solid rgba(255,255,255,0.14); padding: 18px 18px; }
+            .pregunta-head { padding: 22px 18px 18px; }
+            .pregunta-q { font-size: 16px; line-height: 160%; }
+            .pregunta-foot { padding: 16px 18px; }
+            .btn-next-q { width: 100%; text-align: center; }
+        }
+        @media (max-width: 560px) {
+            .ev-top { padding: 0 16px; }
+            .ev-title { font-size: 24px; }
+            .pregunta-q { font-size: 15px; }
+            .opt { padding: 16px; font-size: 14.5px; }
         }
         @media (max-width: 700px) {
             .ev-footer { flex-direction: column; text-align: center; gap: 10px; padding: 16px; }
@@ -208,6 +222,7 @@
             if (!main || !stage) return;
             function scaleEv() {
                 stage.style.transform = 'none';
+                if (window.innerWidth <= 1024) return;   // móvil/tablet: layout fluido, no se escala
                 var sw = stage.offsetWidth, sh = stage.offsetHeight;
                 if (!main.clientWidth || !sw) { requestAnimationFrame(scaleEv); return; }
                 var cs = getComputedStyle(main);

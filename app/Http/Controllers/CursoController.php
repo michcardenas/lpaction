@@ -369,21 +369,39 @@ class CursoController extends Controller
         $eval = $user->progress()->where('module_key', 'evaluacion')->first();
         $emision = optional($eval)->completed_at ?? now();
 
-        $diploma = [
-            'nombre'             => trim((string) $user->name),
-            'apellidos'          => trim((string) ($user->last_name ?? '')),
-            'documento'          => trim((string) ($user->document_id ?? '')),
-            'curso'              => 'Programa formativo Lp(a)ction',
-            'fecha_inicio'       => $cfg['fecha_inicio'] ?? '',
-            'fecha_fin'          => $cfg['fecha_fin'] ?? '',
-            'horas'              => $cfg['horas'] ?? '',
-            'creditos'           => $cfg['creditos'] ?? '',
-            'registro_uems'      => $cfg['registro_uems'] ?? '',
-            'registro_seaformec' => $cfg['registro_seaformec'] ?? '',
-            'fecha_emision'      => $this->fechaLarga($emision),
+        // Datos comunes a ambos certificados.
+        $base = [
+            'nombre'        => trim((string) $user->name),
+            'apellidos'     => trim((string) ($user->last_name ?? '')),
+            'documento'     => trim((string) ($user->document_id ?? '')),
+            'curso'         => 'Programa formativo Lp(a)ction',
+            'fecha_inicio'  => $cfg['fecha_inicio'] ?? '',
+            'fecha_fin'     => $cfg['fecha_fin'] ?? '',
+            'horas'         => $cfg['horas'] ?? '',
+            'fecha_emision' => $this->fechaLarga($emision),
         ];
 
-        return view('curso.diploma', compact('diploma'));
+        // Médicos SELECCIONADOS (cert_icomem) → certificado ICOMEM/SEAFORMEC-EACCME (el actual).
+        if ($user->cert_icomem) {
+            $diploma = $base + [
+                'creditos'           => $cfg['creditos'] ?? '',
+                'registro_uems'      => $cfg['registro_uems'] ?? '',
+                'registro_seaformec' => $cfg['registro_seaformec'] ?? '',
+            ];
+            return view('curso.diploma', compact('diploma'));
+        }
+
+        // Por DEFECTO (todos los demás) → certificado CASEC de la Sociedad Española de Cardiología.
+        $casec = config('curso.diploma_casec', []);
+        $diploma = $base + [
+            'expediente' => $casec['expediente'] ?? '',
+            'creditos'   => $casec['creditos'] ?? '',
+            'lugar'      => $casec['lugar'] ?? 'online',
+            'rol'        => $casec['rol'] ?? 'discente',
+            'presidente' => $casec['presidente'] ?? '',
+        ];
+
+        return view('curso.diploma-casec', compact('diploma'));
     }
 
     /**
@@ -678,21 +696,38 @@ class CursoController extends Controller
         // usuario quedaba atrapado en la pregunta (el enlace al último capítulo rebotaba).
         if ($request->input('hasta') === 'fin') {
             $ultimo = count($etapas) - 1;
+            // Desbloquea los capítulos finales para REPASO (Opción B), pero el caso queda EN CURSO
+            // (no completado) y vuelve al temario, como dice el botón. Solo plata/oro completan.
             $progreso->update([
                 'etapas'      => $resultados,
                 'status'      => 'in_progress',
                 'etapa_index' => max((int) ($progreso->etapa_index ?? 0), $ultimo),
             ]);
-            return redirect()->route('curso.etapa', [$ingreso, $etapas[$ultimo]['key']]);
+            return redirect()->route('curso');
         }
 
-        // Última etapa ("Finalizar ingreso"): el ingreso queda completado y se desbloquea el siguiente.
+        // Última etapa ("Finalizar ingreso"): el ingreso SOLO se completa si el resultado es
+        // SUFICIENTE (plata/oro, score >= mínimo de plata). Con "sin medalla"/"bronce" el caso NO
+        // se marca completado ni se desbloquea el siguiente ingreso: el alumno debe repetir las
+        // etapas señaladas para mejorar la puntuación (petición del cliente; antes se marcaba
+        // completado con puntuación insuficiente — error crítico).
         if ($desde >= count($etapas) - 1) {
-            $progreso->update([
-                'status' => 'completed', 'percent' => 100, 'completed_at' => now(), 'etapas' => $resultados,
-            ]);
-            $this->desbloquearSiguienteIngreso($user, $ingreso);
-            return redirect()->route('curso');   // la medalla va en la última pregunta, no aquí
+            $totalVerde = array_sum(array_map(fn ($r) => (int) ($r['verde'] ?? 0), $resultados));
+            $totalRojo  = array_sum(array_map(fn ($r) => (int) ($r['rojo']  ?? 0), $resultados));
+            $score      = $totalVerde - $totalRojo;
+            $minAprobar = collect($curso['medallas'])->firstWhere('key', 'plata')['min'] ?? 300;
+
+            if ($score >= $minAprobar) {
+                $progreso->update([
+                    'status' => 'completed', 'percent' => 100, 'completed_at' => now(), 'etapas' => $resultados,
+                ]);
+                $this->desbloquearSiguienteIngreso($user, $ingreso);
+                return redirect()->route('curso');   // la medalla va en la última pregunta, no aquí
+            }
+
+            // Resultado insuficiente: se guarda el avance pero el caso queda EN CURSO (no completado).
+            $progreso->update(['etapas' => $resultados, 'status' => 'in_progress']);
+            return redirect()->route('curso')->with('curso_status', 'Resultado insuficiente: repite las etapas señaladas para completar el caso.');
         }
 
         $next = min($desde + 1, count($etapas) - 1);

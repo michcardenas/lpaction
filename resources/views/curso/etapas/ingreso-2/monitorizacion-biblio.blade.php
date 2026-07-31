@@ -1,5 +1,5 @@
-{{-- Bibliografía de la etapa "Monitorización y seguimiento" — INGRESO 2 (34 referencias) --}}
-<h1 class="h-caso">Monitorización y seguimiento</h1>
+{{-- Bibliografía de la etapa "Optimización de control lipídico tras evento recurrente" — INGRESO 2 (34 referencias) --}}
+<h1 class="h-caso">Optimización de control lipídico tras evento recurrente</h1>
 <h2 class="biblio-h">Bibliografía</h2>
 <div class="biblio-list">
     @foreach ($curso['bibliografia_2'] as $i => $ref)

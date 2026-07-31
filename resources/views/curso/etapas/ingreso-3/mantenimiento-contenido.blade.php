@@ -7,7 +7,7 @@
     $hayVid = file_exists(public_path($vid));
 @endphp
 <div class="riesgo">
-    <h1 class="h-caso">{{ cms($k.'h1', 'Terapia de mantenimiento al alta de rehabilitación cardiaca') }}</h1>
+    <h1 class="h-caso">{{ cms($k.'h1', 'Vídeo explicativo') }}</h1>
 
     <figure class="video-full">
         <div class="video-player">

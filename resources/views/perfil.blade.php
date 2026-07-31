@@ -391,18 +391,6 @@
                             <span class="mc-label">Correo electrónico</span>
                             <div class="mc-value">{{ $user->email ?: '—' }}</div>
                         </div>
-                        <div class="mc-field">
-                            <span class="mc-label">Población</span>
-                            <div class="mc-value">{{ $user->city ?: '—' }}</div>
-                        </div>
-                        <div class="mc-field">
-                            <span class="mc-label">País</span>
-                            <div class="mc-value">{{ $user->country ?: '—' }}</div>
-                        </div>
-                        <div class="mc-field">
-                            <span class="mc-label">Provincia</span>
-                            <div class="mc-value">{{ $user->province ?: '—' }}</div>
-                        </div>
                         {{-- Contraseña: vista (valor + lápiz) ↔ formulario de cambio --}}
                         <div class="mc-field mc-field--full" id="mc-pass">
                             <div class="mc-pass-view">
@@ -455,14 +443,6 @@
                         <div class="mc-field">
                             <span class="mc-label">Especialidad</span>
                             <div class="mc-value">{{ $user->specialty ?: '—' }}</div>
-                        </div>
-                        <div class="mc-field">
-                            <span class="mc-label">Hospital</span>
-                            <div class="mc-value">{{ $user->hospital ?: '—' }}</div>
-                        </div>
-                        <div class="mc-field">
-                            <span class="mc-label">Tipo de centro</span>
-                            <div class="mc-value">{{ $user->center_type ?: '—' }}</div>
                         </div>
                     </div>
                 </section>

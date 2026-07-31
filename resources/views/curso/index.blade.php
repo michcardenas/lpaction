@@ -510,6 +510,10 @@
                 left: 0; top: -108px;                                            /* Juan más arriba */
                 width: 390px; max-width: none; height: auto;
             }
+            /* Imagen del ingreso ACTIVO (Ingreso 2/3, 555×746 → 524px de alto): con top:-54 llena
+               justo el contenedor de 470px, sin hueco abajo ni recorte de la cabeza. El paciente
+               base (Ingreso 1, 390×649) se queda en -108. */
+            .juan-img-mobile--activo { top: -54px; }
             /* Tarjeta de datos (3 cards 230) abajo-izquierda */
             /* CUADRO unificado (tabla) — mismo ancho, redondeado, glass, con divisores */
             .juan-cards {
@@ -681,7 +685,10 @@
                 @endphp
                 <div class="juan-col">
                     <img class="juan-img" src="{{ asset($pAct['imagen']) }}" onerror="this.onerror=null;this.src='{{ asset($curso['paciente']['imagen']) }}';" alt="{{ $pAct['nombre'] }}">
-                    <img class="juan-img-mobile" src="{{ asset($pAct['imagen_mobile'] ?? 'images/paciente.png') }}" onerror="this.onerror=null;this.src='{{ asset('images/paciente.png') }}'" alt="{{ $pAct['nombre'] }}">
+                    {{-- Móvil: MISMO paciente que el desktop (usa imagen_mobile si existe; si no, la imagen del
+                         ingreso activo). Antes caía siempre a paciente.png = Juan del Ingreso 1, con lo que en
+                         móvil salía un perfil distinto al de desktop/tablet (reportado por el cliente). --}}
+                    <img class="juan-img-mobile{{ $esPacienteBase ? '' : ' juan-img-mobile--activo' }}" src="{{ asset($pAct['imagen_mobile'] ?? $pAct['imagen']) }}" onerror="this.onerror=null;this.src='{{ asset($curso['paciente']['imagen']) }}'" alt="{{ $pAct['nombre'] }}">
                     <div class="juan-cards">
                         @foreach ($pAct['datos'] as $dato)
                             <div class="juan-card">

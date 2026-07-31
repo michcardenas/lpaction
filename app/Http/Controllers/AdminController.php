@@ -80,6 +80,7 @@ class AdminController extends Controller
                 'nota'       => $evMeta['ultima_nota'] ?? null,
                 'registro'   => $u->created_at,
                 'is_test'    => (bool) $u->is_test,
+                'cert_icomem'=> (bool) $u->cert_icomem,
             ];
         });
 
@@ -97,6 +98,18 @@ class AdminController extends Controller
         abort_if($user->is_admin, 404); // los admins no aparecen en la tabla
 
         $user->is_test = ! $user->is_test;
+        $user->save();
+
+        return redirect()->route('admin');
+    }
+
+    /** Marca/desmarca a un alumno como médico SELECCIONADO → recibe el certificado ICOMEM
+     *  (los no marcados reciben el certificado CASEC de la SEC, que es el de por defecto). */
+    public function toggleCertIcomem(User $user)
+    {
+        abort_if($user->is_admin, 404); // los admins no aparecen en la tabla
+
+        $user->cert_icomem = ! $user->cert_icomem;
         $user->save();
 
         return redirect()->route('admin');

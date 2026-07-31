@@ -150,6 +150,7 @@
             <th class="center">Evaluación</th>
             <th>Registro</th>
             <th class="center" title="Marcar como cuenta de prueba: no cuenta en las métricas de arriba ni en el informe">Test</th>
+            <th class="center" title="Médico seleccionado: recibe el certificado ICOMEM/SEAFORMEC. Sin marcar, recibe el certificado CASEC de la SEC.">Cert. ICOMEM</th>
           </tr>
         </thead>
         <tbody>
@@ -189,9 +190,17 @@
                          title="{{ $a['is_test'] ? 'Quitar marca de prueba (volverá a contar en las métricas)' : 'Marcar como cuenta de prueba (dejará de contar en las métricas)' }}">
                 </form>
               </td>
+              <td class="center col-test">
+                <form method="POST" action="{{ route('admin.toggle-cert-icomem', $a['id']) }}">
+                  @csrf
+                  <input type="checkbox" class="chk-test" onchange="this.form.submit()"
+                         {{ $a['cert_icomem'] ? 'checked' : '' }}
+                         title="{{ $a['cert_icomem'] ? 'Certificado ICOMEM. Desmarcar → recibirá el CASEC de la SEC.' : 'Certificado CASEC (por defecto). Marcar → recibirá el ICOMEM/SEAFORMEC (médico seleccionado).' }}">
+                </form>
+              </td>
             </tr>
           @empty
-            <tr><td colspan="7" class="center muted" style="padding:26px;">Aún no hay alumnos registrados.</td></tr>
+            <tr><td colspan="8" class="center muted" style="padding:26px;">Aún no hay alumnos registrados.</td></tr>
           @endforelse
         </tbody>
       </table>

@@ -6,7 +6,8 @@
 
     <div class="prueba-p riesgo-p rich-p" style="margin: 0 0 16px;">{!! cms($k.'p1') !!}</div>
 
-    <h3 class="prueba-h" style="margin: 0 0 12px;">{{ cms($k.'h_trat', 'Tratamiento farmacológico:') }}</h3>
+    {{-- Label de la lista de fármacos: mismo tamaño que el texto de alrededor (16px), en negrita (petición del cliente). --}}
+    <h3 class="prueba-h" style="font-size: 16px; line-height: 150%; letter-spacing: 0.02em; margin: 0 0 8px;">{{ cms($k.'h_trat', 'Tratamiento farmacológico:') }}</h3>
     {!! cms($k.'lista') !!}
 
     {{-- Pregunta 4 del Ingreso 2 (optimizar tratamiento con Lp(a) elevada) --}}
