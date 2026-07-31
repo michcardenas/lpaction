@@ -21,6 +21,21 @@ class CursoController extends Controller
 
         $curso = config('curso');
 
+        // Autocorrección de consistencia: si un ingreso está COMPLETADO, el siguiente NO puede quedar
+        // bloqueado (evita el caso "Ingreso al 100% pero el siguiente bloqueado", reportado por el cliente).
+        $ingKeys = array_column($curso['ingresos'] ?? [], 'key');
+        foreach ($ingKeys as $i => $k) {
+            $sigKey = $ingKeys[$i + 1] ?? null;
+            $cur = $progress->get($k);
+            if ($sigKey && $cur && $cur->status === 'completed') {
+                $sig = $progress->get($sigKey);
+                if ($sig && $sig->status === 'locked') {
+                    $sig->update(['status' => 'available']);
+                    $sig->status = 'available';   // reflejar en la copia en memoria de esta petición
+                }
+            }
+        }
+
         // Paciente ACTIVO: el Juan cambia según en qué ingreso esté el usuario.
         // - En Ingreso 1 (in_progress o completed sin haber empezado el 2): Juan 52 años, fumador.
         // - En Ingreso 2 (disponible/in_progress/completed): Juan 53 años, exfumador.
@@ -695,13 +710,14 @@ class CursoController extends Controller
         // y lleva al último. Sin esto, esas medallas no tenían NINGÚN botón que avanzara y el
         // usuario quedaba atrapado en la pregunta (el enlace al último capítulo rebotaba).
         if ($request->input('hasta') === 'fin') {
-            $ultimo = count($etapas) - 1;
-            // Desbloquea los capítulos finales para REPASO (Opción B), pero el caso queda EN CURSO
-            // (no completado) y vuelve al temario, como dice el botón. Solo plata/oro completan.
+            // Resultado insuficiente (sin medalla / bronce): el caso queda EN CURSO y vuelve al temario.
+            // NO se sube el etapa_index al final: hacerlo mostraba el ingreso casi al 100% pese a no
+            // estar aprobado, y con el siguiente ingreso bloqueado (contradicción reportada por el
+            // cliente). El alumno repite las etapas señaladas para mejorar; solo plata/oro completan
+            // y desbloquean el siguiente ingreso.
             $progreso->update([
-                'etapas'      => $resultados,
-                'status'      => 'in_progress',
-                'etapa_index' => max((int) ($progreso->etapa_index ?? 0), $ultimo),
+                'etapas' => $resultados,
+                'status' => 'in_progress',
             ]);
             return redirect()->route('curso');
         }
