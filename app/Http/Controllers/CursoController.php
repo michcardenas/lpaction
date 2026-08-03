@@ -875,6 +875,12 @@ class CursoController extends Controller
         $idx = array_search($etapaKey, array_column($etapas, 'key'), true);
         abort_if($idx === false, 404);
 
+        // Caso FINALIZADO (ingreso completado): NO se permite repetir/reiniciar ninguna etapa
+        // (petición del cliente). Refuerzo en servidor del bloqueo que ya aplica la vista.
+        if ($progreso->status === 'completed') {
+            return redirect()->route('curso.etapa', [$ingreso, $etapaKey]);
+        }
+
         $resultados = $progreso->etapas ?? [];
         if (isset($resultados[$etapaKey])) {
             // Reinicio TOTAL del capítulo: verde y rojo a 0, pregunta limpia (sin "piso" de rojo).
