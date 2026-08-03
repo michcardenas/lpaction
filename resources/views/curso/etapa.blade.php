@@ -228,6 +228,10 @@
         .resumen-foot { display: flex; justify-content: center; margin-top: 63px; }
         .btn-finalizar { font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 15px; background: rgba(185,185,185,0.25); color: #BFBFBF; border: 0; padding: 13px 38px; border-radius: 6px; cursor: pointer; transition: background .2s, color .2s; }
         .btn-finalizar:hover { background: rgba(185,185,185,0.40); color: #fff; }
+        /* Bloqueado hasta "Descargar caso": gris apagado + cursor no-permitido, sin hover. */
+        .btn-finalizar.is-locked, .btn-finalizar:disabled,
+        .biblio-next.is-locked, .biblio-next:disabled { opacity: .45; cursor: not-allowed; filter: grayscale(.35); }
+        .btn-finalizar.is-locked:hover, .btn-finalizar:disabled:hover { background: rgba(185,185,185,0.25); color: #BFBFBF; }
 
         /* Analítica sanguínea: cuadro + lista de valores */
         .analitica-block { width: 100%; background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.40); border-radius: 0; padding: 22px 24px; }
@@ -1219,7 +1223,9 @@
                     {{-- En etapas con quiz el botón "Siguiente etapa" vive dentro del cuestionario (Contenido, aquí oculto);
                          agregamos uno en Bibliografía que envía ese mismo form para poder avanzar. --}}
                     @if (in_array($etapaActual, ['pruebas', 'riesgo', 'terapeutico', 'monitorizacion', 'monitorizacion-2', 'resumen']))
-                        <button type="button" class="btn-next biblio-next"
+                        @php $bloqFin = $esUltimaEtapa && ! ($casoDescargado ?? false); @endphp
+                        <button type="button" class="btn-next biblio-next{{ $bloqFin ? ' is-locked' : '' }}" @disabled($bloqFin)
+                                title="{{ $bloqFin ? 'Descarga el caso para poder finalizar el ingreso' : '' }}"
                                 onclick="var f=document.querySelector('#view-contenido form'); if(f){ f.submit(); }">{{ $esUltimaEtapa ? 'Finalizar ingreso' : 'Siguiente etapa' }}</button>
                     @endif
                 </div>
@@ -1464,6 +1470,18 @@
             })->sortBy('min')->values()->all();
     @endphp
 
+    <script>
+        // "Descargar caso": feedback inmediato del gate — el avance sube a 100% y se desbloquea
+        // "Finalizar ingreso". El flag se persiste en el servidor (la descarga es un GET que lo marca),
+        // así que el home y una recarga muestran el 100% de forma consistente.
+        function marcarCasoDescargado() {
+            document.querySelectorAll('.bar > i').forEach(function (el) { el.style.width = '100%'; });
+            document.querySelectorAll('.top-pct, .side-head-pct').forEach(function (el) { el.textContent = '100%'; });
+            document.querySelectorAll('.btn-finalizar, .biblio-next').forEach(function (b) {
+                b.disabled = false; b.classList.remove('is-locked'); b.removeAttribute('title');
+            });
+        }
+    </script>
     <script>
         // Layout fluido (llena toda la pantalla). El contenido del main se escala para
         // caber/llenar sin scroll; los márgenes que queden son del mismo teal (no se ven).

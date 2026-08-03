@@ -448,7 +448,13 @@ class CursoController extends Controller
     {
         $user = Auth::user();
         CourseProgress::seedFor($user);
-        $this->ingresoAbierto($user, $ingreso);   // 404 si el ingreso no está abierto para el usuario
+        $progreso = $this->ingresoAbierto($user, $ingreso);   // 404 si el ingreso no está abierto para el usuario
+
+        // "Descargar caso" es el gate del cierre: al pulsarlo, el módulo llega al 100% y se
+        // desbloquea "Finalizar ingreso". Se registra por ingreso.
+        if (! $progreso->caso_descargado) {
+            $progreso->update(['caso_descargado' => true]);
+        }
 
         // Archivo subido desde el panel (override), si existe.
         $ov = \App\Support\Cms::raw('curso.cont.'.$ingreso.'.resumen.archivo');
@@ -605,6 +611,10 @@ class CursoController extends Controller
         // Cuando el ingreso está COMPLETADO, ya no hay etapa "activa": todas las superadas
         // quedan con check verde (perfecta), incluida la última (Resumen del caso).
         $completado = $progreso->status === 'completed';
+        // "Descargar caso" es el gate del cierre: hasta pulsarlo, el módulo NO llega al 100% y
+        // "Finalizar ingreso" queda bloqueado. Un ingreso ya completado se considera con el gate
+        // superado (los usuarios antiguos no tienen el flag).
+        $casoDescargado = $completado || (bool) $progreso->caso_descargado;
         $etapasEstado = collect($etapas)->map(function ($e, $i) use ($etapaIndex, $viewIndex, $resultados, $completado, $curso, $ingreso) {
             // Error (✗) si marcó alguna incorrecta (rojo>0) O si NO marcó todas las correctas (verde < máximo).
             $verdeE = (int) ($resultados[$e['key']]['verde'] ?? 0);
@@ -676,7 +686,8 @@ class CursoController extends Controller
         $ingresoData  = collect($curso['ingresos'])->firstWhere('key', $ingreso);
         $esUltimaEtapa = $viewIndex >= count($etapas) - 1;
         // Avance del caso: 100% cuando el ingreso está completado (pulsó "Finalizar ingreso").
-        $avance = $completado ? 100 : (int) round($etapaIndex / max(count($etapas), 1) * 100);
+        // Avance = 100% solo cuando el caso está descargado (gate) o el ingreso ya está completado.
+        $avance = $casoDescargado ? 100 : (int) round($etapaIndex / max(count($etapas), 1) * 100);
 
         // Paciente del ingreso que se está viendo: dentro del Ingreso 2 se ve al Juan del Ingreso 2
         // (polo a rayas), en el 3 al del 3, etc. — independientemente del progreso.
@@ -687,7 +698,7 @@ class CursoController extends Controller
 
         return view('curso.etapa', compact(
             'user', 'curso', 'ingreso', 'ingresoData', 'etapaActual', 'etapasEstado', 'esUltimaEtapa', 'avance',
-            'exp', 'verdeBase', 'rojoBase', 'maxScore', 'score', 'medalla', 'mostrarResultado', 'preSel', 'reevaluando', 'etapaTieneError', 'casoFinalizado', 'pacienteIngreso', 'ultimaPreguntaKey', 'enReTrabajo'
+            'exp', 'verdeBase', 'rojoBase', 'maxScore', 'score', 'medalla', 'mostrarResultado', 'preSel', 'reevaluando', 'etapaTieneError', 'casoFinalizado', 'pacienteIngreso', 'ultimaPreguntaKey', 'enReTrabajo', 'casoDescargado'
         ));
     }
 
@@ -757,6 +768,14 @@ class CursoController extends Controller
         // etapas señaladas para mejorar la puntuación (petición del cliente; antes se marcaba
         // completado con puntuación insuficiente — error crítico).
         if ($desde >= count($etapas) - 1) {
+            // Gate del cliente: "Finalizar ingreso" solo se permite tras pulsar "Descargar caso".
+            // (Refuerzo en servidor; el botón también aparece bloqueado en la vista.)
+            if (! $progreso->caso_descargado && $progreso->status !== 'completed') {
+                $progreso->update(['etapas' => $resultados, 'status' => 'in_progress']);
+                return redirect()->route('curso.etapa', [$ingreso, $stageKey])
+                    ->with('curso_status', 'Descarga el caso antes de finalizar el ingreso.');
+            }
+
             $totalVerde = array_sum(array_map(fn ($r) => (int) ($r['verde'] ?? 0), $resultados));
             $totalRojo  = array_sum(array_map(fn ($r) => (int) ($r['rojo']  ?? 0), $resultados));
             $score      = $totalVerde - $totalRojo;

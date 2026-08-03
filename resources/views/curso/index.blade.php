@@ -731,7 +731,10 @@
                             $etapasIng = $curso['etapas_'.$nIng] ?? $curso['etapas'];
                             $etapasTotal = count($etapasIng);
                             $idx = (int) ($p->etapa_index ?? 0);
-                            $percent = $status === 'completed' ? 100 : (int) round($idx / max($etapasTotal, 1) * 100);
+                            // 100% solo si el ingreso está completado o si el alumno ya pulsó "Descargar
+                            // caso" (gate). Estar en "Resumen del caso" sin descargar NO cuenta como 100%.
+                            $percent = ($status === 'completed' || ($p->caso_descargado ?? false))
+                                ? 100 : (int) round($idx / max($etapasTotal, 1) * 100);
                             // Admin (corrector): acceso total → todos los ingresos accesibles para validar.
                             $abierto = ($esAdmin ?? false) || in_array($status, ['available', 'in_progress', 'completed']);
                         @endphp

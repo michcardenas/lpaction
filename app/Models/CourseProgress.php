@@ -15,14 +15,16 @@ class CourseProgress extends Model
         'status',
         'percent',
         'etapa_index',
+        'caso_descargado',
         'etapas',
         'completed_at',
     ];
 
     protected $casts = [
-        'percent'      => 'integer',
-        'etapas'       => 'array',
-        'completed_at' => 'datetime',
+        'percent'         => 'integer',
+        'caso_descargado' => 'boolean',
+        'etapas'          => 'array',
+        'completed_at'    => 'datetime',
     ];
 
     public function user(): BelongsTo
