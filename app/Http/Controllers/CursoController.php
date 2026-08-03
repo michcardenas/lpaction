@@ -746,20 +746,20 @@ class CursoController extends Controller
             return redirect()->route('curso.etapa', [$ingreso, $stageKey, 'resultado' => 1]);
         }
 
-        // "Volver al temario" del modal de medalla (sin/bronce): desbloquea los capítulos finales
-        // y lleva al último. Sin esto, esas medallas no tenían NINGÚN botón que avanzara y el
-        // usuario quedaba atrapado en la pregunta (el enlace al último capítulo rebotaba).
+        // "Volver al temario" del modal (resultado insuficiente, sin/bronce): el caso queda EN CURSO.
+        // Desbloquea los capítulos finales y lleva al ÚLTIMO capítulo (Resumen del caso), donde está
+        // "Finalizar ingreso" — NO al Home (petición del cliente). El avance NO llega al 100% porque el
+        // gate "Descargar caso" lo impide (queda en ~90%), así que no reaparece la contradicción
+        // "100% pero siguiente ingreso bloqueado". El alumno repite las etapas señaladas para mejorar;
+        // solo plata/oro completan y desbloquean el siguiente ingreso.
         if ($request->input('hasta') === 'fin') {
-            // Resultado insuficiente (sin medalla / bronce): el caso queda EN CURSO y vuelve al temario.
-            // NO se sube el etapa_index al final: hacerlo mostraba el ingreso casi al 100% pese a no
-            // estar aprobado, y con el siguiente ingreso bloqueado (contradicción reportada por el
-            // cliente). El alumno repite las etapas señaladas para mejorar; solo plata/oro completan
-            // y desbloquean el siguiente ingreso.
+            $ultimaKey = $etapas[count($etapas) - 1]['key'];   // Resumen del caso
             $progreso->update([
-                'etapas' => $resultados,
-                'status' => 'in_progress',
+                'etapas'      => $resultados,
+                'status'      => 'in_progress',
+                'etapa_index' => count($etapas) - 1,           // desbloquea hasta el último capítulo
             ]);
-            return redirect()->route('curso');
+            return redirect()->route('curso.etapa', [$ingreso, $ultimaKey]);
         }
 
         // Última etapa ("Finalizar ingreso"): el ingreso SOLO se completa si el resultado es
