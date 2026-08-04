@@ -789,8 +789,11 @@ class CursoController extends Controller
                 return redirect()->route('curso');   // la medalla va en la última pregunta, no aquí
             }
 
-            // Resultado insuficiente: se guarda el avance pero el caso queda EN CURSO (no completado).
-            $progreso->update(['etapas' => $resultados, 'status' => 'in_progress']);
+            // Resultado insuficiente: el caso queda EN CURSO (no completado). Se RESETEA el gate
+            // "caso_descargado": si el alumno había descargado (llegando al 100%), al no aprobar el
+            // avance vuelve a <100%, evitando el "100% con el siguiente ingreso bloqueado". Debe
+            // repetir las etapas señaladas, volver a descargar y finalizar cuando apruebe.
+            $progreso->update(['etapas' => $resultados, 'status' => 'in_progress', 'caso_descargado' => false]);
             return redirect()->route('curso')->with('curso_status', 'Resultado insuficiente: repite las etapas señaladas para completar el caso.');
         }
 
