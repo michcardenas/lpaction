@@ -1283,8 +1283,10 @@
             </div>
         </div>
 
-        {{-- Modal: Reiniciar capítulo (confirmación de "Repetir etapa") --}}
-        @if (in_array($etapaActual, ['pruebas', 'riesgo', 'terapeutico', 'monitorizacion', 'monitorizacion-2']))
+        {{-- Modal: Reiniciar capítulo (confirmación de "Repetir etapa").
+             OJO: debe incluir TODAS las etapas con pregunta. 'objetivos' (exclusiva del Ingreso 2)
+             faltaba → en esa etapa el modal no se renderizaba y "Repetir etapa" no hacía nada. --}}
+        @if (in_array($etapaActual, ['pruebas', 'objetivos', 'riesgo', 'terapeutico', 'monitorizacion', 'monitorizacion-2']))
         <div class="reset-modal" id="reset-modal" hidden>
             <div class="reset-card" role="dialog" aria-modal="true" aria-labelledby="reset-title">
                 <span class="reset-ico">
