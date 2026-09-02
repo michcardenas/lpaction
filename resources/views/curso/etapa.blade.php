@@ -1985,7 +1985,14 @@
                 var txt    = capEl ? capEl.textContent.trim() : media.getAttribute('alt');
 
                 if (media.tagName === 'VIDEO') {
+                    var icon    = play ? play.querySelector('path') : null;
+                    var PLAY_D  = 'M8 5v14l11-7z';
+                    var PAUSE_D = 'M6 5h4v14H6zm8 0h4v14h-4z';
+                    var syncIcon = function () { if (icon) icon.setAttribute('d', media.paused ? PLAY_D : PAUSE_D); };
                     if (play) play.addEventListener('click', function () { if (media.paused) media.play(); else media.pause(); });
+                    media.addEventListener('play', syncIcon);
+                    media.addEventListener('pause', syncIcon);
+                    media.addEventListener('ended', syncIcon);
                     if (expand) expand.addEventListener('click', function () { if (media.requestFullscreen) media.requestFullscreen(); });
                     media.addEventListener('timeupdate', function () { if (bar && media.duration) bar.style.width = (media.currentTime / media.duration * 100) + '%'; });
                 } else {

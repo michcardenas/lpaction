@@ -299,9 +299,19 @@ return [
         'monitorizacion' => [
             'h1' => ['label' => 'Título de la sección', 'type' => 'text',     'default' => 'Optimización de control lipídico tras evento recurrente'],
             'p1' => ['label' => 'Texto introductorio',  'type' => 'richtext', 'default' => 'Tras la reevaluación del paciente y obtener el valor de Lp(a), se solicitó a farmacia tratamiento con inclisirán por evento recurrente en paciente polivascular con terapia hipolipemiante óptima, que fue aceptado por parte de la farmacia hospitalaria.'],
-            // Continuación de la sección 6 del Módulo 2 (tras la Pregunta 5): analítica de control tras
-            // inclisirán + screening familiar + cierre. Antes vivía bajo el capítulo inventado
-            // "Terapia de mantenimiento…"; se trae aquí, a su sección real, y aquel capítulo se elimina.
+            // El bloque "Perfil lipídico tras 1 mes de inclisirán" (h_perfil/perfil_intro/lista/comentario)
+            // se trasladó al capítulo de repaso "Monitorización y seguimiento" (sección 'monitorizacion-2').
+            'h_reco'       => ['label' => 'Subtítulo — recomendaciones', 'type' => 'text', 'default' => 'Recomendaciones y screening familiar'],
+            'reco1'        => ['label' => 'Recomendaciones — párrafo 1', 'type' => 'richtext', 'default' => 'Juan es consciente de que su riesgo cardiovascular es excepcionalmente alto y de que es portador de un factor sobre el que el tratamiento actual solo tiene un efecto parcial. Asume que debe extremar su autocuidado y la cumplimentación farmacológica.'],
+            'reco2'        => ['label' => 'Recomendaciones — párrafo 2', 'type' => 'richtext', 'default' => 'De acuerdo con sus resultados, se recomienda screening familiar.'],
+            'screening'    => ['label' => 'Screening familiar (párrafo)', 'type' => 'richtext', 'default' => '<p><b>Screening familiar:</b> dado que se determina Lp(a) &gt;90% por factores genéticos, los hijos de Juan tienen una probabilidad del 50% de heredar niveles elevados. Se recomienda medir la Lp(a) al menos una vez en la vida a todos los familiares de primer grado (hijos, hermanos) a partir de los 18 años.</p>'],
+            'cierre'       => ['label' => 'Texto de cierre', 'type' => 'richtext', 'default' => 'Aquí es donde surge la verdadera incógnita: ¿hemos hecho todo lo posible... o solo hemos tratado una parte del problema? Tal vez la respuesta pueda estar más cerca de lo que pensamos, marcando el siguiente capítulo en el manejo del riesgo cardiovascular residual.'],
+        ],
+
+        // Capítulo de repaso "Monitorización y seguimiento" (solo contenido): perfil lipídico tras
+        // inclisirán, trasladado desde "Optimización de control lipídico…" (petición del cliente).
+        'monitorizacion-2' => [
+            'h1'           => ['label' => 'Título de la sección', 'type' => 'text', 'default' => 'Monitorización y seguimiento'],
             'h_perfil'     => ['label' => 'Subtítulo — perfil lipídico', 'type' => 'text', 'default' => 'Perfil lipídico tras 1 mes de inclisirán (1.ª dosis)'],
             'perfil_intro' => ['label' => 'Intro del perfil', 'type' => 'richtext', 'default' => 'Una vez optimizado el tratamiento con inclisirán, al mes se repite la analítica. Perfil lipídico completo (tras 1 mes de inclisirán, 1.ª dosis):'],
             'lista'        => ['label' => 'Perfil lipídico (lista con formato)', 'type' => 'richtext', 'default' =>
@@ -320,36 +330,6 @@ return [
                 . '<li>GLU: 91 mg/dL.</li>'
                 . '</ul>'],
             'comentario'   => ['label' => 'Comentario del perfil', 'type' => 'richtext', 'default' => 'Ha alcanzado el objetivo de cLDL y ApoB tras inclisirán; el colesterol no-HDL queda en 71 mg/dL, ligeramente por encima del objetivo &lt;70 mg/dL de la categoría de riesgo extremo. La Lp(a) disminuye modestamente, pero permanece marcadamente elevada.'],
-            'h_reco'       => ['label' => 'Subtítulo — recomendaciones', 'type' => 'text', 'default' => 'Recomendaciones y screening familiar'],
-            'reco1'        => ['label' => 'Recomendaciones — párrafo 1', 'type' => 'richtext', 'default' => 'Juan es consciente de que su riesgo cardiovascular es excepcionalmente alto y de que es portador de un factor sobre el que el tratamiento actual solo tiene un efecto parcial. Asume que debe extremar su autocuidado y la cumplimentación farmacológica.'],
-            'reco2'        => ['label' => 'Recomendaciones — párrafo 2', 'type' => 'richtext', 'default' => 'De acuerdo con sus resultados, se recomienda screening familiar.'],
-            'screening'    => ['label' => 'Screening familiar (párrafo)', 'type' => 'richtext', 'default' => '<p><b>Screening familiar:</b> dado que se determina Lp(a) &gt;90% por factores genéticos, los hijos de Juan tienen una probabilidad del 50% de heredar niveles elevados. Se recomienda medir la Lp(a) al menos una vez en la vida a todos los familiares de primer grado (hijos, hermanos) a partir de los 18 años.</p>'],
-            'cierre'       => ['label' => 'Texto de cierre', 'type' => 'richtext', 'default' => 'Aquí es donde surge la verdadera incógnita: ¿hemos hecho todo lo posible... o solo hemos tratado una parte del problema? Tal vez la respuesta pueda estar más cerca de lo que pensamos, marcando el siguiente capítulo en el manejo del riesgo cardiovascular residual.'],
-        ],
-
-        'monitorizacion-2' => [
-            'h1'         => ['label' => 'Título de la sección', 'type' => 'text',     'default' => 'Monitorización y seguimiento 2'],
-            'p1'         => ['label' => 'Texto introductorio',  'type' => 'richtext', 'default' => 'Una vez optimizado el tratamiento con inclisirán, al mes se repite la analítica. Perfil lipídico completo (tras 1 mes de inclisirán, 1.ª dosis):'],
-            'lista'      => ['label' => 'Perfil lipídico tras inclisirán (lista con formato)', 'type' => 'richtext', 'default' =>
-                '<ul class="analitica-list">'
-                . '<li>CT: 103 mg/dL.</li>'
-                . '<li>cHDL: 42 mg/dL.</li>'
-                . '<li>cLDL: 38 mg/dL.</li>'
-                . '<li>TG: 115 mg/dL.</li>'
-                . '<li>Colesterol no-HDL: 71 mg/dL.</li>'
-                . '<li>ApoB: 45 mg/dL (0–100).</li>'
-                . '<li>cVLDL calculado: 23 mg/dL (0–30).</li>'
-                . '<li>TG/HDL: 2,7.</li>'
-                . '<li>Partículas remanentes: 24 mg/dL.</li>'
-                . '<li>Lp(a): 276 nmol/L.</li>'
-                . '<li>HbA1c: 5,9%.</li>'
-                . '<li>GLU: 91 mg/dL.</li>'
-                . '</ul>'],
-            'comentario' => ['label' => 'Comentario del perfil', 'type' => 'richtext', 'default' => 'Ha alcanzado el objetivo de cLDL y ApoB tras inclisirán; el colesterol no-HDL queda en 71 mg/dL, ligeramente por encima del objetivo &lt;70 mg/dL de la categoría de riesgo extremo. La Lp(a) disminuye modestamente, pero permanece marcadamente elevada.'],
-            'screening1' => ['label' => 'Screening — párrafo 1', 'type' => 'richtext', 'default' => 'Juan es consciente de que su riesgo cardiovascular es excepcionalmente alto y de que es portador de un factor sobre el que el tratamiento actual solo tiene un efecto parcial. Asume que debe extremar su autocuidado y la cumplimentación farmacológica.'],
-            'screening2' => ['label' => 'Screening — párrafo 2', 'type' => 'richtext', 'default' => 'De acuerdo con sus resultados, se recomienda screening familiar.'],
-            'screening3' => ['label' => 'Screening — párrafo 3', 'type' => 'richtext', 'default' => 'Screening familiar: dado que se determina Lp(a) &gt;90% por factores genéticos, los hijos de Juan tienen una probabilidad del 50% de heredar niveles elevados. Se recomienda medir la Lp(a) al menos una vez en la vida a todos los familiares de primer grado (hijos, hermanos) a partir de los 18 años.'],
-            'cierre'     => ['label' => 'Texto de cierre', 'type' => 'richtext', 'default' => 'Aquí es donde surge la verdadera incógnita: ¿hemos hecho todo lo posible... o solo hemos tratado una parte del problema? Tal vez la respuesta pueda estar más cerca de lo que pensamos, marcando el siguiente capítulo en el manejo del riesgo cardiovascular residual.'],
         ],
 
         'mantenimiento' => [
