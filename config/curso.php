@@ -741,7 +741,7 @@ ApoB y colesterol no-HDL son mejores marcadores de riesgo residual y su reducciÃ
 'paciente_3' => [
     'nombre' => 'Juan',
     'imagen'            => 'images/paciente_pantalla_3.png',       // etapas del curso (Juan serio, paciente)
-    'imagen_home'       => 'images/paciente_pantalla_3_home.png',  // SOLO el home, en curso/disponible (Juan contento camisa gris)
+    'imagen_home'       => 'images/paciente_pantalla_3.png',       // SOLO el home, en curso/disponible: cara NEUTRAL (acaba de tener un infarto), no la sonriente (peticiÃ³n del cliente)
     'imagen_progreso'   => 'images/paciente_pantalla_3b.png',
     'imagen_completado' => 'images/paciente_pantalla_3c.png',      // home al completar (Juan sano, chaqueta)
     'datos'  => [
