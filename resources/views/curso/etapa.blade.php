@@ -481,7 +481,9 @@
         .onb-text { font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 14px; line-height: 152%; color: rgba(255,255,255,0.80); margin: 0; max-width: 460px; }
         .onb-text b { color: #fff; font-weight: 600; }
         .onb-img { width: 100%; max-width: 480px; height: auto; border-radius: 12px; margin: 2px auto 4px; display: block; box-shadow: 0 8px 30px rgba(0,0,0,0.25); }
-        .onb-sub { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 14.5px; line-height: 140%; color: #fff; margin: 4px 0 0; }
+        .onb-sub { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 14.5px; line-height: 140%; color: #fff; margin: 0; }
+        .onb-repite { display: flex; flex-direction: column; gap: 6px; }
+        .onb-repite .onb-text { margin: 0; }
         .onb-medals { display: flex; justify-content: center; gap: 12px; flex-wrap: nowrap; margin-top: 4px; }
         .onb-medals figure { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 8px; width: 106px; }
         .onb-medals img { width: 60px; height: auto; }
@@ -1333,9 +1335,11 @@
                         <section class="onb-slide">
                             <h3 class="onb-title">Encuentra todas las respuestas correctas</h3>
                             <img class="onb-img" src="{{ asset('images/onb-slide1.png') }}" alt="Cómo repetir una etapa: capítulo marcado en rojo, botón Repetir etapa y Siguiente etapa" onerror="this.style.display='none'">
-                            <p class="onb-text">Algunas preguntas tienen hasta <b>3 respuestas correctas</b>. Al seleccionar una, se habilitará <b>«Siguiente etapa»</b>, pero puede haber más.</p>
-                            <p class="onb-sub">¿Te equivocaste o quieres intentarlo de nuevo?</p>
-                            <p class="onb-text">Regresa al <b>capítulo marcado en rojo</b> y pulsa <b>«Repetir etapa»</b> para responder nuevamente sin repetir lo anterior.</p>
+                            <p class="onb-text">Algunas preguntas tienen hasta 3 respuestas correctas. Al seleccionar una, se habilitará «Siguiente etapa», pero puede haber más.</p>
+                            <div class="onb-repite">
+                                <p class="onb-sub">¿Te equivocaste o quieres intentarlo de nuevo?</p>
+                                <p class="onb-text">Regresa al capítulo marcado en rojo y pulsa «Repetir etapa» para responder nuevamente sin repetir lo anterior.</p>
+                            </div>
                         </section>
                         {{-- Slide 2: medallas --}}
                         <section class="onb-slide">
