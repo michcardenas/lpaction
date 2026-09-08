@@ -480,12 +480,8 @@
         .onb-title { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 20px; line-height: 130%; color: #fff; margin: 0; }
         .onb-text { font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 14px; line-height: 152%; color: rgba(255,255,255,0.80); margin: 0; max-width: 460px; }
         .onb-text b { color: #fff; font-weight: 600; }
-        .onb-diagram { display: flex; flex-direction: column; align-items: center; gap: 14px; margin-top: 4px; }
-        .onb-stage { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: #ff9a9a; border: 1.5px dashed rgba(255,120,120,0.75); border-radius: 8px; padding: 8px 14px; }
-        .onb-stage i { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid #ff9a9a; font-style: normal; font-size: 11px; line-height: 1; }
-        .onb-btns { display: flex; gap: 12px; }
-        .onb-mini { font-size: 12.5px; font-weight: 500; color: #fff; background: rgba(255,255,255,0.06); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.28); border-radius: 7px; padding: 9px 14px; }
-        .onb-mini-next { box-shadow: inset 0 0 0 1px #05BAEE; }
+        .onb-img { width: 100%; max-width: 480px; height: auto; border-radius: 12px; margin: 2px auto 4px; display: block; box-shadow: 0 8px 30px rgba(0,0,0,0.25); }
+        .onb-sub { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 14.5px; line-height: 140%; color: #fff; margin: 4px 0 0; }
         .onb-medals { display: flex; justify-content: center; gap: 12px; flex-wrap: nowrap; margin-top: 4px; }
         .onb-medals figure { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 8px; width: 106px; }
         .onb-medals img { width: 60px; height: auto; }
@@ -515,7 +511,7 @@
             .onb-medals figcaption { font-size: 10px; line-height: 120%; }
             .onb-checks { gap: 12px; }
             .onb-checks li { font-size: 13px; }
-            .onb-btns { flex-direction: column; width: 100%; max-width: 240px; }
+            .onb-sub { font-size: 13.5px; }
             .onb-next { padding: 12px 18px; font-size: 14px; }
         }
 
@@ -1335,15 +1331,11 @@
                     <div class="onb-track" id="onb-track">
                         {{-- Slide 1: cómo responder / repetir --}}
                         <section class="onb-slide">
-                            <h3 class="onb-title">Puede haber más de una respuesta correcta</h3>
-                            <p class="onb-text">En algunas preguntas <b>puede haber una, dos o tres opciones correctas</b>. Aunque <b>"Siguiente etapa"</b> se active al elegir una válida, tu objetivo es identificar <b>todas</b> antes de avanzar. Para <b>repetir</b> una pregunta, pulsa <b>"Siguiente etapa"</b> y vuelve al <b>capítulo marcado en rojo</b>.</p>
-                            <div class="onb-diagram">
-                                <span class="onb-stage">Pruebas complementarias <i>!</i></span>
-                                <div class="onb-btns">
-                                    <span class="onb-mini onb-mini-rep">↻ Repetir etapa</span>
-                                    <span class="onb-mini onb-mini-next">Siguiente etapa</span>
-                                </div>
-                            </div>
+                            <h3 class="onb-title">Encuentra todas las respuestas correctas</h3>
+                            <img class="onb-img" src="{{ asset('images/onb-slide1.png') }}" alt="Cómo repetir una etapa: capítulo marcado en rojo, botón Repetir etapa y Siguiente etapa" onerror="this.style.display='none'">
+                            <p class="onb-text">Algunas preguntas tienen hasta <b>3 respuestas correctas</b>. Al seleccionar una, se habilitará <b>«Siguiente etapa»</b>, pero puede haber más.</p>
+                            <p class="onb-sub">¿Te equivocaste o quieres intentarlo de nuevo?</p>
+                            <p class="onb-text">Regresa al <b>capítulo marcado en rojo</b> y pulsa <b>«Repetir etapa»</b> para responder nuevamente sin repetir lo anterior.</p>
                         </section>
                         {{-- Slide 2: medallas --}}
                         <section class="onb-slide">
