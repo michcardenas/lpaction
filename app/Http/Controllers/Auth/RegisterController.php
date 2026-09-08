@@ -103,8 +103,8 @@ class RegisterController extends Controller
 
         Auth::login($user);
 
-        // Usuario recién registrado (nuevo) → muestra el pop-up de bienvenida sobre el login;
-        // solo entra al curso al pulsar "Entrar al curso".
-        return redirect()->route('login')->with('bienvenida', true);
+        // El registro entra DIRECTO al curso (sin bienvenida) y NO marca welcome_seen: esa entrada
+        // "no cuenta". El pop-up de bienvenida aparece SOLO en el primer inicio de sesión (login).
+        return redirect()->route('curso')->with('status', '¡Registro completado! Bienvenido/a, ' . $user->name . '.');
     }
 }
