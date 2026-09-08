@@ -103,7 +103,8 @@ class RegisterController extends Controller
 
         Auth::login($user);
 
-        // Entra directo al curso "La evolución de Juan".
-        return redirect()->route('curso')->with('status', '¡Registro completado! Bienvenido/a, ' . $user->name . '.');
+        // Usuario recién registrado (nuevo) → muestra el pop-up de bienvenida sobre el login;
+        // solo entra al curso al pulsar "Entrar al curso".
+        return redirect()->route('login')->with('bienvenida', true);
     }
 }

@@ -29,6 +29,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/contenido/{area?}', [SiteContentController::class, 'edit'])->middleware('admin')->name('admin.contenido');
     Route::post('/admin/contenido', [SiteContentController::class, 'update'])->middleware('admin')->name('admin.contenido.update');
     Route::get('/curso', [CursoController::class, 'index'])->name('curso');
+    Route::post('/bienvenida/entrar', [CursoController::class, 'entrarBienvenida'])->name('bienvenida.entrar');
     Route::view('/tutoria', 'tutoria')->name('tutoria');
     Route::view('/autores', 'autores')->name('autores');
     Route::get('/perfil', [PerfilController::class, 'show'])->name('perfil');

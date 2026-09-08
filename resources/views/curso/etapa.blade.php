@@ -461,6 +461,64 @@
         }
         .ep-btn:hover, .ep-btn:active, .ep-btn:focus { background: #05BAEE; color: #fff; }   /* al click → azul total */
 
+        /* ===== Carrusel "Antes de empezar" (3 slides) — reemplaza el pop-up Atención, mismo vidrio oscuro ===== */
+        .onb-card {
+            width: 560px; max-width: 100%;
+            display: flex; flex-direction: column; gap: 22px;
+            padding: 30px 30px 20px; border-radius: 28px; text-align: center;
+            background:
+                radial-gradient(85% 50% at 20% 4%, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 55%),
+                radial-gradient(65% 42% at 84% 6%, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 50%),
+                rgba(255,255,255,0.10);
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.40), inset 0 1px 0 rgba(255,255,255,0.35);
+            -webkit-backdrop-filter: blur(40px); backdrop-filter: blur(40px);
+            animation: resetPop .28s cubic-bezier(.22,.61,.36,1) both;
+        }
+        .onb-viewport { overflow: hidden; }
+        .onb-track { display: flex; transition: transform .38s cubic-bezier(.22,.61,.36,1); }
+        .onb-slide { flex: 0 0 100%; min-width: 100%; display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 6px 4px; }
+        .onb-title { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 20px; line-height: 130%; color: #fff; margin: 0; }
+        .onb-text { font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 14px; line-height: 152%; color: rgba(255,255,255,0.80); margin: 0; max-width: 460px; }
+        .onb-text b { color: #fff; font-weight: 600; }
+        .onb-diagram { display: flex; flex-direction: column; align-items: center; gap: 14px; margin-top: 4px; }
+        .onb-stage { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: #ff9a9a; border: 1.5px dashed rgba(255,120,120,0.75); border-radius: 8px; padding: 8px 14px; }
+        .onb-stage i { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid #ff9a9a; font-style: normal; font-size: 11px; line-height: 1; }
+        .onb-btns { display: flex; gap: 12px; }
+        .onb-mini { font-size: 12.5px; font-weight: 500; color: #fff; background: rgba(255,255,255,0.06); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.28); border-radius: 7px; padding: 9px 14px; }
+        .onb-mini-next { box-shadow: inset 0 0 0 1px #05BAEE; }
+        .onb-medals { display: flex; justify-content: center; gap: 12px; flex-wrap: nowrap; margin-top: 4px; }
+        .onb-medals figure { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 8px; width: 106px; }
+        .onb-medals img { width: 60px; height: auto; }
+        .onb-medals figcaption { font-family: 'Montserrat', sans-serif; font-size: 12.5px; font-weight: 500; color: rgba(255,255,255,0.85); line-height: 125%; }
+        .onb-checks { list-style: none; margin: 6px 0 0; padding: 0; display: flex; flex-direction: column; gap: 14px; max-width: 440px; text-align: left; }
+        .onb-checks li { position: relative; padding-left: 34px; font-family: 'Montserrat', sans-serif; font-size: 14px; line-height: 145%; color: rgba(255,255,255,0.85); }
+        .onb-checks li b { color: #fff; font-weight: 600; }
+        .onb-checks li::before { content: ''; position: absolute; left: 0; top: 0; width: 22px; height: 22px; border-radius: 50%; background: rgba(53,199,120,0.18); box-shadow: inset 0 0 0 1.5px #35c778; }
+        .onb-checks li::after { content: ''; position: absolute; left: 7px; top: 7px; width: 8px; height: 4px; border-left: 2px solid #35c778; border-bottom: 2px solid #35c778; transform: rotate(-45deg); }
+        .onb-foot { display: grid; grid-template-columns: 40px 1fr auto; align-items: center; gap: 12px; margin-top: 6px; }
+        .onb-back { width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center; border: 0; border-radius: 8px; background: transparent; color: #05BAEE; cursor: pointer; }
+        .onb-dots { display: flex; justify-content: center; gap: 8px; }
+        .onb-dots span { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.30); transition: background .2s, width .2s; }
+        .onb-dots span.on { background: #05BAEE; width: 20px; border-radius: 99px; }
+        .onb-next { font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 15px; color: #fff; background: rgba(255,255,255,0.06); border: 0; box-shadow: inset 0 0 0 1px #05BAEE; padding: 12px 26px; border-radius: 8px; cursor: pointer; transition: background .2s, color .2s; white-space: nowrap; }
+        .onb-next:hover, .onb-next:focus { background: #05BAEE; }
+        .onb-next.is-cta { background: #05BAEE; }
+        /* ===== MÓVIL: MISMO estilo que PC (vidrio oscuro y mismos colores), solo ajustado al tamaño ===== */
+        @media (max-width: 767px) {
+            .onb-card { width: 100%; max-width: 440px; padding: 26px 16px 16px; gap: 18px; }
+            .onb-slide { padding: 4px 2px; gap: 14px; }
+            .onb-title { font-size: 18px; }
+            .onb-text { font-size: 13.5px; }
+            .onb-medals { gap: 6px; flex-wrap: nowrap; }
+            .onb-medals figure { flex: 1 1 0; width: auto; min-width: 0; gap: 6px; }
+            .onb-medals img { width: 46px; }
+            .onb-medals figcaption { font-size: 10px; line-height: 120%; }
+            .onb-checks { gap: 12px; }
+            .onb-checks li { font-size: 13px; }
+            .onb-btns { flex-direction: column; width: 100%; max-width: 240px; }
+            .onb-next { padding: 12px 18px; font-size: 14px; }
+        }
+
         /* Hamburguesa (solo móvil) */
         .etapa-burger { display: none; align-items: center; justify-content: center; width: 30px; height: 30px; color: #05BAEE; background: none; border: 0; cursor: pointer; padding: 0; }
         .etapa-backdrop { display: none; }
@@ -1269,17 +1327,53 @@
             </main>
         </div>
 
-        {{-- Pop-up "Atención: más de una respuesta correcta" (al darle Siguiente etapa) --}}
+        {{-- Carrusel "Antes de empezar" (3 slides) — reemplaza el antiguo pop-up "Atención".
+             Se abre al pulsar "Siguiente etapa" en la Presentación; "Empezar la actividad" avanza. --}}
         <div class="etapa-popup" id="etapa-popup" hidden>
-            <div class="ep-card" role="dialog" aria-modal="true" aria-labelledby="ep-title">
-                <span class="ep-icon">
-                    <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M12 16.5v-5"/><path d="M12 8h.01"/></svg>
-                </span>
-                <div class="ep-body">
-                    <h3 class="ep-title" id="ep-title">Atención: puede haber más de una respuesta correcta</h3>
-                    <p class="ep-text">En algunas preguntas <b>puede haber una, dos o tres opciones correctas</b>. Aunque el botón <b>"Siguiente etapa"</b> se active al seleccionar una respuesta válida, tu objetivo es identificar todas las opciones correctas antes de avanzar. Para <b>repetir una pregunta</b>, pulsa <b>"Siguiente etapa"</b> y luego <b>vuelve</b> al <b>capítulo marcado en rojo</b>. Desde ahí podrás <b>repetir únicamente esa pregunta</b>.</p>
+            <div class="onb-card" role="dialog" aria-modal="true" aria-label="Antes de empezar">
+                <div class="onb-viewport">
+                    <div class="onb-track" id="onb-track">
+                        {{-- Slide 1: cómo responder / repetir --}}
+                        <section class="onb-slide">
+                            <h3 class="onb-title">Puede haber más de una respuesta correcta</h3>
+                            <p class="onb-text">En algunas preguntas <b>puede haber una, dos o tres opciones correctas</b>. Aunque <b>"Siguiente etapa"</b> se active al elegir una válida, tu objetivo es identificar <b>todas</b> antes de avanzar. Para <b>repetir</b> una pregunta, pulsa <b>"Siguiente etapa"</b> y vuelve al <b>capítulo marcado en rojo</b>.</p>
+                            <div class="onb-diagram">
+                                <span class="onb-stage">Pruebas complementarias <i>!</i></span>
+                                <div class="onb-btns">
+                                    <span class="onb-mini onb-mini-rep">↻ Repetir etapa</span>
+                                    <span class="onb-mini onb-mini-next">Siguiente etapa</span>
+                                </div>
+                            </div>
+                        </section>
+                        {{-- Slide 2: medallas --}}
+                        <section class="onb-slide">
+                            <h3 class="onb-title">Gana medallas según tu puntuación</h3>
+                            <p class="onb-text">Según los aciertos de cada ingreso obtendrás una medalla. ¡Intenta conseguir la mejor!</p>
+                            <div class="onb-medals">
+                                <figure><img src="{{ asset('images/medalla-sin.png') }}" alt=""><figcaption>Sin medalla</figcaption></figure>
+                                <figure><img src="{{ asset('images/medalla-bronce.png') }}" alt=""><figcaption>Medalla de Bronce</figcaption></figure>
+                                <figure><img src="{{ asset('images/medalla-plata.png') }}" alt=""><figcaption>Medalla de Plata</figcaption></figure>
+                                <figure><img src="{{ asset('images/medalla-oro.png') }}" alt=""><figcaption>Medalla de Oro</figcaption></figure>
+                            </div>
+                        </section>
+                        {{-- Slide 3: checklist + empezar --}}
+                        <section class="onb-slide">
+                            <h3 class="onb-title">Antes de empezar, recuerda</h3>
+                            <ul class="onb-checks">
+                                <li>Marca <b>todas</b> las opciones correctas de cada pregunta.</li>
+                                <li>Puedes <b>repetir</b> las etapas marcadas en rojo para mejorar tu puntuación.</li>
+                                <li>Cuantos más aciertes, <b>mejor será la medalla</b> que obtengas.</li>
+                            </ul>
+                        </section>
+                    </div>
                 </div>
-                <button type="button" class="ep-btn" onclick="document.getElementById('form-avanzar').submit()">Entendido</button>
+                <div class="onb-foot">
+                    <button type="button" class="onb-back" id="onb-back" aria-label="Anterior" style="visibility:hidden">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+                    </button>
+                    <div class="onb-dots" id="onb-dots"><span class="on"></span><span></span><span></span></div>
+                    <button type="button" class="onb-next" id="onb-next">Siguiente</button>
+                </div>
             </div>
         </div>
 
@@ -2001,6 +2095,31 @@
                     if (expand) expand.addEventListener('click', open);
                 }
             });
+
+            // ===== Carrusel "Antes de empezar" (3 slides) =====
+            (function () {
+                var track = document.getElementById('onb-track');
+                if (!track) return;
+                var total = track.children.length;
+                var idx = 0;
+                var back = document.getElementById('onb-back');
+                var next = document.getElementById('onb-next');
+                var dots = document.getElementById('onb-dots').children;
+                function render() {
+                    track.style.transform = 'translateX(' + (-idx * 100) + '%)';
+                    for (var d = 0; d < dots.length; d++) dots[d].classList.toggle('on', d === idx);
+                    back.style.visibility = idx === 0 ? 'hidden' : 'visible';
+                    var last = idx === total - 1;
+                    next.textContent = last ? 'Empezar la actividad' : 'Siguiente';
+                    next.classList.toggle('is-cta', last);
+                }
+                back.addEventListener('click', function () { if (idx > 0) { idx--; render(); } });
+                next.addEventListener('click', function () {
+                    if (idx < total - 1) { idx++; render(); }
+                    else { document.getElementById('form-avanzar').submit(); }
+                });
+                render();
+            })();
         })();
     </script>
 </body>

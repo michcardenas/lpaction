@@ -48,6 +48,18 @@ class CursoController extends Controller
         return view('curso.index', compact('user', 'curso', 'progress', 'pacienteActivo', 'esAdmin'));
     }
 
+    /** "Entrar al curso" (botón del pop-up de bienvenida en el login): marca la bienvenida como
+     *  vista y entra realmente al curso. */
+    public function entrarBienvenida()
+    {
+        $user = Auth::user();
+        if (! $user->welcome_seen) {
+            $user->welcome_seen = true;
+            $user->save();
+        }
+        return redirect()->route('curso');
+    }
+
     /**
      * Determina qué paciente (imagen + datos) mostrar en el portal según el estado de los ingresos.
      * Refleja "La evolución de Juan": la imagen cambia conforme el usuario avanza.

@@ -24,6 +24,12 @@ class LoginController extends Controller
                 return redirect()->route('admin');
             }
 
+            // Usuario nuevo (0% y no visto): NO entra al curso todavía. Vuelve al login
+            // mostrando el pop-up de bienvenida; solo entra al pulsar "Entrar al curso".
+            if (Auth::user()->needsWelcome()) {
+                return redirect()->route('login')->with('bienvenida', true);
+            }
+
             return redirect()->intended(route('curso'));
         }
 

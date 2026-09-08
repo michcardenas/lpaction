@@ -131,6 +131,14 @@
         @keyframes reg-spin { to { transform: rotate(360deg); } }
         .reg-loader-title { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 24px; color: #fff; margin: 0 0 14px; }
         .reg-loader-sub { font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 15px; line-height: 150%; color: rgba(255,255,255,0.78); margin: 0 auto; max-width: 380px; }
+        /* Pop-up de bienvenida (sobre el login) */
+        .wc-overlay { position: fixed; inset: 0; z-index: 250; display: flex; align-items: center; justify-content: center; background: rgba(26,38,44,0.55); padding: 20px; }
+        .wc-card { width: 100%; max-width: 460px; padding: 48px 44px 40px; display: flex; flex-direction: column; align-items: center; text-align: center; border-radius: 24px; background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.40); -webkit-backdrop-filter: blur(40px); backdrop-filter: blur(40px); box-shadow: 0 30px 90px rgba(0,0,0,0.30); }
+        .wc-hi { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 18px; color: #fff; margin: 0 0 24px; }
+        .wc-logo { height: 56px; width: auto; margin: 0 0 24px; }
+        .wc-text { font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 15px; line-height: 162%; color: rgba(255,255,255,0.82); margin: 0 auto 36px; max-width: 350px; }
+        .wc-btn { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 15px; color: #fff; background: #05BAEE; border: none; border-radius: 8px; padding: 14px 40px; cursor: pointer; transition: background .2s ease; }
+        .wc-btn:hover { background: #04a6d4; }
         /* Modal a spec Figma móvil: 358 · padding 32/16 · gap 32 · spinner 139 · título 22 · sub 14 */
         @media (max-width: 767px) {
             .reg-loader-card { width: 358px; height: auto; min-height: 0; padding: 32px 16px 16px; gap: 32px; }
@@ -335,6 +343,20 @@
         </div>
     </div>
 
+    @if (session('bienvenida'))
+    {{-- Pop-up de bienvenida (usuario nuevo): aparece SOBRE el login tras "Ingresar".
+         No entra al curso hasta pulsar "Entrar al curso". --}}
+    <div id="welcome-overlay" class="wc-overlay">
+        <div class="wc-card">
+            <p class="wc-hi">Te damos la bienvenida al curso</p>
+            <img src="{{ asset('images/logo-lpaction.svg') }}" alt="Lp(a)ction" class="wc-logo">
+            <p class="wc-text">Acompaña a Juan a lo largo de su evolución: analiza la información disponible y pon en práctica tu razonamiento clínico en cada ingreso.</p>
+            <button type="button" class="wc-btn" id="wc-enter">Entrar al curso</button>
+        </div>
+    </div>
+    <form id="wc-form" method="POST" action="{{ route('bienvenida.entrar') }}" style="display:none">@csrf</form>
+    @endif
+
     <script>
         function togglePwd() {
             var i = document.getElementById('password');
@@ -356,7 +378,10 @@
             if (document.fonts && document.fonts.ready) document.fonts.ready.then(scaleLogin);
         })();
 
-        // ===== Loader "Accediendo al curso" al pulsar Ingresar =====
+        // ===== Loader "Accediendo al curso" al pulsar Ingresar (máx ~2 s) =====
+        // El botón NO lanza directo al curso: envía el login y el SERVIDOR valida welcome_seen.
+        //   · welcome_seen = false (nuevo) → vuelve al login mostrando el pop-up de bienvenida.
+        //   · welcome_seen = true          → entra al curso.
         (function () {
             var form = document.getElementById('login-form');
             var overlay = document.getElementById('login-loader');
@@ -364,10 +389,18 @@
             form.addEventListener('submit', function (e) {
                 e.preventDefault();
                 overlay.hidden = false;
-                void overlay.offsetWidth;           // reflow → anima la entrada
+                void overlay.offsetWidth;                 // reflow → anima la entrada
                 overlay.classList.add('is-visible');
-                setTimeout(function () { form.submit(); }, 1600);  // muestra el loader y luego envía
+                setTimeout(function () { form.submit(); }, 1800);   // loader ~1,8 s, luego envía
             });
+        })();
+
+        // ===== Pop-up de bienvenida: ESTE botón "Entrar al curso" es el que entra al curso =====
+        (function () {
+            var btn = document.getElementById('wc-enter');
+            var form = document.getElementById('wc-form');
+            if (!btn || !form) return;
+            btn.addEventListener('click', function () { form.submit(); });
         })();
     </script>
 </body>

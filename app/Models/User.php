@@ -37,6 +37,7 @@ class User extends Authenticatable
         'is_admin',
         'is_test',
         'cert_icomem',
+        'welcome_seen',
     ];
 
     /**
@@ -64,6 +65,7 @@ class User extends Authenticatable
             'is_admin' => 'boolean',
             'is_test' => 'boolean',
             'cert_icomem' => 'boolean',
+            'welcome_seen' => 'boolean',
         ];
     }
 
@@ -77,5 +79,24 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return (bool) $this->is_admin;
+    }
+
+    /**
+     * ¿Debe verse el pop-up de bienvenida? Solo si NO lo ha visto todavía (welcome_seen=false)
+     * y aún no ha empezado ningún ingreso (todo en 0%). Se usa tras el login/registro.
+     */
+    public function needsWelcome(): bool
+    {
+        if ($this->welcome_seen) {
+            return false;
+        }
+        $progress = $this->progress()->get()->keyBy('module_key');
+        foreach (array_column(config('curso.ingresos', []), 'key') as $k) {
+            $p = $progress->get($k);
+            if ($p && (in_array($p->status, ['in_progress', 'completed'], true) || (int) ($p->etapa_index ?? 0) > 0)) {
+                return false;
+            }
+        }
+        return true;
     }
 }
