@@ -602,6 +602,13 @@ class CursoController extends Controller
         // Opciones ya marcadas en esta etapa (para re-pintarlas al volver: el rojo permanece).
         $preSel = $resultados[$etapaActual]['sel'] ?? [];
 
+        // ¿La etapa que se ve tiene cuestionario? Depende del INGRESO: p.ej. 'monitorizacion-2' es la
+        // pregunta de la medalla en el Ingreso 1, pero SOLO CONTENIDO en el Ingreso 2. La vista lo usa
+        // para decidir el botón "Siguiente etapa" (dentro del cuestionario vs. flotante); si se trata
+        // una etapa de contenido como quiz, se queda sin botón para avanzar (reportado por el cliente).
+        $pkActual = $this->preguntaKey($ingreso, $etapaActual);
+        $etapaTienePregunta = $pkActual !== null && ! empty($curso[$pkActual]['opciones'] ?? []);
+
         // ¿Esta etapa tiene un fallo guardado? → se muestra "Reiniciar capítulo" (en perfecta queda bloqueado).
         // Es "error" si hay rojo (marcó alguna incorrecta) O si NO marcó todas las correctas (verde < máximo).
         $etapaTieneError = (int) ($resultados[$etapaActual]['rojo'] ?? 0) > 0
@@ -701,7 +708,7 @@ class CursoController extends Controller
 
         return view('curso.etapa', compact(
             'user', 'curso', 'ingreso', 'ingresoData', 'etapaActual', 'etapasEstado', 'esUltimaEtapa', 'avance',
-            'exp', 'verdeBase', 'rojoBase', 'maxScore', 'score', 'medalla', 'mostrarResultado', 'preSel', 'reevaluando', 'etapaTieneError', 'casoFinalizado', 'pacienteIngreso', 'ultimaPreguntaKey', 'enReTrabajo', 'casoDescargado'
+            'exp', 'verdeBase', 'rojoBase', 'maxScore', 'score', 'medalla', 'mostrarResultado', 'preSel', 'reevaluando', 'etapaTieneError', 'casoFinalizado', 'pacienteIngreso', 'ultimaPreguntaKey', 'enReTrabajo', 'casoDescargado', 'etapaTienePregunta'
         ));
     }
 

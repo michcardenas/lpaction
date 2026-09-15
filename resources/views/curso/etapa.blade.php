@@ -1281,6 +1281,16 @@
                     $biblioView = $ingresoN > 1
                         ? 'curso.etapas.ingreso-'.$ingresoN.'.'.$etapaActual.'-biblio'
                         : 'curso.etapas.'.$etapaActual.'-biblio';
+
+                    // Etapas cuyo botón "Siguiente etapa"/"Finalizar" vive DENTRO del contenido
+                    // (cuestionario o cierre en 'resumen'); el resto usa el botón flotante que envía
+                    // 'avanzar'. OJO: 'monitorizacion-2' es la pregunta de la medalla en el Ingreso 1
+                    // pero SOLO CONTENIDO en el Ingreso 2 → solo cuenta como quiz si esta etapa
+                    // realmente tiene pregunta; si no, debe usar el flotante (si no, se queda SIN
+                    // botón para avanzar — reportado por el cliente).
+                    $m2Quiz = ($etapaTienePregunta ?? false) ? ['monitorizacion-2'] : [];
+                    $etapasQuizBiblio  = array_merge(['pruebas', 'riesgo', 'terapeutico', 'monitorizacion', 'resumen'], $m2Quiz);
+                    $etapasBotonPropio = array_merge(['pruebas', 'objetivos', 'riesgo', 'terapeutico', 'monitorizacion', 'resumen'], $m2Quiz);
                 @endphp
                 <div id="view-contenido" class="view @if($etapaActual !== 'presentacion') view-scroll @endif">
                     @if (view()->exists($contenidoView))
@@ -1296,7 +1306,7 @@
                     @includeIf($biblioView)
                     {{-- En etapas con quiz el botón "Siguiente etapa" vive dentro del cuestionario (Contenido, aquí oculto);
                          agregamos uno en Bibliografía que envía ese mismo form para poder avanzar. --}}
-                    @if (in_array($etapaActual, ['pruebas', 'riesgo', 'terapeutico', 'monitorizacion', 'monitorizacion-2', 'resumen']))
+                    @if (in_array($etapaActual, $etapasQuizBiblio, true))
                         @php $bloqFin = $esUltimaEtapa && ! ($casoDescargado ?? false); @endphp
                         <button type="button" class="btn-next biblio-next{{ $bloqFin ? ' is-locked' : '' }}" @disabled($bloqFin)
                                 title="{{ $bloqFin ? 'Descarga el caso para poder finalizar el ingreso' : '' }}"
@@ -1330,7 +1340,7 @@
                 @endif
 
                 {{-- Siguiente etapa (botón flotante; las etapas con cuestionario llevan el suyo dentro) --}}
-                @unless (in_array($etapaActual, ['pruebas', 'objetivos', 'riesgo', 'terapeutico', 'monitorizacion', 'monitorizacion-2', 'resumen']))
+                @unless (in_array($etapaActual, $etapasBotonPropio, true))
                 <form method="POST" action="{{ route('curso.avanzar', $ingreso) }}" id="form-avanzar" style="display:contents;">
                     @csrf
                     <input type="hidden" name="desde" value="{{ $etapaActual }}">
