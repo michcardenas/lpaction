@@ -880,7 +880,7 @@
             function scaleCurso() {
                 var stage = document.querySelector('.curso-stage');
                 if (!stage) return;
-                if (window.innerWidth < 1024) { stage.style.transform = ''; return; }
+                if (window.innerWidth < 1024) { stage.style.transform = ''; stage.style.marginLeft = ''; return; }
                 var designW = 1440;
                 var designContentH = 780;                       // área de contenido del diseño (900 − nav 64 − footer 56)
                 var contentH = window.innerHeight - 64 - 56;    // área de contenido real
@@ -889,6 +889,14 @@
                 var s = Math.min(window.innerWidth / designW, contentH / designContentH);
                 s = Math.min(s, 1.35);
                 stage.style.transform = 'scale(' + s + ')';
+                // Centrar el stage en el viewport SIEMPRE. La tarjeta mide 1440px fijos; cuando la
+                // ventana es más angosta (1024–1440), `mx-auto` no puede centrar un elemento más
+                // ancho que su contenedor (los márgenes auto colapsan a 0 y queda pegado a la
+                // izquierda), así que al escalar respecto al centro el contenido se salía por la
+                // derecha y "se comía" el panel. Fijando margin-left = (ancho − 1440)/2, el centro
+                // del stage coincide con el centro de la ventana y, como s ≤ ancho/1440, nunca
+                // desborda. En ≥1440 equivale a lo que ya hacía mx-auto (sin cambios de diseño).
+                stage.style.marginLeft = ((window.innerWidth - designW) / 2) + 'px';
             }
             window.addEventListener('resize', scaleCurso);
             window.addEventListener('load', scaleCurso);
