@@ -1493,15 +1493,15 @@
                                 <a class="rp-btn {{ ($b['estilo'] ?? '') === 'cyan' ? 'cyan' : '' }}"
                                    href="{{ route('curso.etapa', [$ingreso, $etapaActual]) }}">{{ $b['texto'] }}</a>
                             @else
-                                {{-- "Volver al temario" (sin/bronce): DESBLOQUEA los capítulos finales y lleva
-                                     al último. Antes era un enlace directo al último capítulo, pero al no haber
-                                     avanzado el progreso rebotaba a esta misma pregunta y el caso no se podía
-                                     terminar nunca. --}}
+                                {{-- "Volver al temario" (sin/bronce): guarda el resultado y devuelve al alumno
+                                     al TEMARIO del ingreso (primer capítulo, con la barra lateral) para repetir
+                                     las etapas en rojo. NO salta al capítulo final (petición del cliente). El
+                                     controlador maneja hasta=temario sin tocar el desbloqueo de las etapas. --}}
                                 <form method="POST" action="{{ route('curso.avanzar', $ingreso) }}" style="display:contents;">
                                     @csrf
                                     <input type="hidden" name="desde" value="{{ $etapaActual }}">
                                     <input type="hidden" name="confirmar" value="1">
-                                    <input type="hidden" name="hasta" value="fin">
+                                    <input type="hidden" name="hasta" value="temario">
                                     <button type="submit" class="rp-btn {{ ($b['estilo'] ?? '') === 'cyan' ? 'cyan' : '' }}">{{ $b['texto'] }}</button>
                                 </form>
                             @endif

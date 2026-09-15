@@ -749,20 +749,20 @@ class CursoController extends Controller
             return redirect()->route('curso.etapa', [$ingreso, $stageKey, 'resultado' => 1]);
         }
 
-        // "Volver al temario" del modal (resultado insuficiente, sin/bronce): el caso queda EN CURSO.
-        // Desbloquea los capítulos finales y lleva al ÚLTIMO capítulo (Resumen del caso), donde está
-        // "Finalizar ingreso" — NO al Home (petición del cliente). El avance NO llega al 100% porque el
-        // gate "Descargar caso" lo impide (queda en ~90%), así que no reaparece la contradicción
-        // "100% pero siguiente ingreso bloqueado". El alumno repite las etapas señaladas para mejorar;
-        // solo plata/oro completan y desbloquean el siguiente ingreso.
-        if ($request->input('hasta') === 'fin') {
-            $ultimaKey = $etapas[count($etapas) - 1]['key'];   // Resumen del caso
+        // "Volver al temario" del modal (resultado insuficiente, sin/bronce): el caso queda EN CURSO
+        // y el alumno vuelve al TEMARIO del ingreso (primer capítulo, con la barra lateral), NO al
+        // capítulo final (petición del cliente: "llevarlo al temario del ingreso, no saltar al final").
+        // NO se toca 'etapa_index': las etapas señaladas en rojo ya están desbloqueadas, así que desde
+        // la barra lateral puede repetirlas para mejorar la puntuación. No se avanza a "Resumen del
+        // caso" (que quedaría con "Finalizar ingreso" bloqueado por puntuación insuficiente y daba la
+        // sensación de callejón sin salida). Solo plata/oro avanzan y completan el ingreso.
+        // (Compat.: 'fin' del código anterior se trata igual que 'temario'.)
+        if (in_array($request->input('hasta'), ['temario', 'fin'], true)) {
             $progreso->update([
-                'etapas'      => $resultados,
-                'status'      => 'in_progress',
-                'etapa_index' => count($etapas) - 1,           // desbloquea hasta el último capítulo
+                'etapas' => $resultados,
+                'status' => 'in_progress',
             ]);
-            return redirect()->route('curso.etapa', [$ingreso, $ultimaKey]);
+            return redirect()->route('curso.etapa', [$ingreso, $etapas[0]['key']]);   // primer capítulo del ingreso
         }
 
         // Última etapa ("Finalizar ingreso"): el ingreso SOLO se completa si el resultado es
