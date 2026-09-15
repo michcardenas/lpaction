@@ -484,17 +484,18 @@
         .onb-sub { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 14.5px; line-height: 140%; color: #fff; margin: 0; }
         .onb-repite { display: flex; flex-direction: column; gap: 6px; }
         .onb-repite .onb-text { margin: 0; }
-        .onb-medals { display: flex; justify-content: center; gap: 12px; flex-wrap: nowrap; margin-top: 4px; }
-        .onb-medals figure { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 8px; width: 106px; }
-        .onb-medals img { width: 60px; height: auto; }
-        .onb-medals figcaption { font-family: 'Montserrat', sans-serif; font-size: 12.5px; font-weight: 500; color: rgba(255,255,255,0.85); line-height: 125%; }
+        .onb-medals { display: flex; justify-content: center; gap: 12px; flex-wrap: nowrap; margin-top: 4px; width: 100%; }
+        .onb-medals figure { margin: 0; flex: 1 1 0; min-width: 0; max-width: 132px; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px 6px 12px; border-radius: 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.13); }
+        .onb-medals img { width: 56px; height: auto; }
+        .onb-medals figcaption { font-family: 'Montserrat', sans-serif; font-size: 11.5px; font-weight: 500; color: rgba(255,255,255,0.85); line-height: 125%; }
+        .onb-note { font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 13px; line-height: 150%; color: rgba(255,255,255,0.72); margin: 4px 0 0; max-width: 480px; }
         .onb-checks { list-style: none; margin: 6px 0 0; padding: 0; display: flex; flex-direction: column; gap: 14px; max-width: 440px; text-align: left; }
         .onb-checks li { position: relative; padding-left: 34px; font-family: 'Montserrat', sans-serif; font-size: 14px; line-height: 145%; color: rgba(255,255,255,0.85); }
         .onb-checks li b { color: #fff; font-weight: 600; }
         .onb-checks li::before { content: ''; position: absolute; left: 0; top: 0; width: 22px; height: 22px; border-radius: 50%; background: rgba(53,199,120,0.18); box-shadow: inset 0 0 0 1.5px #35c778; }
         .onb-checks li::after { content: ''; position: absolute; left: 7px; top: 7px; width: 8px; height: 4px; border-left: 2px solid #35c778; border-bottom: 2px solid #35c778; transform: rotate(-45deg); }
-        .onb-foot { display: grid; grid-template-columns: 40px 1fr auto; align-items: center; gap: 12px; margin-top: 6px; }
-        .onb-back { width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center; border: 0; border-radius: 8px; background: transparent; color: #05BAEE; cursor: pointer; }
+        .onb-foot { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; margin-top: 6px; }
+        .onb-back { display: inline-flex; align-items: center; gap: 6px; padding: 8px 4px; border: 0; background: transparent; color: #05BAEE; cursor: pointer; font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 14px; }
         .onb-dots { display: flex; justify-content: center; gap: 8px; }
         .onb-dots span { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.30); transition: background .2s, width .2s; }
         .onb-dots span.on { background: #05BAEE; width: 20px; border-radius: 99px; }
@@ -507,13 +508,15 @@
             .onb-slide { padding: 4px 2px; gap: 14px; }
             .onb-title { font-size: 18px; }
             .onb-text { font-size: 13.5px; }
-            .onb-medals { gap: 6px; flex-wrap: nowrap; }
-            .onb-medals figure { flex: 1 1 0; width: auto; min-width: 0; gap: 6px; }
-            .onb-medals img { width: 46px; }
-            .onb-medals figcaption { font-size: 10px; line-height: 120%; }
+            .onb-medals { gap: 12px; flex-wrap: wrap; max-width: 340px; margin: 4px auto 0; }
+            .onb-medals figure { flex: 0 0 calc(50% - 6px); max-width: none; padding: 16px 8px 12px; gap: 8px; }
+            .onb-medals img { width: 60px; }
+            .onb-medals figcaption { font-size: 12px; line-height: 122%; }
+            .onb-note { font-size: 12.5px; }
             .onb-checks { gap: 12px; }
             .onb-checks li { font-size: 13px; }
             .onb-sub { font-size: 13.5px; }
+            .onb-back { font-size: 13px; }
             .onb-next { padding: 12px 18px; font-size: 14px; }
         }
 
@@ -1341,16 +1344,17 @@
                                 <p class="onb-text">Regresa al capítulo marcado en rojo y pulsa «Repetir etapa» para responder nuevamente sin repetir lo anterior.</p>
                             </div>
                         </section>
-                        {{-- Slide 2: medallas --}}
+                        {{-- Slide 2: EXP y medallas --}}
                         <section class="onb-slide">
-                            <h3 class="onb-title">Gana medallas según tu puntuación</h3>
-                            <p class="onb-text">Según los aciertos de cada ingreso obtendrás una medalla. ¡Intenta conseguir la mejor!</p>
+                            <h3 class="onb-title">Consigue hasta 500 EXP por ingreso</h3>
+                            <p class="onb-text">Cada ingreso incluye cinco preguntas de hasta 100 puntos de experiencia (EXP) cada una. Tu puntuación determina el reconocimiento que obtienes: sin medalla, bronce, plata u oro.</p>
                             <div class="onb-medals">
                                 <figure><img src="{{ asset('images/medalla-sin.png') }}" alt=""><figcaption>Sin medalla</figcaption></figure>
                                 <figure><img src="{{ asset('images/medalla-bronce.png') }}" alt=""><figcaption>Medalla de Bronce</figcaption></figure>
                                 <figure><img src="{{ asset('images/medalla-plata.png') }}" alt=""><figcaption>Medalla de Plata</figcaption></figure>
                                 <figure><img src="{{ asset('images/medalla-oro.png') }}" alt=""><figcaption>Medalla de Oro</figcaption></figure>
                             </div>
+                            <p class="onb-note">Al completar el ingreso, desbloquearás un vídeo con el análisis comentado y un PDF de repaso.</p>
                         </section>
                         {{-- Slide 3: checklist + empezar --}}
                         <section class="onb-slide">
@@ -1365,7 +1369,7 @@
                 </div>
                 <div class="onb-foot">
                     <button type="button" class="onb-back" id="onb-back" aria-label="Anterior" style="visibility:hidden">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg><span>Anterior</span>
                     </button>
                     <div class="onb-dots" id="onb-dots"><span class="on"></span><span></span><span></span></div>
                     <button type="button" class="onb-next" id="onb-next">Siguiente</button>
