@@ -463,7 +463,7 @@
 
         /* ===== Carrusel "Antes de empezar" (3 slides) — reemplaza el pop-up Atención, mismo vidrio oscuro ===== */
         .onb-card {
-            width: 560px; max-width: 100%;
+            width: 720px; max-width: 100%;
             display: flex; flex-direction: column; gap: 22px;
             padding: 30px 30px 20px; border-radius: 28px; text-align: center;
             background:
@@ -478,18 +478,18 @@
         .onb-track { display: flex; transition: transform .38s cubic-bezier(.22,.61,.36,1); }
         .onb-slide { flex: 0 0 100%; min-width: 100%; display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 6px 4px; }
         .onb-title { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 20px; line-height: 130%; color: #fff; margin: 0; }
-        .onb-text { font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 14px; line-height: 152%; color: rgba(255,255,255,0.80); margin: 0; max-width: 460px; }
+        .onb-text { font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 14px; line-height: 152%; color: rgba(255,255,255,0.80); margin: 0; max-width: 590px; }
         .onb-text b { color: #fff; font-weight: 600; }
-        .onb-img { width: 100%; max-width: 480px; height: auto; border-radius: 12px; margin: 2px auto 4px; display: block; box-shadow: 0 8px 30px rgba(0,0,0,0.25); }
+        .onb-img { width: 100%; max-width: 580px; height: auto; border-radius: 12px; margin: 2px auto 4px; display: block; box-shadow: 0 8px 30px rgba(0,0,0,0.25); }
         .onb-sub { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 14.5px; line-height: 140%; color: #fff; margin: 0; }
         .onb-repite { display: flex; flex-direction: column; gap: 6px; }
         .onb-repite .onb-text { margin: 0; }
         .onb-medals { display: flex; justify-content: center; gap: 12px; flex-wrap: nowrap; margin-top: 4px; width: 100%; }
-        .onb-medals figure { margin: 0; flex: 1 1 0; min-width: 0; max-width: 132px; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px 6px 12px; border-radius: 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.13); }
-        .onb-medals img { width: 56px; height: auto; }
-        .onb-medals figcaption { font-family: 'Montserrat', sans-serif; font-size: 11.5px; font-weight: 500; color: rgba(255,255,255,0.85); line-height: 125%; }
-        .onb-note { font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 13px; line-height: 150%; color: rgba(255,255,255,0.72); margin: 4px 0 0; max-width: 480px; }
-        .onb-checks { list-style: none; margin: 6px 0 0; padding: 0; display: flex; flex-direction: column; gap: 14px; max-width: 440px; text-align: left; }
+        .onb-medals figure { margin: 0; flex: 1 1 0; min-width: 0; max-width: 168px; display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 20px 8px 14px; border-radius: 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.13); }
+        .onb-medals img { width: 66px; height: auto; }
+        .onb-medals figcaption { font-family: 'Montserrat', sans-serif; font-size: 12.5px; font-weight: 500; color: rgba(255,255,255,0.85); line-height: 125%; }
+        .onb-note { font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 13px; line-height: 150%; color: rgba(255,255,255,0.72); margin: 4px 0 0; max-width: 590px; }
+        .onb-checks { list-style: none; margin: 6px 0 0; padding: 0; display: flex; flex-direction: column; gap: 14px; max-width: 520px; text-align: left; }
         .onb-checks li { position: relative; padding-left: 34px; font-family: 'Montserrat', sans-serif; font-size: 14px; line-height: 145%; color: rgba(255,255,255,0.85); }
         .onb-checks li b { color: #fff; font-weight: 600; }
         .onb-checks li::before { content: ''; position: absolute; left: 0; top: 0; width: 22px; height: 22px; border-radius: 50%; background: rgba(53,199,120,0.18); box-shadow: inset 0 0 0 1.5px #35c778; }
