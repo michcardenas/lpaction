@@ -502,8 +502,7 @@
         .onb-req li + li { border-top: 1px solid rgba(255,255,255,0.10); }
         .onb-req-n { flex: 0 0 auto; min-width: 16px; color: rgba(255,255,255,0.55); font-weight: 500; }
         .onb-req-t { flex: 1 1 auto; }
-        .onb-req-check { flex: 0 0 auto; position: relative; width: 22px; height: 22px; border-radius: 50%; background: rgba(53,199,120,0.16); box-shadow: inset 0 0 0 1.5px #35c778; }
-        .onb-req-check::after { content: ''; position: absolute; left: 7px; top: 6px; width: 8px; height: 4px; border-left: 2px solid #35c778; border-bottom: 2px solid #35c778; transform: rotate(-45deg); }
+        .onb-req-check { flex: 0 0 auto; width: 22px; height: 22px; display: block; }
         .onb-foot { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; margin-top: 6px; }
         .onb-back { display: inline-flex; align-items: center; gap: 6px; padding: 8px 4px; border: 0; background: transparent; color: #05BAEE; cursor: pointer; font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 14px; }
         .onb-dots { display: flex; justify-content: center; gap: 8px; }
@@ -531,7 +530,6 @@
             .onb-sub2 { font-size: 14.5px; }
             .onb-req li { gap: 10px; padding: 12px 14px; font-size: 12.5px; line-height: 135%; }
             .onb-req-check { width: 20px; height: 20px; }
-            .onb-req-check::after { left: 6px; top: 6px; }
             .onb-sub { font-size: 13.5px; }
             .onb-back { font-size: 13px; }
             .onb-next { padding: 12px 18px; font-size: 14px; }
@@ -1382,9 +1380,9 @@
                                 <p class="onb-text">Cuando cumplas todos los requisitos, podrás obtener el diploma.</p>
                             </div>
                             <ol class="onb-req">
-                                <li><span class="onb-req-n">1.</span><span class="onb-req-t">Completa los tres ingresos.</span><span class="onb-req-check" aria-hidden="true"></span></li>
-                                <li><span class="onb-req-n">2.</span><span class="onb-req-t">Desde la página principal, abre «Evaluación final» y completa la encuesta de satisfacción.</span><span class="onb-req-check" aria-hidden="true"></span></li>
-                                <li><span class="onb-req-n">3.</span><span class="onb-req-t">Supera la evaluación: 10 preguntas, 2 intentos y al menos un 80 % de aciertos.</span><span class="onb-req-check" aria-hidden="true"></span></li>
+                                <li><span class="onb-req-n">1.</span><span class="onb-req-t">Completa los tres ingresos.</span><svg class="onb-req-check" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10.2" stroke="#35c778" stroke-width="1.6"/><path d="M7.4 12.3l3.1 3.1 6.1-6.4" stroke="#35c778" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></li>
+                                <li><span class="onb-req-n">2.</span><span class="onb-req-t">Desde la página principal, abre «Evaluación final» y completa la encuesta de satisfacción.</span><svg class="onb-req-check" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10.2" stroke="#35c778" stroke-width="1.6"/><path d="M7.4 12.3l3.1 3.1 6.1-6.4" stroke="#35c778" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></li>
+                                <li><span class="onb-req-n">3.</span><span class="onb-req-t">Supera la evaluación: 10 preguntas, 2 intentos y al menos un 80 % de aciertos.</span><svg class="onb-req-check" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10.2" stroke="#35c778" stroke-width="1.6"/><path d="M7.4 12.3l3.1 3.1 6.1-6.4" stroke="#35c778" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></li>
                             </ol>
                         </section>
                     </div>
