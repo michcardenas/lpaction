@@ -15,6 +15,16 @@ return [
     'disponible_hasta' => '15/01/2027',
     'plazas'           => 1000,   // Plazas totales del curso (para el informe: "sobre 1.000 plazas").
 
+    // Módulos que deben permanecer BLOQUEADOS para los ALUMNOS hasta su lanzamiento, AUNQUE hayan
+    // completado el ingreso anterior (petición del cliente: el día del lanzamiento el Módulo 3 sale
+    // bloqueado). Los ADMIN (correctores) NO se ven afectados: mantienen acceso total para revisar.
+    // Se controla desde .env con LPA_MODULOS_BLOQUEADOS (lista separada por comas). Para LIBERAR el
+    // Módulo 3 el día que toque, poner LPA_MODULOS_BLOQUEADOS= (vacío) y `php artisan config:clear`.
+    'modulos_bloqueados' => array_values(array_filter(array_map(
+        'trim',
+        explode(',', (string) env('LPA_MODULOS_BLOQUEADOS', 'ingreso-3'))
+    ))),
+
     // ================================================================
     // ==================  DIPLOMA / CERTIFICADO  =====================
     // ================================================================

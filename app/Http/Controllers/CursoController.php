@@ -27,7 +27,8 @@ class CursoController extends Controller
         foreach ($ingKeys as $i => $k) {
             $sigKey = $ingKeys[$i + 1] ?? null;
             $cur = $progress->get($k);
-            if ($sigKey && $cur && $cur->status === 'completed') {
+            if ($sigKey && $cur && $cur->status === 'completed'
+                && ! $this->moduloBloqueadoLanzamiento($sigKey)) {   // no auto-abrir un módulo retenido (lanzamiento)
                 $sig = $progress->get($sigKey);
                 if ($sig && $sig->status === 'locked') {
                     $sig->update(['status' => 'available']);
@@ -45,7 +46,10 @@ class CursoController extends Controller
         // Admin (corrector): acceso total en el portal para validar todo el contenido.
         $esAdmin = $user->isAdmin();
 
-        return view('curso.index', compact('user', 'curso', 'progress', 'pacienteActivo', 'esAdmin'));
+        // Módulos retenidos hasta su lanzamiento (candado para alumnos; los admin ven todo).
+        $modulosBloqueados = config('curso.modulos_bloqueados', []);
+
+        return view('curso.index', compact('user', 'curso', 'progress', 'pacienteActivo', 'esAdmin', 'modulosBloqueados'));
     }
 
     /** "Entrar al curso" (botón del pop-up de bienvenida en el login): marca la bienvenida como
@@ -1041,10 +1045,22 @@ class CursoController extends Controller
         if ($idx === false || $idx >= count($ingresos) - 1) return;
 
         $siguienteKey = $ingresos[$idx + 1]['key'];
+        // Bloqueo de lanzamiento: si el siguiente módulo está retenido (p.ej. Ingreso 3 el día del
+        // lanzamiento), NO se desbloquea aunque el alumno complete el actual. Se abrirá cuando se
+        // quite de LPA_MODULOS_BLOQUEADOS. (Los admin acceden igual por su bypass en ingresoAbierto.)
+        if ($this->moduloBloqueadoLanzamiento($siguienteKey)) return;
+
         $sig = $user->progress()->where('module_key', $siguienteKey)->first();
         if ($sig && $sig->status === 'locked') {
             $sig->update(['status' => 'available']);
         }
+    }
+
+    /** ¿Este módulo debe permanecer BLOQUEADO para los alumnos hasta su lanzamiento? (config
+     *  curso.modulos_bloqueados / .env LPA_MODULOS_BLOQUEADOS). Los admin NO se ven afectados. */
+    private function moduloBloqueadoLanzamiento(string $moduleKey): bool
+    {
+        return in_array($moduleKey, config('curso.modulos_bloqueados', []), true);
     }
 
     /** Devuelve el progreso del ingreso si está desbloqueado; si no, 404.
@@ -1061,6 +1077,10 @@ class CursoController extends Controller
                 'status' => 'available', 'percent' => 0, 'etapa_index' => 0, 'etapas' => [],
             ]);
         }
+
+        // Bloqueo de lanzamiento: un alumno NO puede abrir por URL un módulo retenido (p.ej. Ingreso 3
+        // el día del lanzamiento), aunque su fila figure como 'available'.
+        abort_if($this->moduloBloqueadoLanzamiento($ingreso), 404);
 
         abort_unless(
             $progreso && in_array($progreso->status, ['available', 'in_progress', 'completed']),

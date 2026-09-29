@@ -735,8 +735,12 @@
                             // caso" (gate). Estar en "Resumen del caso" sin descargar NO cuenta como 100%.
                             $percent = ($status === 'completed' || ($p->caso_descargado ?? false))
                                 ? 100 : (int) round($idx / max($etapasTotal, 1) * 100);
+                            // Módulo RETENIDO hasta su lanzamiento (p.ej. Ingreso 3 el día del lanzamiento):
+                            // candado para el alumno aunque haya completado el anterior. El ADMIN lo ve abierto.
+                            $bloqueadoLanzamiento = in_array($ing['key'], $modulosBloqueados ?? [], true);
                             // Admin (corrector): acceso total → todos los ingresos accesibles para validar.
-                            $abierto = ($esAdmin ?? false) || in_array($status, ['available', 'in_progress', 'completed']);
+                            $abierto = ($esAdmin ?? false)
+                                || (! $bloqueadoLanzamiento && in_array($status, ['available', 'in_progress', 'completed']));
                         @endphp
                         <div class="ing-row {{ $abierto ? '' : 'locked' }}">
                             <div class="ing-label">{{ $ing['label'] }}</div>
@@ -752,7 +756,7 @@
                                     <a href="{{ route('curso.etapa', $ing['key']) }}" class="btn-iniciar">{{ $ctaTexto }}</a>
                                 @else
                                     <span class="btn-locked">
-                                        Iniciar
+                                        {{ $bloqueadoLanzamiento ? 'Próximamente' : 'Iniciar' }}
                                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
                                     </span>
                                 @endif
