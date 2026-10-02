@@ -112,7 +112,10 @@
 </head>
 <body>
     <header class="ev-top">
-        <a href="{{ route('curso') }}" class="ev-back">
+        {{-- "Abandonar examen": guarda la opción elegida + el progreso (abandonar=1) y vuelve al curso;
+             al volver a la evaluación se puede RETOMAR desde esta misma pregunta. --}}
+        <a href="#" class="ev-back"
+           onclick="document.getElementById('abandonar-input').value='1'; document.getElementById('form-pregunta').submit(); return false;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
             Abandonar examen
         </a>
@@ -126,6 +129,7 @@
 
             <form method="POST" action="{{ route('evaluacion.responder') }}" id="form-pregunta">
                 @csrf
+                <input type="hidden" name="abandonar" id="abandonar-input" value="">
                 <div class="pregunta-card">
                     <div class="pregunta-head">
                         <p class="pregunta-num">Pregunta {{ $numero }}/{{ $total }}</p>

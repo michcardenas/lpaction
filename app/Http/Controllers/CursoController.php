@@ -158,7 +158,10 @@ class CursoController extends Controller
         $encuestaProg  = $user->progress()->where('module_key', 'encuesta')->first();
         $encuestaHecha = $encuestaProg && $encuestaProg->status === 'completed';
 
-        return view('curso.evaluacion', compact('user', 'intentos', 'maxIntentos', 'nota', 'apto', 'encuestaHecha'));
+        // ¿Hay un intento del examen SIN terminar guardado (abandonado)? → el botón dirá "Reanudar".
+        $enCurso = ! empty($meta['en_curso']['preguntas']);
+
+        return view('curso.evaluacion', compact('user', 'intentos', 'maxIntentos', 'nota', 'apto', 'encuestaHecha', 'enCurso'));
     }
 
     /** Inicia un intento del examen: escoge N preguntas al azar y guarda el estado en sesión. */
@@ -196,16 +199,31 @@ class CursoController extends Controller
             return redirect()->route('evaluacion')->with('eval_error', 'Has agotado los intentos disponibles.');
         }
 
-        // Escoge $tomar índices al azar del banco de preguntas.
+        // REANUDAR: si hay un intento SIN terminar guardado (el alumno pulsó "Abandonar"), se retoma
+        // con las MISMAS preguntas y en la posición donde lo dejó, en vez de empezar uno nuevo
+        // (petición del cliente: no perder el progreso al abandonar el examen).
+        $enCurso = $meta['en_curso'] ?? null;
+        if (is_array($enCurso) && ! empty($enCurso['preguntas'])) {
+            session()->put('eval', [
+                'preguntas'  => array_values($enCurso['preguntas']),
+                'pos'        => (int) ($enCurso['pos'] ?? 0),
+                'respuestas' => (array) ($enCurso['respuestas'] ?? []),
+            ]);
+            return redirect()->route('evaluacion.pregunta');
+        }
+
+        // Intento NUEVO: escoge $tomar índices al azar del banco de preguntas.
         $indices = array_keys($todas);
         shuffle($indices);
         $sel = array_slice($indices, 0, $tomar);
 
-        session()->put('eval', [
+        $eval = [
             'preguntas'  => $sel,   // índices en config.preguntas
             'pos'        => 0,
             'respuestas' => [],     // pos => letra elegida
-        ]);
+        ];
+        session()->put('eval', $eval);
+        $this->guardarEvalEnCurso($user, $eval);   // persiste el intento en BD (sobrevive a abandonar/cerrar sesión)
 
         return redirect()->route('evaluacion.pregunta');
     }
@@ -215,7 +233,13 @@ class CursoController extends Controller
     {
         $eval = session('eval');
         if (! $eval || empty($eval['preguntas'])) {
-            return redirect()->route('evaluacion');
+            // Rehidrata desde BD si hay un intento en curso guardado (sobrevive a pérdida de sesión
+            // o a entrar desde otro equipo); si no hay, vuelve al intro.
+            $eval = $this->cargarEvalEnCurso(Auth::user());
+            if (! $eval) {
+                return redirect()->route('evaluacion');
+            }
+            session()->put('eval', $eval);
         }
 
         $cfg   = config('curso.evaluacion');
@@ -251,7 +275,10 @@ class CursoController extends Controller
     {
         $eval = session('eval');
         if (! $eval || empty($eval['preguntas'])) {
-            return redirect()->route('evaluacion');
+            $eval = $this->cargarEvalEnCurso(Auth::user());
+            if (! $eval) {
+                return redirect()->route('evaluacion');
+            }
         }
 
         $pos = (int) $eval['pos'];
@@ -259,8 +286,18 @@ class CursoController extends Controller
         if (in_array($sel, ['a', 'b', 'c', 'd'], true)) {
             $eval['respuestas'][$pos] = $sel;
         }
+
+        // ABANDONAR: guarda la opción elegida + el progreso SIN avanzar ni calificar y vuelve al curso.
+        // Al volver a "Reanudar", el examen continúa en esta misma pregunta con lo ya respondido.
+        if ($request->boolean('abandonar')) {
+            session()->put('eval', $eval);
+            $this->guardarEvalEnCurso(Auth::user(), $eval);
+            return redirect()->route('curso');
+        }
+
         $eval['pos'] = $pos + 1;
         session()->put('eval', $eval);
+        $this->guardarEvalEnCurso(Auth::user(), $eval);   // persiste el progreso tras cada respuesta
 
         if ($eval['pos'] >= count($eval['preguntas'])) {
             return $this->calificarEvaluacion();
@@ -302,6 +339,7 @@ class CursoController extends Controller
         $meta['ultima_nota'] = $aciertos;
         $meta['ultimo_pct']  = $pct;
         $meta['apto']        = (bool) ($meta['apto'] ?? false) || $apto;   // una vez APTO, se queda
+        unset($meta['en_curso']);   // intento TERMINADO: ya no hay examen a medias que reanudar
         $prog->update([
             'etapas'       => $meta,
             'status'       => $meta['apto'] ? 'completed' : 'in_progress',
@@ -328,6 +366,45 @@ class CursoController extends Controller
         session()->forget('eval');
 
         return redirect()->route('evaluacion.resultado');
+    }
+
+    /**
+     * Guarda el intento del examen EN CURSO en la fila 'evaluacion' (etapas.en_curso), para que el
+     * alumno pueda abandonar y RETOMAR desde donde lo dejó, con las mismas preguntas y respuestas.
+     * No toca el intento si ya está APTO. No consume intentos (eso solo ocurre al calificar).
+     */
+    private function guardarEvalEnCurso($user, array $eval): void
+    {
+        $prog = $user->progress()->firstOrCreate(
+            ['module_key' => 'evaluacion'],
+            ['status' => 'available', 'percent' => 0]
+        );
+        $meta = $prog->etapas ?? [];
+        if (! empty($meta['apto'])) return;   // ya aprobó: nada que guardar
+
+        $meta['en_curso'] = [
+            'preguntas'  => array_values($eval['preguntas'] ?? []),
+            'pos'        => (int) ($eval['pos'] ?? 0),
+            'respuestas' => (array) ($eval['respuestas'] ?? []),
+        ];
+        $prog->update([
+            'etapas' => $meta,
+            'status' => $prog->status === 'completed' ? 'completed' : 'in_progress',
+        ]);
+    }
+
+    /** Devuelve el intento del examen EN CURSO guardado en BD (array eval) o null si no hay. */
+    private function cargarEvalEnCurso($user): ?array
+    {
+        $prog = $user->progress()->where('module_key', 'evaluacion')->first();
+        $enCurso = $prog->etapas['en_curso'] ?? null;
+        if (! is_array($enCurso) || empty($enCurso['preguntas'])) return null;
+
+        return [
+            'preguntas'  => array_values($enCurso['preguntas']),
+            'pos'        => (int) ($enCurso['pos'] ?? 0),
+            'respuestas' => (array) ($enCurso['respuestas'] ?? []),
+        ];
     }
 
     /** Pantalla de resultado del examen (APTO / NO APTA). */

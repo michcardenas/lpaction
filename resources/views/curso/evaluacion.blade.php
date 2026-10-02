@@ -164,7 +164,7 @@
                 @else
                     <form method="POST" action="{{ route('evaluacion.comenzar') }}" style="margin:0;">
                         @csrf
-                        <button type="submit" class="ev-comenzar">Comenzar evaluación</button>
+                        <button type="submit" class="ev-comenzar">{{ ($enCurso ?? false) ? 'Reanudar evaluación' : 'Comenzar evaluación' }}</button>
                     </form>
                 @endif
             </div>
