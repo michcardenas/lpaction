@@ -164,7 +164,12 @@
   .scard .big .u { font-size: 15px; color: #56707b; }
   .scard .txt { font-size: 14px; color: #55707c; line-height: 1.5; margin-top: 12px; }
 
-  /* Portada */
+  /* Portada = imagen a hoja completa (misma proporción A4 que .page) */
+  .page-cover { padding: 0; }
+  .page-cover::before, .page-cover::after { display: none; }
+  .cover-full { display: block; width: 100%; height: auto; }
+
+  /* Portada (maqueta HTML, en desuso tras usar la imagen) */
   .cover { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center; padding-top: 0; }
   .cover-top { width: 100%; display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; }
   .cover-badge { background: #7a1420; color: #fff; font-weight: 800; letter-spacing: .04em; font-size: 20px; padding: 12px 34px; border-radius: 999px; }
@@ -194,19 +199,9 @@
 
   <div class="doc">
 
-    {{-- ======================= PORTADA ======================= --}}
-    <section class="page cover">
-      <div class="cover-top">
-        <span class="cover-badge">INFORME FINAL</span>
-        <img class="cover-sec" src="{{ asset('images/sec-logo-hd.png') }}" alt="Sociedad Española de Cardiología">
-      </div>
-      <img class="cover-logo" src="{{ asset('images/logo-lpaction.svg') }}" alt="Lp(a)ction">
-      <img class="cover-mol" src="{{ asset('images/molecula-lpa.png') }}" alt="">
-      <h1>Resultados<br>del curso</h1>
-      <div class="cover-foot">
-        <img class="cover-qual" src="{{ asset('images/qualimed-logo.svg') }}" alt="Qualimed">
-        <span class="cover-data">DATOS REALES · {{ $r['generado']->format('d/m/Y') }}</span>
-      </div>
+    {{-- ======================= PORTADA (imagen a hoja completa) ======================= --}}
+    <section class="page page-cover">
+      <img class="cover-full" src="{{ asset('images/informe-portada.png') }}" alt="Informe final · Resultados del curso">
     </section>
 
     {{-- ===================== VISIÓN EJECUTIVA ===================== --}}
