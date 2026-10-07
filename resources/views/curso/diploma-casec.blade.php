@@ -74,11 +74,14 @@
 </head>
 <body>
   <div class="toolbar">
-    <span>Tu certificado está listo.</span>
+    <span>{{ ($tieneUems ?? false) ? 'Diploma 1 de 2 · CASEC.' : 'Tu certificado está listo.' }}</span>
     <button class="btn-pdf" onclick="window.print()">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
       Descargar PDF
     </button>
+    @if ($tieneUems ?? false)
+      <a class="btn-pdf" href="{{ route('diploma.uems') }}" style="background:#7a1420;color:#fff;">Diploma UEMS-ICOMEN →</a>
+    @endif
     <a class="btn-volver" href="{{ route('curso') }}">Volver al curso</a>
   </div>
 

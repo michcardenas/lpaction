@@ -72,6 +72,20 @@ return [
         'presidente' => 'Ignacio Fernández Lozano',
     ],
 
+    // Especialidades que reciben el DIPLOMA ADICIONAL UEMS-ICOMEN (SEAFORMEC-EACCME) además del
+    // CASEC base → estas especialidades obtienen DOS diplomas (petición del cliente). Los nombres
+    // deben coincidir EXACTAMENTE con los del desplegable de 'especialidades' (valor guardado en
+    // users.specialty). La comparación se hace en minúsculas.
+    'diploma_uems_especialidades' => [
+        'Cardiología',
+        'Medicina Interna',
+        'Endocrinología y Nutrición',
+        'Nefrología',
+        'Neurología',
+        'Angiología y Cirugía Vascular',   // "Cirugía Vascular"
+        'Cirugía Cardiovascular',          // "Cirugía Cardiaca"
+    ],
+
     // Especialidades del registro y el CERTIFICADO que obtiene cada una:
     //   'cases_uems' → Certificado CASES + UEMS
     //   'casec'      → únicamente Certificado CASEC

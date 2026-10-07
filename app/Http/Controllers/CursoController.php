@@ -471,21 +471,69 @@ class CursoController extends Controller
         $user = Auth::user();
         CourseProgress::seedFor($user);
 
-        // Guard: el diploma solo está disponible tras aprobar la evaluación (status ≠ locked).
-        // El admin (corrector) puede previsualizarlo para validar la plantilla.
-        $prog = $user->progress()->where('module_key', 'diploma')->first();
-        if (! $user->isAdmin() && (! $prog || $prog->status === 'locked')) {
+        if (! $this->diplomaDesbloqueado($user)) {
             return redirect()->route('curso')->with('diploma_error', 'Aún no has desbloqueado el diploma. Aprueba la evaluación final para obtenerlo.');
         }
 
-        $cfg = config('curso.diploma', []);
+        // DIPLOMA BASE (todos los aptos): certificado CASEC de la Sociedad Española de Cardiología.
+        $casec = config('curso.diploma_casec', []);
+        $diploma = $this->datosDiplomaBase($user) + [
+            'expediente' => $casec['expediente'] ?? '',
+            'creditos'   => $casec['creditos'] ?? '',
+            'lugar'      => $casec['lugar'] ?? 'online',
+            'rol'        => $casec['rol'] ?? 'discente',
+            'presidente' => $casec['presidente'] ?? '',
+        ];
+        // Las especialidades acreditadas reciben ADEMÁS el diploma UEMS-ICOMEN → se ofrece en la barra.
+        $tieneUems = $this->tieneDiplomaUems($user);
 
-        // Fecha de emisión: cuándo aprobó la evaluación (o, en su defecto, hoy).
+        return view('curso.diploma-casec', compact('diploma', 'tieneUems'));
+    }
+
+    /**
+     * Diploma ADICIONAL UEMS-ICOMEN (SEAFORMEC-EACCME). Lo reciben, ADEMÁS del CASEC base, solo las
+     * especialidades acreditadas (petición del cliente: 2 diplomas para esas especialidades).
+     */
+    public function diplomaUems()
+    {
+        $user = Auth::user();
+        CourseProgress::seedFor($user);
+
+        if (! $this->diplomaDesbloqueado($user)) {
+            return redirect()->route('curso')->with('diploma_error', 'Aún no has desbloqueado el diploma. Aprueba la evaluación final para obtenerlo.');
+        }
+        // Solo las especialidades acreditadas (o admin) tienen este 2.º diploma.
+        if (! $this->tieneDiplomaUems($user)) {
+            return redirect()->route('diploma');
+        }
+
+        $cfg = config('curso.diploma', []);
+        $diploma = $this->datosDiplomaBase($user) + [
+            'creditos'           => $cfg['creditos'] ?? '',
+            'registro_uems'      => $cfg['registro_uems'] ?? '',
+            'registro_seaformec' => $cfg['registro_seaformec'] ?? '',
+        ];
+        $esAdicional = true;   // la barra mostrará el enlace al diploma principal (CASEC)
+
+        return view('curso.diploma', compact('diploma', 'esAdicional'));
+    }
+
+    /** ¿El diploma está desbloqueado para este usuario? (APTO en la evaluación, o admin para previsualizar). */
+    private function diplomaDesbloqueado($user): bool
+    {
+        if ($user->isAdmin()) return true;
+        $prog = $user->progress()->where('module_key', 'diploma')->first();
+        return $prog && $prog->status !== 'locked';
+    }
+
+    /** Datos comunes a ambos certificados (nombre, apellidos, documento, fechas...). */
+    private function datosDiplomaBase($user): array
+    {
+        $cfg = config('curso.diploma', []);
         $eval = $user->progress()->where('module_key', 'evaluacion')->first();
         $emision = optional($eval)->completed_at ?? now();
 
-        // Datos comunes a ambos certificados.
-        $base = [
+        return [
             'nombre'        => trim((string) $user->name),
             'apellidos'     => trim((string) ($user->last_name ?? '')),
             'documento'     => trim((string) ($user->document_id ?? '')),
@@ -495,28 +543,19 @@ class CursoController extends Controller
             'horas'         => $cfg['horas'] ?? '',
             'fecha_emision' => $this->fechaLarga($emision),
         ];
+    }
 
-        // Médicos SELECCIONADOS (cert_icomem) → certificado ICOMEM/SEAFORMEC-EACCME (el actual).
-        if ($user->cert_icomem) {
-            $diploma = $base + [
-                'creditos'           => $cfg['creditos'] ?? '',
-                'registro_uems'      => $cfg['registro_uems'] ?? '',
-                'registro_seaformec' => $cfg['registro_seaformec'] ?? '',
-            ];
-            return view('curso.diploma', compact('diploma'));
-        }
-
-        // Por DEFECTO (todos los demás) → certificado CASEC de la Sociedad Española de Cardiología.
-        $casec = config('curso.diploma_casec', []);
-        $diploma = $base + [
-            'expediente' => $casec['expediente'] ?? '',
-            'creditos'   => $casec['creditos'] ?? '',
-            'lugar'      => $casec['lugar'] ?? 'online',
-            'rol'        => $casec['rol'] ?? 'discente',
-            'presidente' => $casec['presidente'] ?? '',
-        ];
-
-        return view('curso.diploma-casec', compact('diploma'));
+    /**
+     * ¿Este usuario tiene derecho al diploma adicional UEMS-ICOMEN? Lo reciben las especialidades
+     * acreditadas (config curso.diploma_uems_especialidades); también el flag manual cert_icomem y
+     * los admin (para previsualizar la plantilla).
+     */
+    private function tieneDiplomaUems($user): bool
+    {
+        if ($user->isAdmin() || $user->cert_icomem) return true;
+        $espec = mb_strtolower(trim((string) $user->specialty));
+        $lista = array_map(fn ($e) => mb_strtolower(trim($e)), config('curso.diploma_uems_especialidades', []));
+        return $espec !== '' && in_array($espec, $lista, true);
     }
 
     /**

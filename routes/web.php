@@ -40,6 +40,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/evaluacion/responder', [CursoController::class, 'evaluacionResponder'])->name('evaluacion.responder');
     Route::get('/evaluacion/resultado', [CursoController::class, 'evaluacionResultado'])->name('evaluacion.resultado');
     Route::get('/diploma', [CursoController::class, 'diploma'])->name('diploma');
+    // Diploma adicional UEMS-ICOMEN (solo especialidades acreditadas → 2 diplomas).
+    Route::get('/diploma/uems', [CursoController::class, 'diplomaUems'])->name('diploma.uems');
     Route::get('/encuesta', [CursoController::class, 'encuesta'])->name('encuesta');
     Route::post('/encuesta', [CursoController::class, 'encuestaGuardar'])->name('encuesta.guardar');
     Route::post('/curso/{ingreso}/marcar', [CursoController::class, 'marcar'])->name('curso.marcar');

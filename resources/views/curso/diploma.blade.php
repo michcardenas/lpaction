@@ -90,11 +90,14 @@
 </head>
 <body>
   <div class="toolbar">
-    <span>Tu diploma está listo.</span>
+    <span>{{ ($esAdicional ?? false) ? 'Diploma 2 de 2 · UEMS-ICOMEN.' : 'Tu diploma está listo.' }}</span>
     <button class="btn-pdf" onclick="window.print()">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
       Descargar PDF
     </button>
+    @if ($esAdicional ?? false)
+      <a class="btn-volver" href="{{ route('diploma') }}">← Diploma CASEC</a>
+    @endif
     <a class="btn-volver" href="{{ route('curso') }}">Volver al curso</a>
   </div>
 
