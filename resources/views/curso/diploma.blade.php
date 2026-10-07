@@ -143,7 +143,7 @@
       <div class="abs firma2"><img src="{{ asset('images/diploma/firma2.jpg') }}" alt=""></div>
 
       <div class="abs sig-name serif sig-l">Dr. D. Manuel Martínez-Sellés D'Oliveira Soares<br>Presidente del ICOMEM</div>
-      <div class="abs sig-name serif sig-r">Dr. D. Ignacio Fernández Lozano<br>Presidente de la SEC</div>
+      <div class="abs sig-name serif sig-r">Ignacio Fernández Lozano<br>Presidente Sociedad Española de Cardiología</div>
     </div>
   </div>
 </body>

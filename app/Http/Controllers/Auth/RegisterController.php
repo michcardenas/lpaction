@@ -7,7 +7,6 @@ use App\Models\CourseProgress;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\Rules\Password;
 
 class RegisterController extends Controller
@@ -26,25 +25,9 @@ class RegisterController extends Controller
             return back()->withInput($request->except(['password', 'password_confirmation']));
         }
 
-        // reCAPTCHA v2 (si está configurado en .env). Si no, se usa la casilla "not_robot".
-        $usaRecaptcha = (bool) config('services.recaptcha.secret_key');
-        if ($usaRecaptcha) {
-            $ok = false;
-            try {
-                $resp = Http::asForm()->timeout(8)->post('https://www.google.com/recaptcha/api/siteverify', [
-                    'secret'   => config('services.recaptcha.secret_key'),
-                    'response' => $request->input('g-recaptcha-response'),
-                    'remoteip' => $request->ip(),
-                ]);
-                $ok = (bool) ($resp->json('success') ?? false);
-            } catch (\Throwable $e) {
-                $ok = false;
-            }
-            if (! $ok) {
-                return back()->withInput($request->except(['password', 'password_confirmation']))
-                    ->withErrors(['g-recaptcha-response' => 'No pudimos verificar que no eres un robot. Marca la casilla e inténtalo de nuevo.']);
-            }
-        }
+        // Lista blanca de correos autorizados a registrarse (petición del cliente). Si la lista está
+        // vacía, el registro queda abierto. La comparación es en minúsculas.
+        $autorizados = config('curso.registro_emails', []);
 
         $rules = [
             // 1. Datos personales
@@ -52,7 +35,14 @@ class RegisterController extends Controller
             'last_name'        => ['required', 'string', 'max:255'],
             'document_id'      => ['required', 'string', 'max:50'],
             // 'email:rfc' + regex: exige dominio con punto y TLD (rechaza "prueba@ejemplo").
-            'email'            => ['required', 'email:rfc', 'regex:/^[^@\s]+@[^@\s]+\.[A-Za-z]{2,}$/', 'max:255', 'confirmed', 'unique:users,email'],
+            // Además: solo se permiten correos de la lista blanca de inscripción (si hay lista).
+            'email'            => ['required', 'email:rfc', 'regex:/^[^@\s]+@[^@\s]+\.[A-Za-z]{2,}$/', 'max:255', 'confirmed', 'unique:users,email',
+                function ($attr, $value, $fail) use ($autorizados) {
+                    if (! empty($autorizados) && ! in_array(strtolower(trim((string) $value)), $autorizados, true)) {
+                        $fail('Este email no está habilitado para la inscripción. Introduce un email autorizado para continuar.');
+                    }
+                },
+            ],
             'password'         => ['required', 'confirmed', Password::min(8)],
             // 2. Datos profesionales
             'specialty'        => ['required', 'string', 'max:150'],
@@ -63,14 +53,9 @@ class RegisterController extends Controller
             // Consentimiento
             'accepted_privacy' => ['accepted'],
         ];
-        // Solo exigir la casilla "No soy un robot" cuando NO hay reCAPTCHA.
-        if (! $usaRecaptcha) {
-            $rules['not_robot'] = ['accepted'];
-        }
 
         $data = $request->validate($rules, [
             'accepted_privacy.accepted'   => 'Debes aceptar la política de privacidad y el aviso legal.',
-            'not_robot.accepted'          => 'Confirma que no eres un robot.',
             'email.email'                 => 'Introduce un correo electrónico válido.',
             'email.regex'                 => 'El correo debe incluir un dominio válido (p. ej. nombre@dominio.com).',
             'email.confirmed'             => 'Los correos electrónicos no coinciden.',

@@ -25,6 +25,28 @@ return [
         explode(',', (string) env('LPA_MODULOS_BLOQUEADOS', 'ingreso-3'))
     ))),
 
+    // Lista blanca de correos AUTORIZADOS a registrarse (petición del cliente: el alta queda
+    // restringida a esta lista hasta ir sumando usuarios reales mensualmente, hasta 1.000).
+    // Se pueden añadir también por .env (LPA_REGISTRO_EMAILS, separados por comas); se unen a esta
+    // lista. Todo se compara en minúsculas. Si la lista está VACÍA, el registro queda abierto a todos.
+    'registro_emails' => array_values(array_unique(array_filter(array_map(
+        fn ($e) => strtolower(trim($e)),
+        array_merge(
+            [
+                'pruebas@p.es',
+                'pruebas2@p.es',
+                'pruebas3@p.es',
+                'pruebas4@p.es',
+                'pruebas5@p.es',
+                'pruebas6@p.es',
+                'pruebas7@p.es',
+                'aldoji91@gmail.com',
+                'qualimed@qualimed.es',
+            ],
+            explode(',', (string) env('LPA_REGISTRO_EMAILS', ''))
+        )
+    )))),
+
     // ================================================================
     // ==================  DIPLOMA / CERTIFICADO  =====================
     // ================================================================

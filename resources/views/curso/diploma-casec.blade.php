@@ -111,7 +111,7 @@
         <img class="c-firma-img" src="{{ asset('images/diploma/casec_firma.jpg') }}" alt="Firma">
         <div class="c-firma-line"></div>
         <div class="c-firma-nom serif">{{ $diploma['presidente'] }}</div>
-        <div class="c-firma-cargo">Presidente · Sociedad Española de Cardiología</div>
+        <div class="c-firma-cargo">Presidente Sociedad Española de Cardiología</div>
       </div>
     </div>
   </div>
