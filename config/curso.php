@@ -76,6 +76,16 @@ return [
     // CASEC base → estas especialidades obtienen DOS diplomas (petición del cliente). Los nombres
     // deben coincidir EXACTAMENTE con los del desplegable de 'especialidades' (valor guardado en
     // users.specialty). La comparación se hace en minúsculas.
+    // ---- Correos automáticos (bienvenida, recuperación, recordatorios) ----
+    // Se envían desde la plataforma por SMTP (credenciales en .env: MAIL_*). Remitente del buzón
+    // no-reply@lpaction.es. La fecha de cierre alimenta los recordatorios 05 (2 semanas) y 06 (48 h).
+    'correos' => [
+        'from_address' => env('MAIL_FROM_ADDRESS', 'no-reply@lpaction.es'),
+        'from_name'    => env('MAIL_FROM_NAME', 'Lp(a)ction'),
+        // Fecha/hora de cierre del curso que aparece en los recordatorios (texto tal cual se muestra).
+        'fecha_cierre' => env('LPA_FECHA_CIERRE', '20 de mayo a las 24:00 h (hora peninsular)'),
+    ],
+
     'diploma_uems_especialidades' => [
         'Cardiología',
         'Medicina Interna',

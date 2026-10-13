@@ -251,6 +251,12 @@
             <form id="login-form" action="{{ route('login') }}" method="POST" class="login-card w-full max-w-[790px] p-7 lg:p-9">
                 @csrf
 
+                @if (session('status'))
+                    <div class="mb-5 px-4 py-3 rounded-lg text-[14px]" style="background:rgba(5,186,238,.1); border:1px solid rgba(5,186,238,.4); color:#06758f;">
+                        {{ session('status') }}
+                    </div>
+                @endif
+
                 @if ($errors->any())
                     <div class="mb-5 px-4 py-3 rounded-lg text-[14px]" style="background:rgba(224,86,75,0.12); border:1px solid rgba(224,86,75,0.4); color:#e0564b;">
                         {{ $errors->first() }}
@@ -289,7 +295,7 @@
                 </label>
 
                 {{-- Recuperar (botón ghost full-width) --}}
-                <a href="#" class="login-recuperar inline-block text-[14px] text-[#3a4a52] hover:text-[#05BAEE] transition-colors mb-7">
+                <a href="{{ route('password.request') }}" class="login-recuperar inline-block text-[14px] text-[#3a4a52] hover:text-[#05BAEE] transition-colors mb-7">
                     Recuperar contraseña
                 </a>
 

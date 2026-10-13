@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CursoController;
 use App\Http\Controllers\PerfilController;
@@ -19,6 +20,12 @@ Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
 Route::get('/registro', [RegisterController::class, 'show'])->name('register');
 Route::post('/registro', [RegisterController::class, 'store']);
 
+// Recuperación de contraseña (enlace por correo, plantilla 02).
+Route::get('/recuperar', [PasswordResetController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('/recuperar', [PasswordResetController::class, 'sendResetLink'])->name('password.email');
+Route::get('/restablecer/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
+Route::post('/restablecer', [PasswordResetController::class, 'reset'])->name('password.update');
+
 // Curso (requiere sesión iniciada)
 Route::middleware('auth')->group(function () {
     Route::get('/admin', [AdminController::class, 'dashboard'])->middleware('admin')->name('admin');
@@ -28,6 +35,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/informe-dinamico', [AdminController::class, 'informeDinamico'])->middleware('admin')->name('admin.informe.dinamico');
     Route::get('/admin/encuestas', [AdminController::class, 'encuestas'])->middleware('admin')->name('admin.encuestas');
     Route::get('/admin/preguntas', [AdminController::class, 'preguntas'])->middleware('admin')->name('admin.preguntas');
+    // Vista previa de los correos automáticos (para revisión del cliente).
+    Route::get('/admin/correos', [AdminController::class, 'correos'])->middleware('admin')->name('admin.correos');
+    Route::get('/admin/correos/{plantilla}', [AdminController::class, 'correoPreview'])->middleware('admin')->name('admin.correos.preview');
     Route::get('/admin/contenido/{area?}', [SiteContentController::class, 'edit'])->middleware('admin')->name('admin.contenido');
     Route::post('/admin/contenido', [SiteContentController::class, 'update'])->middleware('admin')->name('admin.contenido.update');
     Route::get('/curso', [CursoController::class, 'index'])->name('curso');

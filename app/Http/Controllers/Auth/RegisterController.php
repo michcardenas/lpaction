@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Mail\CorreoPlantilla;
 use App\Models\CourseProgress;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules\Password;
 
 class RegisterController extends Controller
@@ -87,6 +90,18 @@ class RegisterController extends Controller
         CourseProgress::seedFor($user);
 
         Auth::login($user);
+
+        // Correo de bienvenida (plantilla 01). Un fallo de SMTP no debe impedir el alta: se registra
+        // en el log y el usuario continúa igualmente.
+        try {
+            Mail::to($user->email)->send(new CorreoPlantilla(
+                '01-bienvenida',
+                'Tu inscripción en Lp(a)ction está confirmada',
+                ['nombre' => $user->name, 'cta_url' => url('/login')],
+            ));
+        } catch (\Throwable $e) {
+            Log::warning('No se pudo enviar el correo de bienvenida a ' . $user->email . ': ' . $e->getMessage());
+        }
 
         // Tras registrarse se muestra el POP-UP DE BIENVENIDA (petición del cliente): se vuelve al
         // login con el overlay; el alumno entra al curso solo al pulsar "Entrar al curso" (que marca

@@ -3,11 +3,13 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Mail\CorreoPlantilla;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Mail;
 
 class User extends Authenticatable
 {
@@ -67,6 +69,24 @@ class User extends Authenticatable
             'cert_icomem' => 'boolean',
             'welcome_seen' => 'boolean',
         ];
+    }
+
+    /**
+     * Enviar el correo de recuperación de contraseña con NUESTRA plantilla (02), en lugar de la
+     * notificación por defecto de Laravel. El token lo genera el broker de contraseñas.
+     */
+    public function sendPasswordResetNotification($token): void
+    {
+        $url = route('password.reset', [
+            'token' => $token,
+            'email' => $this->getEmailForPasswordReset(),
+        ]);
+
+        Mail::to($this->email)->send(new CorreoPlantilla(
+            '02-password-reset',
+            'Restablece tu contraseña de Lp(a)ction',
+            ['nombre' => $this->name, 'cta_url' => $url],
+        ));
     }
 
     /** Progreso del curso (un registro por módulo). */

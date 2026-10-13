@@ -152,6 +152,45 @@ class AdminController extends Controller
         return view('admin.preguntas', compact('preguntas'));
     }
 
+    /**
+     * Catálogo de correos automáticos de la plataforma (para revisión del cliente).
+     * Cada entrada enlaza a una vista previa renderizada con imágenes y datos de ejemplo.
+     */
+    public function correos()
+    {
+        $correos = self::catalogoCorreos();
+
+        return view('admin.correos', compact('correos'));
+    }
+
+    /** Vista previa de un correo concreto (HTML final, con imágenes y datos de ejemplo). */
+    public function correoPreview(string $plantilla)
+    {
+        $catalogo = self::catalogoCorreos();
+        abort_unless(isset($catalogo[$plantilla]), 404);
+
+        $html = \App\Mail\CorreoPlantilla::construirHtml($plantilla, [
+            'nombre'       => 'María',
+            'cta_url'      => url('/login'),
+            'fecha_cierre' => config('curso.correos.fecha_cierre'),
+        ]);
+
+        return response($html);
+    }
+
+    /** Definición de los 6 correos automáticos (clave de plantilla => metadatos). */
+    private static function catalogoCorreos(): array
+    {
+        return [
+            '01-bienvenida'       => ['asunto' => 'Tu inscripción en Lp(a)ction está confirmada', 'cuando' => 'Al registrarse un nuevo usuario.'],
+            '02-password-reset'   => ['asunto' => 'Restablece tu contraseña de Lp(a)ction', 'cuando' => 'Al solicitar "Recuperar contraseña".'],
+            '03-completa-curso'   => ['asunto' => 'Te esperamos para que completes el curso', 'cuando' => 'Recordatorio a quienes empezaron y no han terminado.'],
+            '04-modulo3'          => ['asunto' => '¡Ya está disponible el módulo 3!', 'cuando' => 'Al liberar el módulo 3 (envío manual).'],
+            '05-faltan-2-semanas' => ['asunto' => 'Faltan 2 semanas para finalizar Lp(a)ction', 'cuando' => '2 semanas antes del cierre del curso.'],
+            '06-faltan-48h'       => ['asunto' => 'Faltan 48 horas para finalizar Lp(a)ction', 'cuando' => '48 horas antes del cierre del curso.'],
+        ];
+    }
+
     /** Marca/desmarca a un alumno como cuenta de PRUEBA (excluida de las métricas). */
     public function toggleTest(User $user)
     {
