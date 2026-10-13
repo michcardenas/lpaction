@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password as PasswordRule;
@@ -31,7 +32,17 @@ class PasswordResetController extends Controller
         );
 
         // Respuesta neutra: no revelamos si el correo existe o no (privacidad).
-        Password::sendResetLink($request->only('email'));
+        // Blindado: si el envío por SMTP falla (credenciales, conexión…), NO mostramos un 500
+        // al usuario; registramos el error y devolvemos un mensaje amable.
+        try {
+            Password::sendResetLink($request->only('email'));
+        } catch (\Throwable $e) {
+            Log::error('Fallo al enviar el correo de recuperación de contraseña: ' . $e->getMessage());
+
+            return back()
+                ->withInput($request->only('email'))
+                ->withErrors(['email' => 'No pudimos enviar el correo en este momento. Inténtalo de nuevo en unos minutos.']);
+        }
 
         return back()->with('status', 'Si el correo está registrado, te hemos enviado un enlace para restablecer tu contraseña. Revisa tu bandeja de entrada (y la carpeta de spam).');
     }
