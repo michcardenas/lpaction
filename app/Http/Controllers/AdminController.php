@@ -61,7 +61,11 @@ class AdminController extends Controller
             User::where('is_admin', false)->where('is_test', true)->pluck('id')
         )->get()->groupBy('user_id');
 
-        $alumnos = User::where('is_admin', false)->orderByDesc('id')->get()->map(function ($u) use ($progresos, $progresosTest) {
+        // Especialidades que pueden optar a los créditos oficiales (reciben el diploma UEMS) → "Acreditación: SÍ".
+        $maxIntentos = (int) (config('curso.evaluacion.max_intentos') ?? 2);
+        $acreditadas = array_map(fn ($e) => mb_strtolower(trim($e)), config('curso.diploma_uems_especialidades', []));
+
+        $alumnos = User::where('is_admin', false)->orderByDesc('id')->get()->map(function ($u) use ($progresos, $progresosTest, $maxIntentos, $acreditadas) {
             $filas = $progresos->get($u->id) ?? $progresosTest->get($u->id) ?? collect();
             $estado = function ($m) use ($filas) {
                 $f = $filas->firstWhere('module_key', $m);
@@ -69,18 +73,39 @@ class AdminController extends Controller
             };
             $ev = $filas->firstWhere('module_key', 'evaluacion');
             $evMeta = $ev->etapas ?? [];
+            $apto = ! empty($evMeta['apto']);
+            $intentos = (int) ($evMeta['intentos'] ?? 0);
+            // Estado de la evaluación: APTO / NO APTO / EN CURSO.
+            $estadoEval = $apto ? 'apto' : ($intentos >= $maxIntentos ? 'no_apto' : 'en_curso');
+
+            $dip = $filas->firstWhere('module_key', 'diploma');
+            $diplomaDescargado = ! empty(($dip->etapas ?? [])['descargado']);
+
+            $espec = trim((string) ($u->specialty ?? ''));
+            $acreditada = $espec !== '' && in_array(mb_strtolower($espec), $acreditadas, true);
+
             return [
-                'id'         => $u->id,
-                'nombre'     => trim($u->name.' '.($u->last_name ?? '')) ?: '—',
-                'email'      => $u->email,
-                'i1'         => $estado('ingreso-1'),
-                'i2'         => $estado('ingreso-2'),
-                'i3'         => $estado('ingreso-3'),
-                'apto'       => ! empty($evMeta['apto']),
-                'nota'       => $evMeta['ultima_nota'] ?? null,
-                'registro'   => $u->created_at,
-                'is_test'    => (bool) $u->is_test,
-                'cert_icomem'=> (bool) $u->cert_icomem,
+                'id'          => $u->id,
+                'nombre'      => trim($u->name.' '.($u->last_name ?? '')) ?: '—',
+                'email'       => $u->email,
+                'especialidad'=> $espec !== '' ? $espec : '—',
+                'dni'         => trim((string) $u->document_id) ?: '—',
+                'provincia'   => trim((string) $u->province) ?: '—',
+                'poblacion'   => trim((string) $u->city) ?: '—',
+                'perfil'      => trim((string) $u->experience_level) ?: '—',
+                'acreditada'  => $acreditada,
+                'i1'          => $estado('ingreso-1'),
+                'i2'          => $estado('ingreso-2'),
+                'i3'          => $estado('ingreso-3'),
+                'apto'        => $apto,
+                'estado_eval' => $estadoEval,
+                'nota'        => $evMeta['ultima_nota'] ?? null,
+                'nota1'       => $evMeta['nota_intento1'] ?? null,
+                'nota2'       => $evMeta['nota_intento2'] ?? null,
+                'diploma'     => $diplomaDescargado,
+                'registro'    => $u->created_at,
+                'is_test'     => (bool) $u->is_test,
+                'cert_icomem' => (bool) $u->cert_icomem,
             ];
         });
 
@@ -90,6 +115,41 @@ class AdminController extends Controller
         return view('admin.dashboard', compact(
             'totalAlumnos', 'stats', 'aptos', 'mediaNota', 'cursoCompleto', 'nuevos7d', 'alumnos', 'informeDisponible'
         ));
+    }
+
+    /** Visor de la ENCUESTA de satisfacción: puntuación por dimensión + comentario de cada alumno. */
+    public function encuestas()
+    {
+        $dims = array_map(fn ($it) => $it['titulo'], config('curso.encuesta.items', []));
+
+        $rows = User::where('is_admin', false)
+            ->whereHas('progress', fn ($q) => $q->where('module_key', 'encuesta')->where('status', 'completed'))
+            ->with(['progress' => fn ($q) => $q->where('module_key', 'encuesta')])
+            ->orderByDesc('id')->get()
+            ->map(function ($u) {
+                $enc = optional($u->progress->firstWhere('module_key', 'encuesta'))->etapas ?? [];
+                $vals = array_values(array_filter(array_map('intval', $enc['respuestas'] ?? []), fn ($v) => $v > 0));
+                return [
+                    'nombre'        => trim($u->name.' '.($u->last_name ?? '')) ?: '—',
+                    'email'         => $u->email,
+                    'is_test'       => (bool) $u->is_test,
+                    'valoraciones'  => $enc['respuestas'] ?? [],
+                    'observaciones' => trim((string) ($enc['observaciones'] ?? '')),
+                    'media'         => count($vals) ? round(array_sum($vals) / count($vals), 1) : null,
+                    'completada'    => optional(optional($u->progress->firstWhere('module_key', 'encuesta'))->completed_at),
+                ];
+            });
+
+        return view('admin.encuestas', compact('dims', 'rows'));
+    }
+
+    /** Apartado con TODAS las preguntas de los ingresos: % de acierto y nº de respuestas. */
+    public function preguntas()
+    {
+        $r = \App\Support\CourseReport::build();
+        $preguntas = $r['todasPreguntas'] ?? [];
+
+        return view('admin.preguntas', compact('preguntas'));
     }
 
     /** Marca/desmarca a un alumno como cuenta de PRUEBA (excluida de las métricas). */

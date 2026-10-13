@@ -50,8 +50,9 @@
 
   /* Tabla */
   .panel { background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.09); border-radius: 14px; overflow: hidden; }
-  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
-  th, td { text-align: left; padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,.06); }
+  .panel.scroll-x { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; white-space: nowrap; }
+  th, td { text-align: left; padding: 11px 13px; border-bottom: 1px solid rgba(255,255,255,.06); }
   th { font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: #7fa7b8; font-weight: 700; background: rgba(255,255,255,.03); }
   tbody tr:hover { background: rgba(255,255,255,.03); }
   td .muted { color: #7f97a2; font-size: 12.5px; }
@@ -59,6 +60,7 @@
   .pill.ok { background: rgba(22,163,74,.18); color: #6ee7a8; }
   .pill.prog { background: rgba(234,179,8,.16); color: #f4d06a; }
   .pill.none { background: rgba(255,255,255,.06); color: #8b9aa3; }
+  .pill.no { background: rgba(220,38,38,.18); color: #ff8a8a; }
   .center { text-align: center; }
 
   /* Alumnos de PRUEBA: checkbox + fila atenuada (excluidos de las métricas) */
@@ -85,6 +87,8 @@
       @if ($informeDisponible)
         <a class="btn btn-ghost" href="{{ route('admin.informe') }}" title="Maqueta con datos simulados">Maqueta</a>
       @endif
+      <a class="btn btn-ghost" href="{{ route('admin.encuestas') }}" title="Puntuaciones y comentarios de la encuesta de satisfacción">Encuestas</a>
+      <a class="btn btn-ghost" href="{{ route('admin.preguntas') }}" title="Todas las preguntas con su % de acierto">Preguntas</a>
       <a class="btn btn-ghost" href="{{ route('admin.contenido') }}" title="Editar textos e imágenes de la página de inicio">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
         Editar web
@@ -144,13 +148,21 @@
         <thead>
           <tr>
             <th>Alumno</th>
+            <th>Especialidad</th>
+            <th>DNI</th>
+            <th>Provincia</th>
+            <th>Población</th>
+            <th>Perfil profesional</th>
+            <th class="center" title="SÍ = especialidad que puede optar a los créditos oficiales (diploma UEMS-ICOMEN)">Acreditación</th>
             <th class="center">Ingreso 1</th>
             <th class="center">Ingreso 2</th>
             <th class="center">Ingreso 3</th>
-            <th class="center">Evaluación</th>
+            <th class="center" title="Nota del 1.er y del 2.º intento">Evaluación (1º / 2º)</th>
+            <th class="center">Estado</th>
+            <th class="center" title="SÍ = el alumno abrió/descargó su diploma">Diploma</th>
             <th>Registro</th>
-            <th class="center" title="Marcar como cuenta de prueba: no cuenta en las métricas de arriba ni en el informe">Test</th>
-            <th class="center" title="Médico seleccionado: recibe el certificado ICOMEM/SEAFORMEC. Sin marcar, recibe el certificado CASEC de la SEC.">Cert. ICOMEM</th>
+            <th class="center" title="Marcar como cuenta de prueba: no cuenta en las métricas ni en el informe">Test</th>
+            <th class="center" title="Médico seleccionado: recibe el certificado ICOMEM/SEAFORMEC. Sin marcar, recibe el CASEC de la SEC.">Cert. ICOMEM</th>
           </tr>
         </thead>
         <tbody>
@@ -162,6 +174,7 @@
                 default       => '<span class="pill none">—</span>',
               };
             };
+            $perfilLbl = ['0-7' => '0-7 años', '8-15' => '8-15 años', '16+' => '≥16 años'];
           @endphp
           @forelse ($alumnos as $a)
             <tr class="{{ $a['is_test'] ? 'es-test' : '' }}">
@@ -169,17 +182,34 @@
                 <div>{{ $a['nombre'] }} @if ($a['is_test'])<span class="pill test">TEST</span>@endif</div>
                 <div class="muted">{{ $a['email'] }}</div>
               </td>
+              <td>{{ $a['especialidad'] }}</td>
+              <td>{{ $a['dni'] }}</td>
+              <td>{{ $a['provincia'] }}</td>
+              <td>{{ $a['poblacion'] }}</td>
+              <td>{{ $perfilLbl[$a['perfil']] ?? $a['perfil'] }}</td>
+              <td class="center">
+                @if ($a['acreditada']) <span class="pill ok">SÍ</span> @else <span class="pill none">NO</span> @endif
+              </td>
               <td class="center">{!! $pill($a['i1']) !!}</td>
               <td class="center">{!! $pill($a['i2']) !!}</td>
               <td class="center">{!! $pill($a['i3']) !!}</td>
               <td class="center">
-                @if ($a['apto'])
-                  <span class="pill ok">APTO{{ $a['nota'] !== null ? ' · '.$a['nota'].'/10' : '' }}</span>
-                @elseif ($a['nota'] !== null)
-                  <span class="pill prog">No apto · {{ $a['nota'] }}/10</span>
+                @if ($a['nota1'] !== null || $a['nota2'] !== null)
+                  <span>1º: {{ $a['nota1'] !== null ? $a['nota1'].'/10' : '—' }}</span><br>
+                  <span class="muted">2º: {{ $a['nota2'] !== null ? $a['nota2'].'/10' : '—' }}</span>
                 @else
                   <span class="pill none">—</span>
                 @endif
+              </td>
+              <td class="center">
+                @switch($a['estado_eval'])
+                  @case('apto')    <span class="pill ok">APTO</span> @break
+                  @case('no_apto') <span class="pill no">NO APTO</span> @break
+                  @default         <span class="pill prog">EN CURSO</span>
+                @endswitch
+              </td>
+              <td class="center">
+                @if ($a['diploma']) <span class="pill ok">SÍ</span> @else <span class="pill none">NO</span> @endif
               </td>
               <td class="muted">{{ optional($a['registro'])->format('d/m/Y') ?? '—' }}</td>
               <td class="center col-test">
@@ -187,7 +217,7 @@
                   @csrf
                   <input type="checkbox" class="chk-test" onchange="this.form.submit()"
                          {{ $a['is_test'] ? 'checked' : '' }}
-                         title="{{ $a['is_test'] ? 'Quitar marca de prueba (volverá a contar en las métricas)' : 'Marcar como cuenta de prueba (dejará de contar en las métricas)' }}">
+                         title="{{ $a['is_test'] ? 'Quitar marca de prueba' : 'Marcar como cuenta de prueba' }}">
                 </form>
               </td>
               <td class="center col-test">
@@ -195,12 +225,12 @@
                   @csrf
                   <input type="checkbox" class="chk-test" onchange="this.form.submit()"
                          {{ $a['cert_icomem'] ? 'checked' : '' }}
-                         title="{{ $a['cert_icomem'] ? 'Certificado ICOMEM. Desmarcar → recibirá el CASEC de la SEC.' : 'Certificado CASEC (por defecto). Marcar → recibirá el ICOMEM/SEAFORMEC (médico seleccionado).' }}">
+                         title="{{ $a['cert_icomem'] ? 'Certificado ICOMEM. Desmarcar → CASEC.' : 'Certificado CASEC. Marcar → ICOMEM/SEAFORMEC.' }}">
                 </form>
               </td>
             </tr>
           @empty
-            <tr><td colspan="8" class="center muted" style="padding:26px;">Aún no hay alumnos registrados.</td></tr>
+            <tr><td colspan="16" class="center muted" style="padding:26px;">Aún no hay alumnos registrados.</td></tr>
           @endforelse
         </tbody>
       </table>

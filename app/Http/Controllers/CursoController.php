@@ -338,6 +338,8 @@ class CursoController extends Controller
         $meta['intentos']    = (int) ($meta['intentos'] ?? 0) + 1;
         $meta['ultima_nota'] = $aciertos;
         $meta['ultimo_pct']  = $pct;
+        // Nota de CADA intento (1 y 2) → el panel admin muestra ambas por separado.
+        $meta['nota_intento'.min($meta['intentos'], 2)] = $aciertos;
         $meta['apto']        = (bool) ($meta['apto'] ?? false) || $apto;   // una vez APTO, se queda
         unset($meta['en_curso']);   // intento TERMINADO: ya no hay examen a medias que reanudar
         $prog->update([
@@ -474,6 +476,7 @@ class CursoController extends Controller
         if (! $this->diplomaDesbloqueado($user)) {
             return redirect()->route('curso')->with('diploma_error', 'Aún no has desbloqueado el diploma. Aprueba la evaluación final para obtenerlo.');
         }
+        $this->marcarDiplomaDescargado($user);   // registra que el alumno abrió/descargó el diploma
 
         // DIPLOMA BASE (todos los aptos): certificado CASEC de la Sociedad Española de Cardiología.
         $casec = config('curso.diploma_casec', []);
@@ -506,6 +509,7 @@ class CursoController extends Controller
         if (! $this->tieneDiplomaUems($user)) {
             return redirect()->route('diploma');
         }
+        $this->marcarDiplomaDescargado($user);
 
         $cfg = config('curso.diploma', []);
         $diploma = $this->datosDiplomaBase($user) + [
@@ -516,6 +520,20 @@ class CursoController extends Controller
         $esAdicional = true;   // la barra mostrará el enlace al diploma principal (CASEC)
 
         return view('curso.diploma', compact('diploma', 'esAdicional'));
+    }
+
+    /** Marca que el alumno abrió/descargó su diploma (etapas.descargado) → columna "Diploma" del admin.
+     *  No se marca a los admin (previsualización). */
+    private function marcarDiplomaDescargado($user): void
+    {
+        if ($user->isAdmin()) return;
+        $prog = $user->progress()->where('module_key', 'diploma')->first();
+        if (! $prog) return;
+        $meta = $prog->etapas ?? [];
+        if (! empty($meta['descargado'])) return;
+        $meta['descargado'] = true;
+        $meta['descargado_at'] = now()->toDateTimeString();
+        $prog->update(['etapas' => $meta]);
     }
 
     /** ¿El diploma está desbloqueado para este usuario? (APTO en la evaluación, o admin para previsualizar). */

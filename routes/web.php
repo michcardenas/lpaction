@@ -26,6 +26,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/admin/alumno/{user}/cert-icomem', [AdminController::class, 'toggleCertIcomem'])->middleware('admin')->name('admin.toggle-cert-icomem');
     Route::get('/admin/informe', [AdminController::class, 'informe'])->middleware('admin')->name('admin.informe');
     Route::get('/admin/informe-dinamico', [AdminController::class, 'informeDinamico'])->middleware('admin')->name('admin.informe.dinamico');
+    Route::get('/admin/encuestas', [AdminController::class, 'encuestas'])->middleware('admin')->name('admin.encuestas');
+    Route::get('/admin/preguntas', [AdminController::class, 'preguntas'])->middleware('admin')->name('admin.preguntas');
     Route::get('/admin/contenido/{area?}', [SiteContentController::class, 'edit'])->middleware('admin')->name('admin.contenido');
     Route::post('/admin/contenido', [SiteContentController::class, 'update'])->middleware('admin')->name('admin.contenido.update');
     Route::get('/curso', [CursoController::class, 'index'])->name('curso');

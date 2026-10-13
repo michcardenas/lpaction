@@ -176,6 +176,27 @@ class CourseReport
         usort($dificiles, fn ($a, $b) => $a['acierto'] <=> $b['acierto']);
         $dificiles = array_slice($dificiles, 0, 5);
 
+        // TODAS las preguntas de los ingresos (aunque nadie las haya respondido todavía), con su
+        // % de acierto y el nº de respuestas. Para el apartado "todas las preguntas" del admin.
+        $todasPreguntas = [];
+        foreach (['ingreso-1' => 1, 'ingreso-2' => 2, 'ingreso-3' => 3] as $ing => $n) {
+            foreach (self::STAGES as $stage) {
+                $pk = self::preguntaKey($ing, $stage);
+                if (empty($curso[$pk]['opciones'])) continue;   // esa etapa no tiene pregunta en ese ingreso
+                $v = $preg["i{$n}:{$stage}"] ?? ['intentos' => 0, 'aciertos' => 0];
+                $enun = $curso[$pk]['enunciado'] ?? '';
+                $todasPreguntas[] = [
+                    'codigo'    => 'I'.$n.' · '.$stageLabel[$stage],
+                    'ingreso'   => $n,
+                    'enunciado' => mb_strlen($enun) > 130 ? mb_substr($enun, 0, 130).'…' : $enun,
+                    'acierto'   => $v['intentos'] ? round($v['aciertos'] / $v['intentos'] * 100) : null,
+                    'n'         => $v['intentos'],
+                ];
+            }
+        }
+        // Orden: menor acierto primero (las no respondidas, acierto null, al final).
+        usort($todasPreguntas, fn ($a, $b) => ($a['acierto'] ?? 101) <=> ($b['acierto'] ?? 101));
+
         return [
             'generado'    => now(),
             'registrados' => $registrados,
@@ -197,6 +218,7 @@ class CourseReport
             'encuestas'   => $encuestas,
             'tasaRespuesta' => $pct($encuestas, $registrados),
             'dimMasBaja'  => $dimMasBaja,
+            'todasPreguntas' => $todasPreguntas,
             'dimensiones' => $dimensiones,
             'porPerfil'   => $porPerfil,
             'heatmap'     => $heatmap,

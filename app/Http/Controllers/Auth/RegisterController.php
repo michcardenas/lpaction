@@ -88,8 +88,10 @@ class RegisterController extends Controller
 
         Auth::login($user);
 
-        // El registro entra DIRECTO al curso (sin bienvenida) y NO marca welcome_seen: esa entrada
-        // "no cuenta". El pop-up de bienvenida aparece SOLO en el primer inicio de sesión (login).
-        return redirect()->route('curso')->with('status', '¡Registro completado! Bienvenido/a, ' . $user->name . '.');
+        // Tras registrarse se muestra el POP-UP DE BIENVENIDA (petición del cliente): se vuelve al
+        // login con el overlay; el alumno entra al curso solo al pulsar "Entrar al curso" (que marca
+        // welcome_seen). La ruta GET /login no tiene middleware guest, así que el overlay se renderiza
+        // aunque el usuario ya esté autenticado.
+        return redirect()->route('login')->with('bienvenida', true);
     }
 }
