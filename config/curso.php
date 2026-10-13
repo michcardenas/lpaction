@@ -83,11 +83,11 @@ return [
         'from_address' => env('MAIL_FROM_ADDRESS', 'no-reply@lpaction.es'),
         'from_name'    => env('MAIL_FROM_NAME', 'Lp(a)ction'),
         // Fecha/hora de cierre del curso que aparece en los recordatorios (texto tal cual se muestra).
-        'fecha_cierre' => env('LPA_FECHA_CIERRE', '20 de mayo a las 24:00 h (hora peninsular)'),
+        'fecha_cierre' => env('LPA_FECHA_CIERRE', '30 de abril a las 24:00 h (hora peninsular)'),
         // Fecha de cierre en formato PARSEABLE (YYYY-MM-DD) para el cálculo automático de los
         // recordatorios: el 05 sale 2 semanas antes y el 06 sale 48 h antes. Si queda vacía, el
-        // comando de recordatorios no envía nada (queda inerte hasta configurarla en el .env).
-        'fecha_cierre_iso' => env('LPA_FECHA_CIERRE_ISO'),
+        // comando de recordatorios no envía nada. Se puede sobrescribir en el .env (LPA_FECHA_CIERRE_ISO).
+        'fecha_cierre_iso' => env('LPA_FECHA_CIERRE_ISO', '2027-04-30'),
     ],
 
     'diploma_uems_especialidades' => [
