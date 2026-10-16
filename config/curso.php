@@ -53,8 +53,8 @@ return [
     // Datos de acreditación que aparecen en el certificado UEMS-ICOMEN.
     // ⚠️ COMPLETAR con los valores oficiales reales antes de emitir en producción.
     'diploma' => [
-        'fecha_inicio'       => '2 de enero de 2027',   // COMPLETAR: inicio real del curso
-        'fecha_fin'          => '30 de abril de 2027',  // COMPLETAR: fin real del curso
+        'fecha_inicio'       => '20 de octubre de 2026', // inicio del curso (corrección cliente oct-2026)
+        'fecha_fin'          => '20 de mayo de 2027',    // fin del curso (corrección cliente oct-2026)
         'horas'              => '20',                   // COMPLETAR: horas lectivas
         'creditos'           => '4,5',                  // COMPLETAR: créditos ECMEC
         'registro_uems'      => '',                     // COMPLETAR: Registro UEMS-EACCME

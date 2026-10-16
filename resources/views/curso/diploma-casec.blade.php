@@ -33,7 +33,7 @@
     background: #fff; overflow: hidden; color: #3f3f46;
     box-shadow: 0 10px 40px rgba(0,0,0,.35);
     display: flex; flex-direction: column; align-items: center;
-    padding: 46pt 70pt 40pt; text-align: center;
+    padding: 34pt 70pt 22pt; text-align: center;
   }
   /* Marco interior sutil en granate SEC */
   .page::before {
@@ -43,7 +43,7 @@
     content: ""; position: absolute; inset: 20pt; border: 0.6pt solid #d9b3c2; pointer-events: none;
   }
 
-  .casec-logo { width: 210pt; height: auto; margin-bottom: 14pt; position: relative; }
+  .casec-logo { width: 196pt; height: auto; margin-bottom: 7pt; position: relative; }
   .serif { font-family: "Times New Roman", "Liberation Serif", serif; }
 
   .c-intro   { font-size: 14pt; color: #52525b; margin-bottom: 6pt; }
@@ -53,14 +53,14 @@
   .c-curso   { font-size: 24pt; font-weight: bold; color: #8a1538; margin: 10pt 0 4pt; }
   .c-exped   { font-size: 12pt; color: #52525b; margin-bottom: 12pt; }
   .c-cel     { font-size: 13pt; color: #52525b; line-height: 1.5; max-width: 660pt; }
-  .c-cred    { font-size: 26pt; font-weight: bold; color: #1f2937; margin: 8pt 0; }
+  .c-cred    { font-size: 26pt; font-weight: bold; color: #1f2937; margin: 5pt 0; }
   .c-cred b  { color: #8a1538; }
   .c-norma   { font-size: 11pt; color: #6b7280; line-height: 1.45; max-width: 640pt; }
 
   .c-firma-wrap { margin-top: auto; display: flex; flex-direction: column; align-items: center; }
-  .c-fecha   { font-size: 12pt; color: #52525b; margin-bottom: 6pt; }
-  .c-firma-img { width: 150pt; height: auto; }
-  .c-firma-line { width: 240pt; border-top: 1pt solid #9ca3af; margin: 2pt 0 6pt; }
+  .c-fecha   { font-size: 12pt; color: #52525b; margin-bottom: 2pt; }
+  .c-firma-img { width: 104pt; height: auto; }
+  .c-firma-line { width: 240pt; border-top: 1pt solid #9ca3af; margin: 2pt 0 3pt; }
   .c-firma-nom { font-size: 12.5pt; font-weight: bold; color: #1f2937; }
   .c-firma-cargo { font-size: 11pt; color: #52525b; }
 
