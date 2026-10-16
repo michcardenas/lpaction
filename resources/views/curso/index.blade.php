@@ -815,9 +815,11 @@
                                     || ($fin['key'] === 'diploma' && $diplomaDesbloqueado);
                             @endphp
                             @if ($finalAbierto && $rutaFinal)
-                                {{-- Desbloqueada: enlace con botón cyan ↗ (el diploma abre en pestaña nueva) --}}
+                                {{-- Desbloqueada: enlace con botón cyan ↗. El diploma abre en pestaña nueva; si el
+                                     alumno tiene 2 diplomas (CASEC + UEMS-ICOMEN), se abren LAS 2 pestañas a la vez
+                                     para que no se pierda el segundo. --}}
                                 <a href="{{ route($rutaFinal) }}" class="final-card"
-                                   @if ($fin['key'] === 'diploma') target="_blank" rel="noopener" @endif>
+                                   @if ($fin['key'] === 'diploma') target="_blank" rel="noopener" @if ($tieneUems ?? false) onclick="window.open('{{ route('diploma.uems') }}', '_blank', 'noopener')" @endif @endif>
                                     <span>{{ $fin['titulo'] }}</span>
                                     <span class="final-arrow">
                                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M17 7H8M17 7V16"/></svg>

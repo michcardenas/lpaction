@@ -49,7 +49,10 @@ class CursoController extends Controller
         // Módulos retenidos hasta su lanzamiento (candado para alumnos; los admin ven todo).
         $modulosBloqueados = config('curso.modulos_bloqueados', []);
 
-        return view('curso.index', compact('user', 'curso', 'progress', 'pacienteActivo', 'esAdmin', 'modulosBloqueados'));
+        // ¿El alumno recibe 2 diplomas (CASEC + UEMS-ICOMEN)? → al abrir el diploma se abren las 2 pestañas.
+        $tieneUems = $this->tieneDiplomaUems($user);
+
+        return view('curso.index', compact('user', 'curso', 'progress', 'pacienteActivo', 'esAdmin', 'modulosBloqueados', 'tieneUems'));
     }
 
     /** "Entrar al curso" (botón del pop-up de bienvenida en el login): marca la bienvenida como
