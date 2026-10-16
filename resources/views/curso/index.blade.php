@@ -846,9 +846,9 @@
                 El contenido de este sitio web está orientado exclusivamente a profesionales sanitarios. 2026 © Qualimed Ediciones S.L.
             </p>
             <div class="flex items-center gap-8">
-                <a href="#" class="footer-link">Aviso legal</a>
-                <a href="#" class="footer-link">Política de privacidad</a>
-                <a href="#" class="footer-link">Política de cookies</a>
+                <a href="{{ route('aviso.legal') }}" class="footer-link">Aviso legal</a>
+                <a href="{{ route('politica.privacidad') }}" class="footer-link">Política de privacidad</a>
+                <a href="{{ route('politica.cookies') }}" class="footer-link">Política de cookies</a>
             </div>
         </div>
     </footer>

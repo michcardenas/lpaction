@@ -319,11 +319,11 @@
                 © 2026 Sociedad Española de Cardiología. Plataforma tecnológica y metodología por © Qualimed Ediciones S.L.
             </p>
             <div class="reg-footer-links flex items-center footer-txt text-white/85">
-                <a href="#" class="hover:text-[#05BAEE] transition-colors">Aviso legal</a>
+                <a href="{{ route('aviso.legal') }}" class="hover:text-[#05BAEE] transition-colors">Aviso legal</a>
                 <span style="display:inline-block; width:1px; height:14px; background:rgba(255,255,255,0.35); margin:0 20px;"></span>
-                <a href="#" class="hover:text-[#05BAEE] transition-colors">Política de privacidad</a>
+                <a href="{{ route('politica.privacidad') }}" class="hover:text-[#05BAEE] transition-colors">Política de privacidad</a>
                 <span style="display:inline-block; width:1px; height:14px; background:rgba(255,255,255,0.35); margin:0 20px;"></span>
-                <a href="#" class="hover:text-[#05BAEE] transition-colors">Política de cookies</a>
+                <a href="{{ route('politica.cookies') }}" class="hover:text-[#05BAEE] transition-colors">Política de cookies</a>
             </div>
         </div>
     </footer>

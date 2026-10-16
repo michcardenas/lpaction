@@ -20,6 +20,11 @@ Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
 Route::get('/registro', [RegisterController::class, 'show'])->name('register');
 Route::post('/registro', [RegisterController::class, 'store']);
 
+// Textos legales (páginas públicas).
+Route::view('/aviso-legal', 'legal.aviso-legal')->name('aviso.legal');
+Route::view('/politica-privacidad', 'legal.politica-privacidad')->name('politica.privacidad');
+Route::view('/politica-cookies', 'legal.politica-cookies')->name('politica.cookies');
+
 // Recuperación de contraseña (enlace por correo, plantilla 02).
 Route::get('/recuperar', [PasswordResetController::class, 'showLinkRequestForm'])->name('password.request');
 Route::post('/recuperar', [PasswordResetController::class, 'sendResetLink'])->name('password.email');

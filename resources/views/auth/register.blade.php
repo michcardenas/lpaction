@@ -367,7 +367,7 @@
                 <label class="flex items-start gap-3 mt-4 cursor-pointer">
                     <input type="checkbox" name="accepted_privacy" value="1" {{ old('accepted_privacy') ? 'checked' : '' }} required
                            class="w-[18px] h-[18px] mt-0.5 rounded-[4px] border border-[#c3ced3] accent-[#05BAEE] cursor-pointer shrink-0">
-                    <span class="text-[14px] text-[#3a4a52]">He leído y acepto política de privacidad y aviso legal</span>
+                    <span class="text-[14px] text-[#3a4a52]">He leído y acepto la <a href="{{ route('politica.privacidad') }}" target="_blank" rel="noopener" style="color:#05BAEE; text-decoration:underline;">política de privacidad</a> y el <a href="{{ route('aviso.legal') }}" target="_blank" rel="noopener" style="color:#05BAEE; text-decoration:underline;">aviso legal</a></span>
                 </label>
                 @error('accepted_privacy')<p class="field-error">{{ $message }}</p>@enderror
 
@@ -401,11 +401,11 @@
                 © 2026 Sociedad Española de Cardiología. Plataforma tecnológica y metodología por © Qualimed Ediciones S.L.
             </p>
             <div class="reg-footer-links flex items-center footer-txt text-white/85">
-                <a href="#" class="hover:text-[#05BAEE] transition-colors">Aviso legal</a>
+                <a href="{{ route('aviso.legal') }}" class="hover:text-[#05BAEE] transition-colors">Aviso legal</a>
                 <span style="display:inline-block; width:1px; height:14px; background:rgba(255,255,255,0.35); margin:0 20px;"></span>
-                <a href="#" class="hover:text-[#05BAEE] transition-colors">Política de privacidad</a>
+                <a href="{{ route('politica.privacidad') }}" class="hover:text-[#05BAEE] transition-colors">Política de privacidad</a>
                 <span style="display:inline-block; width:1px; height:14px; background:rgba(255,255,255,0.35); margin:0 20px;"></span>
-                <a href="#" class="hover:text-[#05BAEE] transition-colors">Política de cookies</a>
+                <a href="{{ route('politica.cookies') }}" class="hover:text-[#05BAEE] transition-colors">Política de cookies</a>
             </div>
         </div>
     </footer>
