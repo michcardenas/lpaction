@@ -55,10 +55,10 @@ return [
     'diploma' => [
         'fecha_inicio'       => '20 de octubre de 2026', // inicio del curso (corrección cliente oct-2026)
         'fecha_fin'          => '20 de mayo de 2027',    // fin del curso (corrección cliente oct-2026)
-        'horas'              => '20',                   // COMPLETAR: horas lectivas
-        'creditos'           => '4,5',                  // COMPLETAR: créditos ECMEC
-        'registro_uems'      => '',                     // COMPLETAR: Registro UEMS-EACCME
-        'registro_seaformec' => '',                     // COMPLETAR: Registro SEAFORMEC-SMPAC
+        'horas'              => '20',                   // horas lectivas
+        'creditos'           => '15',                   // créditos ECMEC (corrección cliente oct-2026)
+        'registro_uems'      => '0576D/10/2026',        // Registro UEMS-EACCME
+        'registro_seaformec' => '0487D/10/2026',        // Registro SEAFORMEC-SMPAC
     ],
 
     // Certificado CASEC (Comité de Acreditación de la SEC) — el que reciben TODOS por defecto.

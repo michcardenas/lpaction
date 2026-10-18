@@ -55,7 +55,7 @@
   .sello   { top: 459pt; left: 377pt; width: 90pt;  height: 89pt; }
   .firma1  { top: 473pt; left: 143pt; width: 139pt; height: 51pt; }
   .firma2  { top: 446pt; left: 563pt; width: 169pt; height: 110pt; }
-  .badge   { top: 396pt; left: 650pt; width: 152pt; height: 66pt; }
+  .badge   { top: 404pt; left: 600pt; width: 208pt; height: 81pt; }
   .page img { display: block; width: 100%; height: 100%; object-fit: contain; }
 
   /* Tipos de texto */
@@ -131,14 +131,9 @@
 
       <div class="abs center-line firmanp">Y para que conste, firman el presente certificado en Madrid, a {{ $diploma['fecha_emision'] }}.</div>
 
-      {{-- Insignia SEAFORMEC/UEMS + letra pequeña --}}
-      <div class="abs badge"><img src="{{ asset('images/diploma/badge_seaformec.jpg') }}" alt=""></div>
-      <div class="fine">
-        Actividad presencial: acreditada con 0.0 ECMECs y CPE-DPCs<br>
-        Actividad a distancia: acreditada con {{ $diploma['creditos'] }} ECMECs y CPE-DPCs<br>
-        Registro UEMS-EACCME: {{ $diploma['registro_uems'] }}<br>
-        Registro SEAFORMEC-SMPAC: {{ $diploma['registro_seaformec'] }}
-      </div>
+      {{-- Insignia SEAFORMEC/UEMS (logo nuevo del cliente: incluye el texto de acreditación
+           y los registros, por eso ya no se pinta el bloque de letra pequeña aparte). --}}
+      <div class="abs badge"><img src="{{ asset('images/diploma/badge_seaformec_v2.png') }}" alt="Actividad acreditada SEAFORMEC/SMPAC · UEMS"></div>
 
       {{-- Firmas --}}
       <div class="abs firma1"><img src="{{ asset('images/diploma/firma1.jpg') }}" alt=""></div>
