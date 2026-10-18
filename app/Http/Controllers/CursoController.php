@@ -482,16 +482,32 @@ class CursoController extends Controller
         $this->marcarDiplomaDescargado($user);   // registra que el alumno abrió/descargó el diploma
 
         // DIPLOMA BASE (todos los aptos): certificado CASEC de la Sociedad Española de Cardiología.
-        $casec = config('curso.diploma_casec', []);
-        $diploma = $this->datosDiplomaBase($user) + [
-            'expediente' => $casec['expediente'] ?? '',
-            'creditos'   => $casec['creditos'] ?? '',
-            'lugar'      => $casec['lugar'] ?? 'online',
-            'rol'        => $casec['rol'] ?? 'discente',
-            'presidente' => $casec['presidente'] ?? '',
+        $casecCfg = config('curso.diploma_casec', []);
+        $casec = $this->datosDiplomaBase($user) + [
+            'expediente' => $casecCfg['expediente'] ?? '',
+            'creditos'   => $casecCfg['creditos'] ?? '',
+            'lugar'      => $casecCfg['lugar'] ?? 'online',
+            'rol'        => $casecCfg['rol'] ?? 'discente',
+            'presidente' => $casecCfg['presidente'] ?? '',
         ];
-        // Las especialidades acreditadas reciben ADEMÁS el diploma UEMS-ICOMEN → se ofrece en la barra.
-        $tieneUems = $this->tieneDiplomaUems($user);
+
+        // Las especialidades acreditadas reciben DOS diplomas. En vez de dejarlos en pestañas/botones
+        // separados (que muchos alumnos no veían), se muestran LOS DOS en una sola pantalla y
+        // "Descargar PDF" genera los dos (2 páginas). Así nadie se pierde el segundo diploma.
+        if ($this->tieneDiplomaUems($user)) {
+            $uemsCfg = config('curso.diploma', []);
+            $uems = $this->datosDiplomaBase($user) + [
+                'creditos'           => $uemsCfg['creditos'] ?? '',
+                'registro_uems'      => $uemsCfg['registro_uems'] ?? '',
+                'registro_seaformec' => $uemsCfg['registro_seaformec'] ?? '',
+            ];
+
+            return view('curso.diploma-dual', compact('casec', 'uems'));
+        }
+
+        // Un solo diploma: el certificado CASEC de siempre.
+        $diploma = $casec;
+        $tieneUems = false;
 
         return view('curso.diploma-casec', compact('diploma', 'tieneUems'));
     }
