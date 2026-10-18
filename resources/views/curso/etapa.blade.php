@@ -1307,9 +1307,7 @@
                     {{-- En etapas con quiz el botón "Siguiente etapa" vive dentro del cuestionario (Contenido, aquí oculto);
                          agregamos uno en Bibliografía que envía ese mismo form para poder avanzar. --}}
                     @if (in_array($etapaActual, $etapasQuizBiblio, true))
-                        @php $bloqFin = $esUltimaEtapa && ! ($casoDescargado ?? false); @endphp
-                        <button type="button" class="btn-next biblio-next{{ $bloqFin ? ' is-locked' : '' }}" @disabled($bloqFin)
-                                title="{{ $bloqFin ? 'Descarga el caso para poder finalizar el ingreso' : '' }}"
+                        <button type="button" class="btn-next biblio-next"
                                 onclick="var f=document.querySelector('#view-contenido form'); if(f){ f.submit(); }">{{ $esUltimaEtapa ? 'Finalizar ingreso' : 'Siguiente etapa' }}</button>
                     @endif
                 </div>

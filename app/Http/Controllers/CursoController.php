@@ -836,9 +836,11 @@ class CursoController extends Controller
 
         $ingresoData  = collect($curso['ingresos'])->firstWhere('key', $ingreso);
         $esUltimaEtapa = $viewIndex >= count($etapas) - 1;
-        // Avance del caso: 100% cuando el ingreso está completado (pulsó "Finalizar ingreso").
-        // Avance = 100% solo cuando el caso está descargado (gate) o el ingreso ya está completado.
-        $avance = $casoDescargado ? 100 : (int) round($etapaIndex / max(count($etapas), 1) * 100);
+        // Avance del caso: 100% cuando el ingreso está completado o cuando el alumno ya llegó a la
+        // última etapa (Resumen del caso). "Descargar caso" ya NO condiciona el avance.
+        $avance = ($completado || $etapaIndex >= count($etapas) - 1)
+            ? 100
+            : (int) round($etapaIndex / max(count($etapas), 1) * 100);
 
         // Paciente del ingreso que se está viendo: dentro del Ingreso 2 se ve al Juan del Ingreso 2
         // (polo a rayas), en el 3 al del 3, etc. — independientemente del progreso.
@@ -919,14 +921,8 @@ class CursoController extends Controller
         // etapas señaladas para mejorar la puntuación (petición del cliente; antes se marcaba
         // completado con puntuación insuficiente — error crítico).
         if ($desde >= count($etapas) - 1) {
-            // Gate del cliente: "Finalizar ingreso" solo se permite tras pulsar "Descargar caso".
-            // (Refuerzo en servidor; el botón también aparece bloqueado en la vista.)
-            if (! $progreso->caso_descargado && $progreso->status !== 'completed') {
-                $progreso->update(['etapas' => $resultados, 'status' => 'in_progress']);
-                return redirect()->route('curso.etapa', [$ingreso, $stageKey])
-                    ->with('curso_status', 'Descarga el caso antes de finalizar el ingreso.');
-            }
-
+            // "Descargar caso" ya NO es requisito para finalizar (antes bloqueaba y dejaba a alumnos
+            // con nota suficiente atascados al 90%). El único requisito es la PUNTUACIÓN.
             $totalVerde = array_sum(array_map(fn ($r) => (int) ($r['verde'] ?? 0), $resultados));
             $totalRojo  = array_sum(array_map(fn ($r) => (int) ($r['rojo']  ?? 0), $resultados));
             $score      = $totalVerde - $totalRojo;

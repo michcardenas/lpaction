@@ -14,14 +14,12 @@
         </a>
     </div>
 
-    {{-- Finalizar ingreso: BLOQUEADO hasta pulsar "Descargar caso" (gate del cliente). --}}
-    @php $gateOk = ($casoDescargado ?? false); @endphp
+    {{-- Finalizar ingreso: SIEMPRE disponible. "Descargar caso" es opcional (revisar el caso);
+         ya NO bloquea el cierre. Antes lo bloqueaba y dejaba a alumnos con nota de sobra (400-500)
+         atascados al 90% si no descargaban el caso. El candado real sigue siendo la puntuación. --}}
     <form method="POST" action="{{ route('curso.avanzar', $ingreso) }}" class="resumen-foot">
         @csrf
         <input type="hidden" name="desde" value="{{ $etapaActual }}">
-        <button type="submit" class="btn-finalizar{{ $gateOk ? '' : ' is-locked' }}" @disabled(! $gateOk)
-                title="{{ $gateOk ? '' : 'Descarga el caso para poder finalizar el ingreso' }}">
-            Finalizar ingreso
-        </button>
+        <button type="submit" class="btn-finalizar">Finalizar ingreso</button>
     </form>
 </div>
