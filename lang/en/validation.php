@@ -131,8 +131,8 @@ return [
     |--------------------------------------------------------------------------
     */
     'custom' => [
-        'attribute-name' => [
-            'rule-name' => 'custom-message',
+        'email' => [
+            'unique' => 'Este correo electrónico ya está registrado. Si ya tienes una cuenta, inicia sesión.',
         ],
     ],
 

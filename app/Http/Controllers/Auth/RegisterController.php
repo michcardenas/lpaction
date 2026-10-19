@@ -62,6 +62,7 @@ class RegisterController extends Controller
             'email.email'                 => 'Introduce un correo electrónico válido.',
             'email.regex'                 => 'El correo debe incluir un dominio válido (p. ej. nombre@dominio.com).',
             'email.confirmed'             => 'Los correos electrónicos no coinciden.',
+            'email.unique'                => 'Este correo electrónico ya está registrado. Si ya tienes una cuenta, inicia sesión.',
             'password.confirmed'          => 'Las contraseñas no coinciden.',
             'password.min'                => 'La contraseña debe tener al menos 8 caracteres.',
             'specialty_other.required_if' => 'Escribe tu especialidad.',
