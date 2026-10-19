@@ -30,6 +30,7 @@
             transition: background .2s; border:none; cursor:pointer;
         }
         .pw-btn:hover { background:#049fcb; }
+        .pw-sep { height:1px; background:rgba(120,140,150,.22); margin:22px 0; }
         .header-bar { background:#0b2a39; }
         .footer-dark { background:#0b2a39; }
     </style>
@@ -77,7 +78,8 @@
                     <button type="submit" class="pw-btn w-full">Guardar contraseña</button>
                 </form>
 
-                <p class="text-[14px] text-[#3a4a52] mt-6 text-center">
+                <div class="pw-sep"></div>
+                <p class="text-[14px] text-[#3a4a52] text-center">
                     <a href="{{ route('login') }}" class="font-medium underline underline-offset-4 hover:text-[#05BAEE] transition-colors">Volver al inicio de sesión</a>
                 </p>
             </div>
