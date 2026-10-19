@@ -88,6 +88,8 @@ return [
         // recordatorios: el 05 sale 2 semanas antes y el 06 sale 48 h antes. Si queda vacía, el
         // comando de recordatorios no envía nada. Se puede sobrescribir en el .env (LPA_FECHA_CIERRE_ISO).
         'fecha_cierre_iso' => env('LPA_FECHA_CIERRE_ISO', '2027-05-20'),
+        // Destino del formulario de contacto / tutoría (buzón de gestión del cliente).
+        'tutoria_to' => env('LPA_TUTORIA_TO', 'gestion@qualimed.es'),
     ],
 
     'diploma_uems_especialidades' => [

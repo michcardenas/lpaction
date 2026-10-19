@@ -96,6 +96,15 @@
             transition: background .2s ease;
         }
         .tut-submit:hover { background: #04a3d1; }
+        /* Alertas de envío del formulario */
+        .tut-alert {
+            display: flex; align-items: center; gap: 10px;
+            border-radius: 8px; padding: 14px 16px; margin: 0 0 24px;
+            font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 14px; line-height: 1.5;
+        }
+        .tut-alert svg { flex-shrink: 0; }
+        .tut-alert-ok  { background: rgba(16,185,129,0.14); border: 1px solid rgba(16,185,129,0.45); color: #6ee7b7; }
+        .tut-alert-err { background: rgba(229,72,77,0.14);  border: 1px solid rgba(229,72,77,0.45);  color: #ff9ea0; }
 
         /* ===== Footer simple (línea legal + enlaces) — como el Figma ===== */
         .tut-footer { background: #000; }
@@ -313,13 +322,28 @@
             <div class="tut-card">
                 <h2 class="tut-card-head">Formulario de contacto</h2>
 
-                {{-- Envío pendiente: el cliente aún no ha definido la configuración del botón "Enviar" --}}
-                <form onsubmit="return false">
-                    <label class="tut-label" for="tut-motivo">Motivo de contacto <span style="color:#e5484d">*</span></label>
-                    <textarea id="tut-motivo" class="tut-textarea" placeholder="Escribe aquí..."></textarea>
+                @if (session('tut_success'))
+                    <div class="tut-alert tut-alert-ok" role="status">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                        <span>{{ session('tut_success') }}</span>
+                    </div>
+                @endif
+                @if (session('tut_error'))
+                    <div class="tut-alert tut-alert-err" role="alert">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                        <span>{{ session('tut_error') }}</span>
+                    </div>
+                @endif
 
-                    {{-- Envío pendiente: el cliente aún no ha definido la configuración del botón "Enviar" --}}
-                    <button type="button" class="tut-submit">Enviar</button>
+                <form method="POST" action="{{ route('tutoria.send') }}">
+                    @csrf
+                    <label class="tut-label" for="tut-motivo">Motivo de contacto <span style="color:#e5484d">*</span></label>
+                    <textarea id="tut-motivo" name="motivo" class="tut-textarea" placeholder="Escribe aquí..." required>{{ old('motivo') }}</textarea>
+                    @error('motivo')
+                        <p style="color:#ff9ea0;font-size:14px;margin-top:8px">{{ $message }}</p>
+                    @enderror
+
+                    <button type="submit" class="tut-submit">Enviar</button>
                 </form>
             </div>
 

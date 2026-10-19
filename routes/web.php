@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CursoController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\SiteContentController;
+use App\Http\Controllers\TutoriaController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -47,7 +48,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/admin/contenido', [SiteContentController::class, 'update'])->middleware('admin')->name('admin.contenido.update');
     Route::get('/curso', [CursoController::class, 'index'])->name('curso');
     Route::post('/bienvenida/entrar', [CursoController::class, 'entrarBienvenida'])->name('bienvenida.entrar');
-    Route::view('/tutoria', 'tutoria')->name('tutoria');
+    Route::get('/tutoria', [TutoriaController::class, 'show'])->name('tutoria');
+    Route::post('/tutoria', [TutoriaController::class, 'send'])->name('tutoria.send');
     Route::view('/autores', 'autores')->name('autores');
     Route::get('/perfil', [PerfilController::class, 'show'])->name('perfil');
     Route::put('/perfil/password', [PerfilController::class, 'updatePassword'])->name('perfil.password');
