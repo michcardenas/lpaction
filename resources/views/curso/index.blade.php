@@ -760,13 +760,11 @@
                                         $ctaTexto = $percent >= 100 ? 'Acceder' : ($percent > 0 ? 'Continuar' : 'Iniciar');
                                     @endphp
                                     <a href="{{ route('curso.etapa', $ing['key']) }}" class="btn-iniciar">{{ $ctaTexto }}</a>
-                                @elseif ($requiereAcreditacion)
-                                    <span class="btn-locked" title="Disponible solo para especialidades con acreditación SEAFORMEC">
-                                        Solo acreditados
-                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
-                                    </span>
                                 @else
-                                    <span class="btn-locked">
+                                    {{-- Bloqueado: mismo candado estándar para todos los casos (secuencial,
+                                         "Próximamente" o por acreditación SEAFORMEC) — diseño idéntico al Figma. --}}
+                                    <span class="btn-locked"
+                                        @if ($requiereAcreditacion) title="Disponible solo para especialidades con acreditación SEAFORMEC" @endif>
                                         {{ $bloqueadoLanzamiento ? 'Próximamente' : 'Iniciar' }}
                                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
                                     </span>
