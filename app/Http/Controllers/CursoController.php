@@ -595,8 +595,12 @@ class CursoController extends Controller
     private function tieneDiplomaUems($user): bool
     {
         if ($user->isAdmin() || $user->cert_icomem) return true;
-        $espec = mb_strtolower(trim((string) $user->specialty));
-        $lista = array_map(fn ($e) => mb_strtolower(trim($e)), config('curso.diploma_uems_especialidades', []));
+        // Comparación robusta: insensible a tildes y mayúsculas, para que variantes reales como
+        // "Cardiologia", "CARDIOLOGIA" o "cardiología" se reconozcan igual que "Cardiología".
+        $norm = fn ($s) => strtr(mb_strtolower(trim((string) $s)),
+            ['á'=>'a','é'=>'e','í'=>'i','ó'=>'o','ú'=>'u','ü'=>'u','ñ'=>'n']);
+        $espec = $norm($user->specialty);
+        $lista = array_map($norm, config('curso.diploma_uems_especialidades', []));
         return $espec !== '' && in_array($espec, $lista, true);
     }
 
