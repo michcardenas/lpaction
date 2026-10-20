@@ -15,22 +15,27 @@ return [
     'disponible_hasta' => '15/01/2027',
     'plazas'           => 1000,   // Plazas totales del curso (para el informe: "sobre 1.000 plazas").
 
-    // Módulos "Próximamente": permanecen BLOQUEADOS para los ALUMNOS hasta su lanzamiento, aunque
-    // hayan completado el ingreso anterior. Los ADMIN (correctores) NO se ven afectados.
-    // Se controla desde .env con LPA_MODULOS_BLOQUEADOS (lista separada por comas).
-    // NOTA: el Ingreso 3 YA NO se retiene aquí; ahora se rige por acreditación (ver
-    // 'modulos_solo_acreditados' más abajo). Por defecto esta lista va VACÍA.
+    // Módulos "No disponible" (aún no lanzados): permanecen BLOQUEADOS para TODOS los alumnos hasta
+    // su lanzamiento, aunque hayan completado el ingreso anterior. Los ADMIN (correctores) NO se ven
+    // afectados. Este bloqueo tiene PRIORIDAD sobre la acreditación. Por petición del cliente, el
+    // Ingreso 3 sale "No disponible" para todo el mundo hasta la fecha de lanzamiento.
+    // Se controla desde .env con LPA_MODULOS_BLOQUEADOS (lista separada por comas). El día que se
+    // libere el Módulo 3: poner LPA_MODULOS_BLOQUEADOS= (vacío) y `php artisan config:clear`; entonces
+    // pasará a regirse por acreditación (ver 'modulos_solo_acreditados').
     'modulos_bloqueados' => array_values(array_filter(array_map(
         'trim',
-        explode(',', (string) env('LPA_MODULOS_BLOQUEADOS', ''))
+        explode(',', (string) env('LPA_MODULOS_BLOQUEADOS', 'ingreso-3'))
     ))),
 
-    // Módulos que REQUIEREN acreditación SEAFORMEC/UEMS-ICOMEN (petición del cliente): son VISIBLES
-    // para todos los alumnos pero SOLO ACCESIBLES para los acreditados (especialidades de
-    // 'diploma_uems_especialidades', flag cert_icomem o admin). A los alumnos NO acreditados no se
-    // les exige este módulo: completan el curso con el resto de ingresos y obtienen su diploma CASEC.
-    // El Módulo 3 ("Terapias dirigidas a la Lp(a)") entra aquí. Configurable con
-    // LPA_MODULOS_SOLO_ACREDITADOS (lista separada por comas); vaciar la lista lo abre a todos.
+    // Texto informativo que se muestra bajo un módulo bloqueado (p. ej. la fecha de lanzamiento).
+    'modulos_aviso' => [
+        'ingreso-3' => env('LPA_MODULO3_AVISO', 'Disponible el 20 de enero de 2027.'),
+    ],
+
+    // Módulos que REQUIEREN acreditación SEAFORMEC/UEMS-ICOMEN: una vez LIBERADOS (fuera de
+    // 'modulos_bloqueados'), solo serán ACCESIBLES para los acreditados (especialidades de
+    // 'diploma_uems_especialidades', flag cert_icomem o admin); a los NO acreditados no se les exige.
+    // Mientras el Ingreso 3 siga en 'modulos_bloqueados' manda el "No disponible" (para todos).
     'modulos_solo_acreditados' => array_values(array_filter(array_map(
         'trim',
         explode(',', (string) env('LPA_MODULOS_SOLO_ACREDITADOS', 'ingreso-3'))

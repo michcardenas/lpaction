@@ -46,8 +46,11 @@ class CursoController extends Controller
         // Admin (corrector): acceso total en el portal para validar todo el contenido.
         $esAdmin = $user->isAdmin();
 
-        // Módulos retenidos hasta su lanzamiento (candado "Próximamente"; los admin ven todo).
+        // Módulos retenidos hasta su lanzamiento (candado "No disponible"; los admin ven todo).
         $modulosBloqueados = config('curso.modulos_bloqueados', []);
+
+        // Texto informativo por módulo bloqueado (p. ej. "Disponible el 20 de enero de 2027.").
+        $modulosAviso = config('curso.modulos_aviso', []);
 
         // Módulos que requieren acreditación SEAFORMEC (p. ej. Ingreso 3): visibles pero bloqueados
         // para alumnos no acreditados.
@@ -57,7 +60,7 @@ class CursoController extends Controller
         // pestañas. Además marca la ACREDITACIÓN SEAFORMEC: solo los acreditados acceden al Ingreso 3.
         $tieneUems = $this->tieneDiplomaUems($user);
 
-        return view('curso.index', compact('user', 'curso', 'progress', 'pacienteActivo', 'esAdmin', 'modulosBloqueados', 'modulosSoloAcreditados', 'tieneUems'));
+        return view('curso.index', compact('user', 'curso', 'progress', 'pacienteActivo', 'esAdmin', 'modulosBloqueados', 'modulosAviso', 'modulosSoloAcreditados', 'tieneUems'));
     }
 
     /** "Entrar al curso" (botón del pop-up de bienvenida en el login): marca la bienvenida como
@@ -1255,11 +1258,16 @@ class CursoController extends Controller
     {
         if ($user && $user->isAdmin()) return false;
 
+        // PRIORIDAD: si el módulo está retenido hasta su lanzamiento ("No disponible"), está
+        // bloqueado para TODOS (acreditados o no).
+        if ($this->moduloBloqueadoLanzamiento($moduleKey)) return true;
+
+        // Ya liberado: puede requerir acreditación SEAFORMEC.
         if ($this->moduloSoloAcreditados($moduleKey)) {
             return ! $this->tieneDiplomaUems($user);
         }
 
-        return $this->moduloBloqueadoLanzamiento($moduleKey);
+        return false;
     }
 
     /** Devuelve el progreso del ingreso si está desbloqueado; si no, 404.

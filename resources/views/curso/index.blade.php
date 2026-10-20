@@ -132,6 +132,25 @@
             font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 15px;
             cursor: not-allowed;
         }
+        /* Botón "Ver" (módulo ya completado): gris secundario, clicable (como el Figma). */
+        .btn-ver {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 150px; height: 46px; border-radius: 8px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.14);
+            color: #c7d6db;
+            font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 15px;
+            transition: background .2s;
+        }
+        .btn-ver:hover { background: rgba(255,255,255,0.12); }
+        /* Línea informativa bajo un módulo "No disponible" (p. ej. fecha de lanzamiento). */
+        .ing-aviso {
+            grid-column: 2 / -1;
+            display: flex; align-items: center; gap: 8px;
+            margin-top: -8px; padding-left: 28px;
+            font-family: 'Montserrat', sans-serif; font-size: 13.5px; color: #8aa1a9;
+        }
+        .ing-aviso svg { flex-shrink: 0; opacity: .8; }
 
         /* ===== Detalle del curso ===== */
         .detalle-head {
@@ -389,14 +408,15 @@
             .ing-row {
                 display: grid !important;
                 grid-template-columns: 1fr auto;
-                grid-template-areas: "label label" "title title" "pct cta";
+                grid-template-areas: "label label" "title title" "pct cta" "aviso aviso";
                 gap: 16px 16px !important; padding: 20px 12px !important; align-items: center;
             }
             .ing-label { grid-area: label; font-size: 20px !important; font-weight: 600 !important; line-height: 140% !important; padding-bottom: 8px !important; border-bottom: 0.5px solid rgba(185,185,185,0.25) !important; }
             .ing-title { grid-area: title; font-size: 15px !important; font-weight: 400 !important; line-height: 150% !important; padding-left: 0 !important; border-left: none !important; color: #FFFFFF !important; }
             .ing-pct { grid-area: pct; align-self: center; }
             .ing-cta { grid-area: cta; justify-self: end; }
-            .btn-iniciar, .btn-locked { width: 148px !important; height: 45px !important; font-size: 15px; }
+            .ing-aviso { grid-area: aviso; margin-top: 0 !important; padding-left: 0 !important; }
+            .btn-iniciar, .btn-locked, .btn-ver { width: 148px !important; height: 45px !important; font-size: 15px; }
 
             /* Detalle del curso: label en bloque, estado + fecha en línea */
             .detalle-head { display: block !important; padding: 20px 12px 12px !important; }
@@ -554,7 +574,7 @@
             .ing-row {
                 display: grid !important;
                 grid-template-columns: 1fr auto;
-                grid-template-areas: "label label" "title title" "pct cta";
+                grid-template-areas: "label label" "title title" "pct cta" "aviso aviso";
                 gap: 24px 12px !important; padding: 16px 8px !important; align-items: center;
                 border-bottom: 0.5px solid rgba(185,185,185,0.25) !important;         /* divisor #B9B9B9 25% */
             }
@@ -562,7 +582,8 @@
             .ing-title { grid-area: title; font-size: 14px !important; font-weight: 400 !important; line-height: 150% !important; color: #FFFFFF !important; padding-left: 0 !important; border-left: none !important; }
             .ing-pct { grid-area: pct; align-self: center; }
             .ing-cta { grid-area: cta; justify-self: end; }
-            .btn-iniciar, .btn-locked { width: 148px !important; height: 45px !important; border-radius: 4px !important; font-size: 15px; }
+            .ing-aviso { grid-area: aviso; margin-top: 0 !important; padding-left: 0 !important; }
+            .btn-iniciar, .btn-locked, .btn-ver { width: 148px !important; height: 45px !important; border-radius: 4px !important; font-size: 15px; }
 
             /* ===== Detalle del curso ===== */
             .detalle-head { display: block !important; padding: 18px 0 10px !important; }
@@ -735,41 +756,51 @@
                             // caso" (gate). Estar en "Resumen del caso" sin descargar NO cuenta como 100%.
                             $percent = ($status === 'completed' || ($p->caso_descargado ?? false))
                                 ? 100 : (int) round($idx / max($etapasTotal, 1) * 100);
-                            // Módulo que REQUIERE acreditación SEAFORMEC (p. ej. Ingreso 3): visible pero
-                            // bloqueado para el alumno NO acreditado. El acreditado y el admin lo ven abierto.
+                            // --- Estado de acceso del módulo para ESTE alumno ---
+                            // Prioridad 1: módulo "No disponible" (retenido hasta su lanzamiento) → bloqueado
+                            // para TODOS (acreditados o no); el admin lo ve abierto.
+                            $bloqueadoLanzamiento = in_array($ing['key'], $modulosBloqueados ?? [], true);
+                            // Prioridad 2 (solo si ya está liberado): requiere acreditación SEAFORMEC.
                             $soloAcreditados = in_array($ing['key'], $modulosSoloAcreditados ?? [], true);
-                            $requiereAcreditacion = $soloAcreditados && ! ($tieneUems ?? false) && ! ($esAdmin ?? false);
-                            // Módulo RETENIDO hasta su lanzamiento ("Próximamente"): candado para el alumno
-                            // aunque haya completado el anterior. El ADMIN lo ve abierto. (No aplica a los
-                            // módulos de acreditación, que se rigen por la regla de arriba.)
-                            $bloqueadoLanzamiento = ! $soloAcreditados && in_array($ing['key'], $modulosBloqueados ?? [], true);
+                            $requiereAcreditacion = ! $bloqueadoLanzamiento && $soloAcreditados
+                                && ! ($tieneUems ?? false) && ! ($esAdmin ?? false);
+                            // Texto informativo (p. ej. fecha de lanzamiento) bajo el módulo no disponible.
+                            $avisoDisponible = $bloqueadoLanzamiento ? ($modulosAviso[$ing['key']] ?? null) : null;
                             // Admin (corrector): acceso total → todos los ingresos accesibles para validar.
                             $abierto = ($esAdmin ?? false)
-                                || (! $requiereAcreditacion && ! $bloqueadoLanzamiento
+                                || (! $bloqueadoLanzamiento && ! $requiereAcreditacion
                                     && in_array($status, ['available', 'in_progress', 'completed']));
                         @endphp
                         <div class="ing-row {{ $abierto ? '' : 'locked' }}">
                             <div class="ing-label">{{ $ing['label'] }}</div>
                             <div class="ing-title">{{ $ing['titulo'] }}</div>
-                            <div class="ing-pct">{{ str_pad($percent, 2, '0', STR_PAD_LEFT) }} %</div>
+                            {{-- En un módulo aún "No disponible" no se muestra el % (como en el Figma). --}}
+                            <div class="ing-pct">@unless ($bloqueadoLanzamiento){{ str_pad($percent, 2, '0', STR_PAD_LEFT) }} %@endunless</div>
                             <div class="ing-cta">
                                 @if ($abierto)
                                     @php
-                                        // 100% → "Acceder" (el módulo ya está terminado, solo se consulta);
-                                        // empezado → "Continuar"; sin empezar → "Iniciar".
-                                        $ctaTexto = $percent >= 100 ? 'Acceder' : ($percent > 0 ? 'Continuar' : 'Iniciar');
+                                        // 100% → "Ver" (ya terminado, solo se consulta); empezado → "Continuar";
+                                        // sin empezar → "Iniciar".
+                                        $ctaTexto = $percent >= 100 ? 'Ver' : ($percent > 0 ? 'Continuar' : 'Iniciar');
+                                        $ctaClase = $percent >= 100 ? 'btn-ver' : 'btn-iniciar';
                                     @endphp
-                                    <a href="{{ route('curso.etapa', $ing['key']) }}" class="btn-iniciar">{{ $ctaTexto }}</a>
+                                    <a href="{{ route('curso.etapa', $ing['key']) }}" class="{{ $ctaClase }}">{{ $ctaTexto }}</a>
                                 @else
-                                    {{-- Bloqueado: mismo candado estándar para todos los casos (secuencial,
-                                         "Próximamente" o por acreditación SEAFORMEC) — diseño idéntico al Figma. --}}
+                                    {{-- "No disponible" si el módulo aún no se ha lanzado; "Iniciar" si es un
+                                         bloqueo secuencial (falta completar el anterior). --}}
                                     <span class="btn-locked"
                                         @if ($requiereAcreditacion) title="Disponible solo para especialidades con acreditación SEAFORMEC" @endif>
-                                        {{ $bloqueadoLanzamiento ? 'Próximamente' : 'Iniciar' }}
+                                        {{ $bloqueadoLanzamiento ? 'No disponible' : 'Iniciar' }}
                                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
                                     </span>
                                 @endif
                             </div>
+                            @if ($avisoDisponible)
+                                <div class="ing-aviso">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 11v5"/><path d="M12 7.5h.01"/></svg>
+                                    <span>{{ $avisoDisponible }}</span>
+                                </div>
+                            @endif
                         </div>
                     @endforeach
 
