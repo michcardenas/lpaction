@@ -20,9 +20,18 @@ class LpactionEntriesSeeder extends Seeder
 {
     public function run(): void
     {
-        $password = Hash::make('Prueba2026');   // misma clave para todos
+        $password = Hash::make('Prueba2026');   // misma clave para todos (cohorte de prueba)
+        $creados = 0; $actualizados = 0; $omitidos = 0;
 
         foreach ($this->entries() as $e) {
+            $u = User::where('email', $e['email'])->first();
+
+            // SEGURIDAD EN PRODUCCIÓN: si ya existe una cuenta REAL con ese correo (is_test=false),
+            // NO se toca (no le cambiamos la contraseña ni los datos). Solo creamos cuentas nuevas
+            // o refrescamos las que ya eran de prueba.
+            if ($u && ! $u->is_test) { $omitidos++; continue; }
+
+            $existia = (bool) $u;
             User::updateOrCreate(
                 ['email' => $e['email']],
                 [
@@ -37,9 +46,10 @@ class LpactionEntriesSeeder extends Seeder
                     'is_admin'         => false,
                 ]
             );
+            $existia ? $actualizados++ : $creados++;
         }
 
-        $this->command->info('Seed lp(a)ction entries: '.count($this->entries()).' usuarios (clave Prueba2026).');
+        $this->command->info("Seed lp(a)ction entries -> creados: {$creados} | actualizados (prueba): {$actualizados} | OMITIDOS (cuentas reales intactas): {$omitidos}");
     }
 
     /** @return array<int,array<string,string>> */
