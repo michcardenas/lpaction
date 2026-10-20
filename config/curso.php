@@ -12,7 +12,7 @@ return [
     'titulo'           => 'La evolución de Juan',
     'subtitulo_1'      => 'Tres ingresos,',
     'subtitulo_2'      => 'tres decisiones clave',
-    'disponible_hasta' => '15/01/2027',
+    'disponible_hasta' => '20/5/2027',
     'plazas'           => 1000,   // Plazas totales del curso (para el informe: "sobre 1.000 plazas").
 
     // Módulos "No disponible" (aún no lanzados): permanecen BLOQUEADOS para TODOS los alumnos hasta
