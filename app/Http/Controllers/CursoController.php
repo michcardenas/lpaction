@@ -28,7 +28,7 @@ class CursoController extends Controller
             $sigKey = $ingKeys[$i + 1] ?? null;
             $cur = $progress->get($k);
             if ($sigKey && $cur && $cur->status === 'completed'
-                && ! $this->moduloBloqueadoLanzamiento($sigKey)) {   // no auto-abrir un módulo retenido (lanzamiento)
+                && ! $this->moduloBloqueadoPara($user, $sigKey)) {   // no auto-abrir un módulo bloqueado para este alumno
                 $sig = $progress->get($sigKey);
                 if ($sig && $sig->status === 'locked') {
                     $sig->update(['status' => 'available']);
@@ -46,13 +46,18 @@ class CursoController extends Controller
         // Admin (corrector): acceso total en el portal para validar todo el contenido.
         $esAdmin = $user->isAdmin();
 
-        // Módulos retenidos hasta su lanzamiento (candado para alumnos; los admin ven todo).
+        // Módulos retenidos hasta su lanzamiento (candado "Próximamente"; los admin ven todo).
         $modulosBloqueados = config('curso.modulos_bloqueados', []);
 
-        // ¿El alumno recibe 2 diplomas (CASEC + UEMS-ICOMEN)? → al abrir el diploma se abren las 2 pestañas.
+        // Módulos que requieren acreditación SEAFORMEC (p. ej. Ingreso 3): visibles pero bloqueados
+        // para alumnos no acreditados.
+        $modulosSoloAcreditados = config('curso.modulos_solo_acreditados', []);
+
+        // ¿El alumno recibe 2 diplomas (CASEC + UEMS-ICOMEN)? → al abrir el diploma se abren las 2
+        // pestañas. Además marca la ACREDITACIÓN SEAFORMEC: solo los acreditados acceden al Ingreso 3.
         $tieneUems = $this->tieneDiplomaUems($user);
 
-        return view('curso.index', compact('user', 'curso', 'progress', 'pacienteActivo', 'esAdmin', 'modulosBloqueados', 'tieneUems'));
+        return view('curso.index', compact('user', 'curso', 'progress', 'pacienteActivo', 'esAdmin', 'modulosBloqueados', 'modulosSoloAcreditados', 'tieneUems'));
     }
 
     /** "Entrar al curso" (botón del pop-up de bienvenida en el login): marca la bienvenida como
@@ -1085,12 +1090,27 @@ class CursoController extends Controller
     }
 
     /**
-     * ¿El alumno ha completado TODOS los ingresos (los 3 al 100%)?
-     * Es el requisito para abrir la evaluación final.
+     * Ingresos que ESTE usuario debe completar para terminar el curso. Excluye los módulos que
+     * requieren acreditación SEAFORMEC cuando el alumno NO está acreditado (p. ej. el Ingreso 3 para
+     * un no acreditado): ese alumno termina con el resto de ingresos y obtiene su diploma CASEC.
+     * Para los acreditados y los admin se exigen todos.
+     */
+    private function ingresosRequeridos($user): array
+    {
+        $claves = array_column(config('curso.ingresos', []), 'key');
+        return array_values(array_filter(
+            $claves,
+            fn ($k) => ! $this->moduloBloqueadoPara($user, $k)
+        ));
+    }
+
+    /**
+     * ¿El alumno ha completado TODOS los ingresos que le corresponden (según su acreditación)?
+     * Es el requisito para abrir la evaluación final. Un no acreditado NO necesita el Ingreso 3.
      */
     private function todosLosIngresosCompletados($user): bool
     {
-        $claves = array_column(config('curso.ingresos', []), 'key');
+        $claves = $this->ingresosRequeridos($user);
         if (! $claves) return false;
 
         $completados = $user->progress()
@@ -1194,10 +1214,10 @@ class CursoController extends Controller
         if ($idx === false || $idx >= count($ingresos) - 1) return;
 
         $siguienteKey = $ingresos[$idx + 1]['key'];
-        // Bloqueo de lanzamiento: si el siguiente módulo está retenido (p.ej. Ingreso 3 el día del
-        // lanzamiento), NO se desbloquea aunque el alumno complete el actual. Se abrirá cuando se
-        // quite de LPA_MODULOS_BLOQUEADOS. (Los admin acceden igual por su bypass en ingresoAbierto.)
-        if ($this->moduloBloqueadoLanzamiento($siguienteKey)) return;
+        // Si el siguiente módulo está bloqueado para ESTE usuario (requiere acreditación SEAFORMEC y
+        // no la tiene, o es un módulo "Próximamente"), NO se desbloquea aunque complete el actual.
+        // (Los admin acceden igual por su bypass en ingresoAbierto.)
+        if ($this->moduloBloqueadoPara($user, $siguienteKey)) return;
 
         $sig = $user->progress()->where('module_key', $siguienteKey)->first();
         if ($sig && $sig->status === 'locked') {
@@ -1205,11 +1225,37 @@ class CursoController extends Controller
         }
     }
 
-    /** ¿Este módulo debe permanecer BLOQUEADO para los alumnos hasta su lanzamiento? (config
-     *  curso.modulos_bloqueados / .env LPA_MODULOS_BLOQUEADOS). Los admin NO se ven afectados. */
+    /** ¿Este módulo debe permanecer BLOQUEADO para los alumnos hasta su lanzamiento? ("Próximamente";
+     *  config curso.modulos_bloqueados / .env LPA_MODULOS_BLOQUEADOS). Los admin NO se ven afectados. */
     private function moduloBloqueadoLanzamiento(string $moduleKey): bool
     {
         return in_array($moduleKey, config('curso.modulos_bloqueados', []), true);
+    }
+
+    /** ¿Este módulo requiere acreditación SEAFORMEC/UEMS-ICOMEN? (config curso.modulos_solo_acreditados).
+     *  Visible para todos, pero solo accesible para alumnos acreditados; a los no acreditados no se
+     *  les exige para terminar el curso. */
+    private function moduloSoloAcreditados(string $moduleKey): bool
+    {
+        return in_array($moduleKey, config('curso.modulos_solo_acreditados', []), true);
+    }
+
+    /**
+     * ¿El módulo está BLOQUEADO para ESTE usuario concreto? Combina las dos reglas de acceso:
+     *  - Módulo que requiere acreditación (p. ej. Ingreso 3): su acceso lo decide SOLO la
+     *    acreditación SEAFORMEC del alumno (tieneDiplomaUems). No lo afecta el bloqueo de lanzamiento.
+     *  - Resto de módulos: bloqueo de lanzamiento global ("Próximamente").
+     * Los admin (correctores) nunca quedan bloqueados.
+     */
+    private function moduloBloqueadoPara($user, string $moduleKey): bool
+    {
+        if ($user && $user->isAdmin()) return false;
+
+        if ($this->moduloSoloAcreditados($moduleKey)) {
+            return ! $this->tieneDiplomaUems($user);
+        }
+
+        return $this->moduloBloqueadoLanzamiento($moduleKey);
     }
 
     /** Devuelve el progreso del ingreso si está desbloqueado; si no, 404.
@@ -1227,9 +1273,10 @@ class CursoController extends Controller
             ]);
         }
 
-        // Bloqueo de lanzamiento: un alumno NO puede abrir por URL un módulo retenido (p.ej. Ingreso 3
-        // el día del lanzamiento), aunque su fila figure como 'available'.
-        abort_if($this->moduloBloqueadoLanzamiento($ingreso), 404);
+        // Un alumno NO puede abrir por URL un módulo bloqueado para él: ni un módulo "Próximamente",
+        // ni un módulo que requiere acreditación SEAFORMEC si no la tiene (p. ej. Ingreso 3), aunque
+        // su fila figure como 'available'.
+        abort_if($this->moduloBloqueadoPara($user, $ingreso), 404);
 
         abort_unless(
             $progreso && in_array($progreso->status, ['available', 'in_progress', 'completed']),

@@ -15,14 +15,25 @@ return [
     'disponible_hasta' => '15/01/2027',
     'plazas'           => 1000,   // Plazas totales del curso (para el informe: "sobre 1.000 plazas").
 
-    // Módulos que deben permanecer BLOQUEADOS para los ALUMNOS hasta su lanzamiento, AUNQUE hayan
-    // completado el ingreso anterior (petición del cliente: el día del lanzamiento el Módulo 3 sale
-    // bloqueado). Los ADMIN (correctores) NO se ven afectados: mantienen acceso total para revisar.
-    // Se controla desde .env con LPA_MODULOS_BLOQUEADOS (lista separada por comas). Para LIBERAR el
-    // Módulo 3 el día que toque, poner LPA_MODULOS_BLOQUEADOS= (vacío) y `php artisan config:clear`.
+    // Módulos "Próximamente": permanecen BLOQUEADOS para los ALUMNOS hasta su lanzamiento, aunque
+    // hayan completado el ingreso anterior. Los ADMIN (correctores) NO se ven afectados.
+    // Se controla desde .env con LPA_MODULOS_BLOQUEADOS (lista separada por comas).
+    // NOTA: el Ingreso 3 YA NO se retiene aquí; ahora se rige por acreditación (ver
+    // 'modulos_solo_acreditados' más abajo). Por defecto esta lista va VACÍA.
     'modulos_bloqueados' => array_values(array_filter(array_map(
         'trim',
-        explode(',', (string) env('LPA_MODULOS_BLOQUEADOS', 'ingreso-3'))
+        explode(',', (string) env('LPA_MODULOS_BLOQUEADOS', ''))
+    ))),
+
+    // Módulos que REQUIEREN acreditación SEAFORMEC/UEMS-ICOMEN (petición del cliente): son VISIBLES
+    // para todos los alumnos pero SOLO ACCESIBLES para los acreditados (especialidades de
+    // 'diploma_uems_especialidades', flag cert_icomem o admin). A los alumnos NO acreditados no se
+    // les exige este módulo: completan el curso con el resto de ingresos y obtienen su diploma CASEC.
+    // El Módulo 3 ("Terapias dirigidas a la Lp(a)") entra aquí. Configurable con
+    // LPA_MODULOS_SOLO_ACREDITADOS (lista separada por comas); vaciar la lista lo abre a todos.
+    'modulos_solo_acreditados' => array_values(array_filter(array_map(
+        'trim',
+        explode(',', (string) env('LPA_MODULOS_SOLO_ACREDITADOS', 'ingreso-3'))
     ))),
 
     // Lista blanca de correos AUTORIZADOS a registrarse (petición del cliente: el alta queda

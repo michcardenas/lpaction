@@ -735,12 +735,18 @@
                             // caso" (gate). Estar en "Resumen del caso" sin descargar NO cuenta como 100%.
                             $percent = ($status === 'completed' || ($p->caso_descargado ?? false))
                                 ? 100 : (int) round($idx / max($etapasTotal, 1) * 100);
-                            // Módulo RETENIDO hasta su lanzamiento (p.ej. Ingreso 3 el día del lanzamiento):
-                            // candado para el alumno aunque haya completado el anterior. El ADMIN lo ve abierto.
-                            $bloqueadoLanzamiento = in_array($ing['key'], $modulosBloqueados ?? [], true);
+                            // Módulo que REQUIERE acreditación SEAFORMEC (p. ej. Ingreso 3): visible pero
+                            // bloqueado para el alumno NO acreditado. El acreditado y el admin lo ven abierto.
+                            $soloAcreditados = in_array($ing['key'], $modulosSoloAcreditados ?? [], true);
+                            $requiereAcreditacion = $soloAcreditados && ! ($tieneUems ?? false) && ! ($esAdmin ?? false);
+                            // Módulo RETENIDO hasta su lanzamiento ("Próximamente"): candado para el alumno
+                            // aunque haya completado el anterior. El ADMIN lo ve abierto. (No aplica a los
+                            // módulos de acreditación, que se rigen por la regla de arriba.)
+                            $bloqueadoLanzamiento = ! $soloAcreditados && in_array($ing['key'], $modulosBloqueados ?? [], true);
                             // Admin (corrector): acceso total → todos los ingresos accesibles para validar.
                             $abierto = ($esAdmin ?? false)
-                                || (! $bloqueadoLanzamiento && in_array($status, ['available', 'in_progress', 'completed']));
+                                || (! $requiereAcreditacion && ! $bloqueadoLanzamiento
+                                    && in_array($status, ['available', 'in_progress', 'completed']));
                         @endphp
                         <div class="ing-row {{ $abierto ? '' : 'locked' }}">
                             <div class="ing-label">{{ $ing['label'] }}</div>
@@ -754,6 +760,11 @@
                                         $ctaTexto = $percent >= 100 ? 'Acceder' : ($percent > 0 ? 'Continuar' : 'Iniciar');
                                     @endphp
                                     <a href="{{ route('curso.etapa', $ing['key']) }}" class="btn-iniciar">{{ $ctaTexto }}</a>
+                                @elseif ($requiereAcreditacion)
+                                    <span class="btn-locked" title="Disponible solo para especialidades con acreditación SEAFORMEC">
+                                        Solo acreditados
+                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+                                    </span>
                                 @else
                                     <span class="btn-locked">
                                         {{ $bloqueadoLanzamiento ? 'Próximamente' : 'Iniciar' }}
@@ -797,12 +808,14 @@
                         <div class="detalle-hasta">Disponible hasta: {{ $curso['disponible_hasta'] }}</div>
                     </div>
                     @php
-                        // La EVALUACIÓN FINAL se desbloquea cuando están completados TODOS los ingresos
-                        // (incluido el 3, al 100%). El DIPLOMA se desbloquea solo tras aprobar la
-                        // evaluación (APTO).
-                        $evalDesbloqueada = ($esAdmin ?? false) || collect($curso['ingresos'])->every(
-                            fn ($ing) => optional($progress->get($ing['key']))->status === 'completed'
-                        );
+                        // La EVALUACIÓN FINAL se desbloquea cuando están completados los ingresos que le
+                        // corresponden al alumno. Los módulos que requieren acreditación SEAFORMEC (p. ej.
+                        // el Ingreso 3) NO se exigen a un alumno no acreditado. El DIPLOMA se desbloquea
+                        // solo tras aprobar la evaluación (APTO).
+                        $evalDesbloqueada = ($esAdmin ?? false) || collect($curso['ingresos'])
+                            ->reject(fn ($ing) => in_array($ing['key'], $modulosSoloAcreditados ?? [], true)
+                                && ! ($tieneUems ?? false))
+                            ->every(fn ($ing) => optional($progress->get($ing['key']))->status === 'completed');
                         // El DIPLOMA se desbloquea tras aprobar la evaluación (status ≠ locked).
                         $diplomaDesbloqueado = ($esAdmin ?? false) || (optional($progress->get('diploma'))->status
                             && optional($progress->get('diploma'))->status !== 'locked');
