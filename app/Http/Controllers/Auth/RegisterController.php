@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
 
 class RegisterController extends Controller
@@ -28,9 +29,10 @@ class RegisterController extends Controller
             return back()->withInput($request->except(['password', 'password_confirmation']));
         }
 
-        // Lista blanca de correos autorizados a registrarse (petición del cliente). Si la lista está
-        // vacía, el registro queda abierto. La comparación es en minúsculas.
-        $autorizados = config('curso.registro_emails', []);
+        // Inscritos AUTORIZADOS a registrarse (config/registrantes.php): mapa correo => documento.
+        // SOLO estas personas pueden crear cuenta, identificándose por CORREO + DOCUMENTO (ambos
+        // deben coincidir). Si la lista está vacía, el registro queda abierto a todos.
+        $autorizados = config('registrantes.autorizados', []);
 
         $rules = [
             // 1. Datos personales
@@ -39,13 +41,7 @@ class RegisterController extends Controller
             'document_id'      => ['required', 'string', 'max:50'],
             // 'email:rfc' + regex: exige dominio con punto y TLD (rechaza "prueba@ejemplo").
             // Además: solo se permiten correos de la lista blanca de inscripción (si hay lista).
-            'email'            => ['required', 'email:rfc', 'regex:/^[^@\s]+@[^@\s]+\.[A-Za-z]{2,}$/', 'max:255', 'confirmed', 'unique:users,email',
-                function ($attr, $value, $fail) use ($autorizados) {
-                    if (! empty($autorizados) && ! in_array(strtolower(trim((string) $value)), $autorizados, true)) {
-                        $fail('Este email no está habilitado para la inscripción. Introduce un email autorizado para continuar.');
-                    }
-                },
-            ],
+            'email'            => ['required', 'email:rfc', 'regex:/^[^@\s]+@[^@\s]+\.[A-Za-z]{2,}$/', 'max:255', 'confirmed', 'unique:users,email'],
             'password'         => ['required', 'confirmed', Password::min(8)],
             // 2. Datos profesionales
             'specialty'        => ['required', 'string', 'max:150'],
@@ -57,7 +53,7 @@ class RegisterController extends Controller
             'accepted_privacy' => ['accepted'],
         ];
 
-        $data = $request->validate($rules, [
+        $messages = [
             'accepted_privacy.accepted'   => 'Debes aceptar la política de privacidad y el aviso legal.',
             'email.email'                 => 'Introduce un correo electrónico válido.',
             'email.regex'                 => 'El correo debe incluir un dominio válido (p. ej. nombre@dominio.com).',
@@ -68,7 +64,32 @@ class RegisterController extends Controller
             'specialty_other.required_if' => 'Escribe tu especialidad.',
             'experience_level.required'   => 'Debes seleccionar tu perfil profesional.',
             'experience_level.in'         => 'Selecciona un perfil profesional válido.',
-        ]);
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        // RESTRICCIÓN DE INSCRIPCIÓN: solo pueden registrarse las personas de la lista de autorizados,
+        // identificadas por CORREO + DOCUMENTO (ambos deben coincidir con el mismo registro).
+        $validator->after(function ($v) use ($request, $autorizados) {
+            if (empty($autorizados)) {
+                return; // lista vacía = registro abierto
+            }
+            $email = strtolower(trim((string) $request->input('email')));
+            if (! array_key_exists($email, $autorizados)) {
+                $v->errors()->add('email', 'Este correo no está en la lista de inscritos autorizados. Si crees que es un error, contacta con la organización.');
+                return;
+            }
+            // El correo está autorizado: el documento debe coincidir con el de ese registro.
+            $docAutorizado = $autorizados[$email];
+            if ($docAutorizado !== '') {
+                $docIngresado = $this->normalizarDoc($request->input('document_id'));
+                if ($docIngresado === '' || $docIngresado !== $docAutorizado) {
+                    $v->errors()->add('document_id', 'El documento de identificación no coincide con el del correo autorizado.');
+                }
+            }
+        });
+
+        $data = $validator->validate();
 
         // Si la especialidad es "Otra", guardamos la que el usuario escribió (sin acreditación oficial).
         $specialty = $data['specialty'] === 'Otra'
@@ -109,5 +130,12 @@ class RegisterController extends Controller
         // welcome_seen). La ruta GET /login no tiene middleware guest, así que el overlay se renderiza
         // aunque el usuario ya esté autenticado.
         return redirect()->route('login')->with('bienvenida', true);
+    }
+
+    /** Normaliza un documento para comparar: MAYÚSCULAS y solo caracteres alfanuméricos
+     *  (quita espacios, puntos y guiones). Igual que la normalización de config/registrantes.php. */
+    private function normalizarDoc($doc): string
+    {
+        return preg_replace('/[^A-Z0-9]/', '', strtoupper(trim((string) $doc)));
     }
 }
