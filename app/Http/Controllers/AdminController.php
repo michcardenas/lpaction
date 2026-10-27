@@ -255,6 +255,19 @@ class AdminController extends Controller
         return redirect()->route('admin');
     }
 
+    /** Des-registra a un alumno: BORRA su cuenta (y su progreso) para que vuelva a figurar como
+     *  PENDIENTE y pueda inscribirse de nuevo. Solo administradores. */
+    public function desregistrar(User $user)
+    {
+        abort_if($user->is_admin, 404);
+
+        $email = $user->email;
+        $user->progress()->delete();
+        $user->delete();
+
+        return back()->with('status', "Se des-registró a {$email}: ahora figura como pendiente y puede volver a inscribirse.");
+    }
+
     /** Descarga del informe final del curso (PDF maqueta con datos simulados). Solo administradores. */
     public function informe()
     {

@@ -87,6 +87,9 @@
   .pg:hover { border-color: rgba(255,255,255,.4); }
   .pg.disabled { opacity: .4; pointer-events: none; }
   .pg-info { font-size: 13px; color: #9fb4bf; }
+  .btn-desreg { font: inherit; font-size: 11px; cursor: pointer; background: rgba(220,38,38,.14); color: #ff9ea0; border: 1px solid rgba(220,38,38,.35); border-radius: 6px; padding: 2px 8px; white-space: nowrap; }
+  .btn-desreg:hover { background: rgba(220,38,38,.26); color: #ffb3b5; }
+  .flash { background: rgba(22,163,74,.14); border: 1px solid rgba(22,163,74,.4); color: #6ee7a8; border-radius: 10px; padding: 12px 16px; margin-bottom: 18px; font-size: 14px; }
 
   @media (max-width: 900px) {
     .cards { grid-template-columns: repeat(2, 1fr); }
@@ -121,6 +124,10 @@
   </div>
 
   <div class="wrap">
+
+    @if (session('status'))
+      <div class="flash">{{ session('status') }}</div>
+    @endif
 
     {{-- KPIs principales --}}
     <div class="cards">
@@ -219,6 +226,13 @@
                 @if ($a['is_test']) <span class="pill test">TEST</span>
                 @elseif ($a['registrado']) <span class="pill ok">✓ Registrado</span>
                 @else <span class="pill none">Pendiente</span> @endif
+                @if ($a['registrado'] && $a['id'])
+                  <form method="POST" action="{{ route('admin.desregistrar', $a['id']) }}" style="display:inline-block; margin-left:6px;"
+                        onsubmit="return confirm('¿Des-registrar a {{ $a['email'] }}? Se borrará su cuenta y volverá a figurar como pendiente.');">
+                    @csrf
+                    <button type="submit" class="btn-desreg" title="Borra la cuenta: vuelve a figurar como pendiente y puede re-inscribirse">des-registrar</button>
+                  </form>
+                @endif
               </td>
               <td>
                 <div>{{ $a['nombre'] }}</div>
