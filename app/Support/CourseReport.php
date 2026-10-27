@@ -21,8 +21,13 @@ class CourseReport
         $dimNames = array_map(fn ($it) => $it['titulo'], $items);
         $nDim = count($dimNames);
 
-        // Alumnos reales: sin administradores ni cuentas de prueba (is_test).
-        $students = User::where('is_admin', false)->where('is_test', false)->with('progress')->get();
+        // Alumnos REALES del curso = inscritos de la lista AUTORIZADA que ya tienen cuenta real
+        // (is_test=false). Excluye cuentas de prueba Y cuentas antiguas que no están en la lista
+        // (demos con progreso completo que falseaban el informe).
+        $autorizados = config('registrantes.autorizados', []);
+        $students = User::where('is_admin', false)->where('is_test', false)->with('progress')->get()
+            ->filter(fn ($u) => array_key_exists(mb_strtolower(trim((string) $u->email)), $autorizados))
+            ->values();
         $registrados = $students->count();
         $plazas = (int) ($curso['plazas'] ?? 0);
 
