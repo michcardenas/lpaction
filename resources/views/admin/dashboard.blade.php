@@ -226,13 +226,6 @@
                 @if ($a['is_test']) <span class="pill test">TEST</span>
                 @elseif ($a['registrado']) <span class="pill ok">✓ Registrado</span>
                 @else <span class="pill none">Pendiente</span> @endif
-                @if ($a['registrado'] && $a['id'])
-                  <form method="POST" action="{{ route('admin.desregistrar', $a['id']) }}" style="display:inline-block; margin-left:6px;"
-                        onsubmit="return confirm('¿Des-registrar a {{ $a['email'] }}? Se borrará su cuenta y volverá a figurar como pendiente.');">
-                    @csrf
-                    <button type="submit" class="btn-desreg" title="Borra la cuenta: vuelve a figurar como pendiente y puede re-inscribirse">des-registrar</button>
-                  </form>
-                @endif
               </td>
               <td>
                 <div>{{ $a['nombre'] }}</div>
