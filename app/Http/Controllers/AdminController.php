@@ -12,11 +12,22 @@ class AdminController extends Controller
     /** Panel de administración: métricas de progreso + lista de inscritos. */
     public function dashboard()
     {
-        // Alumnos = usuarios NO administradores. Los marcados como TEST no cuentan en las métricas.
-        $studentIds = User::where('is_admin', false)->where('is_test', false)->pluck('id');
+        // Alumnos REALES del curso = inscritos AUTORIZADOS que YA tienen cuenta real (is_test=false).
+        // Las métricas excluyen las cuentas de prueba (is_test=true) Y las cuentas antiguas que NO
+        // están en la lista de inscritos (p. ej. demos con progreso completo que inflaban el avance,
+        // como "19 completados" del Ingreso 3 que está No disponible).
+        $autorizados      = config('registrantes.autorizados', []);
+        $totalAutorizados = count($autorizados);
+        $realesEmail = User::where('is_admin', false)->where('is_test', false)->get()
+            ->keyBy(fn ($u) => mb_strtolower(trim((string) $u->email)));
+        $testCol = User::where('is_admin', false)->where('is_test', true)->get();
+        $alumnosReales = collect($autorizados)->keys()
+            ->map(fn ($e) => $realesEmail->get(mb_strtolower(trim((string) $e))))
+            ->filter()->values();
+        $studentIds   = $alumnosReales->pluck('id');
         $totalAlumnos = $studentIds->count();
 
-        // Progreso de todos los alumnos, agrupado por usuario.
+        // Progreso de los alumnos reales, agrupado por usuario.
         $progresos = CourseProgress::whereIn('user_id', $studentIds)->get()->groupBy('user_id');
 
         // Cuenta de estados por módulo (completado / en curso).
@@ -52,16 +63,11 @@ class AdminController extends Controller
         // Curso completo = aprobó la evaluación (desbloquea diploma).
         $cursoCompleto = $aptos;
 
-        // Registros recientes (últimos 7 días).
-        $nuevos7d = User::where('is_admin', false)->where('is_test', false)
-            ->where('created_at', '>=', now()->subDays(7))->count();
+        // Registros recientes (últimos 7 días) entre los alumnos reales.
+        $nuevos7d = $alumnosReales->filter(fn ($u) => $u->created_at >= now()->subDays(7))->count();
 
-        // Tabla de alumnos con su estado por ingreso (los TEST sí se listan, marcados, pero
-        // su progreso no está en $progresos así que se consulta aparte).
-        $progresosTest = CourseProgress::whereIn(
-            'user_id',
-            User::where('is_admin', false)->where('is_test', true)->pluck('id')
-        )->get()->groupBy('user_id');
+        // Progreso de las cuentas de prueba (para su pestaña).
+        $progresosTest = CourseProgress::whereIn('user_id', $testCol->pluck('id'))->get()->groupBy('user_id');
 
         // Especialidades que pueden optar a los créditos oficiales (reciben el diploma UEMS) → "Acreditación: SÍ".
         $maxIntentos = (int) (config('curso.evaluacion.max_intentos') ?? 2);
@@ -112,17 +118,12 @@ class AdminController extends Controller
             'registro' => null, 'is_test' => false, 'cert_icomem' => false,
         ];
 
-        // "Registrado" = cuenta REAL (is_test=false). Las de prueba (is_test=true) van en su pestaña.
-        $reales  = User::where('is_admin', false)->where('is_test', false)->get()
-            ->keyBy(fn ($u) => mb_strtolower(trim((string) $u->email)));
-        $testCol = User::where('is_admin', false)->where('is_test', true)->get();
-
-        $autorizados      = config('registrantes.autorizados', []);
-        $totalAutorizados = count($autorizados);
-        $registradosN = collect($autorizados)->keys()
-            ->filter(fn ($e) => $reales->has(mb_strtolower(trim((string) $e))))->count();
-        $pendientesN = $totalAutorizados - $registradosN;
-        $testN = $testCol->count();
+        // La lista reusa los datos ya cargados arriba. "Registrado" = alumno real (autorizado con
+        // cuenta is_test=false); por eso registrados = totalAlumnos.
+        $reales       = $realesEmail;
+        $registradosN = $totalAlumnos;
+        $pendientesN  = $totalAutorizados - $registradosN;
+        $testN        = $testCol->count();
 
         if ($tab === 'test') {
             $base = $testCol->map(fn ($u) => $fila($u, $progresosTest->get($u->id) ?? collect()))->values();
