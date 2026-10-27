@@ -4,9 +4,79 @@ namespace App\Http\Controllers;
 
 use App\Models\CourseProgress;
 use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class AdminController extends Controller
 {
+    /**
+     * Lista de INSCRITOS (los autorizados en config/registrantes) con su estado de registro.
+     * Dos pestañas: "alumnos" (la lista de autorizados; en VERDE los que ya crearon su cuenta,
+     * el resto "pendiente") y "test" (las cuentas marcadas como prueba). Paginado + buscador.
+     */
+    public function inscritos(Request $request)
+    {
+        $tab     = $request->query('tab') === 'test' ? 'test' : 'alumnos';
+        $q       = trim((string) $request->query('q', ''));
+        $perPage = 50;
+
+        // Usuarios con cuenta (no admin), indexados por correo en minúsculas para cruzar.
+        $usuarios = User::where('is_admin', false)->get()
+            ->keyBy(fn ($u) => mb_strtolower(trim((string) $u->email)));
+
+        // Totales sobre TODA la lista (no solo la página actual).
+        $autorizados      = config('registrantes.autorizados', []);
+        $totalAutorizados = count($autorizados);
+        $registrados = collect($autorizados)->keys()
+            ->filter(fn ($email) => $usuarios->has(mb_strtolower(trim((string) $email))))->count();
+        $pendientes = $totalAutorizados - $registrados;
+        $totalTest  = $usuarios->filter(fn ($u) => (bool) $u->is_test)->count();
+
+        if ($tab === 'test') {
+            // Cuentas de prueba (is_test = true).
+            $base = $usuarios->filter(fn ($u) => (bool) $u->is_test)->map(fn ($u) => [
+                'email'      => $u->email,
+                'documento'  => $u->document_id,
+                'nombre'     => trim($u->name.' '.$u->last_name),
+                'registrado' => true,
+                'fecha'      => $u->created_at,
+            ])->values();
+        } else {
+            // Autorizados: registrados primero (verde), luego pendientes.
+            $base = collect($autorizados)->map(function ($doc, $email) use ($usuarios) {
+                $u = $usuarios->get(mb_strtolower(trim((string) $email)));
+                return [
+                    'email'      => $email,
+                    'documento'  => $doc,
+                    'nombre'     => $u ? trim($u->name.' '.$u->last_name) : null,
+                    'registrado' => (bool) $u,
+                    'fecha'      => $u?->created_at,
+                ];
+            })->values()->sortByDesc('registrado')->values();
+        }
+
+        // Buscador por nombre / correo / documento.
+        if ($q !== '') {
+            $needle = mb_strtolower($q);
+            $base = $base->filter(fn ($r) =>
+                str_contains(mb_strtolower((string) $r['email']), $needle)
+                || str_contains(mb_strtolower((string) ($r['nombre'] ?? '')), $needle)
+                || str_contains(mb_strtolower((string) $r['documento']), $needle)
+            )->values();
+        }
+
+        $page  = max(1, (int) $request->query('page', 1));
+        $items = (new LengthAwarePaginator(
+            $base->forPage($page, $perPage)->values(),
+            $base->count(), $perPage, $page,
+            ['path' => $request->url()]
+        ))->appends($request->except('page'));
+
+        return view('admin.inscritos', compact(
+            'items', 'tab', 'q', 'totalAutorizados', 'registrados', 'pendientes', 'totalTest'
+        ));
+    }
+
     /** Panel de administración: métricas de progreso de los alumnos. */
     public function dashboard()
     {
