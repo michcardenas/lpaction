@@ -9,75 +9,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class AdminController extends Controller
 {
-    /**
-     * Lista de INSCRITOS (los autorizados en config/registrantes) con su estado de registro.
-     * Dos pestañas: "alumnos" (la lista de autorizados; en VERDE los que ya crearon su cuenta,
-     * el resto "pendiente") y "test" (las cuentas marcadas como prueba). Paginado + buscador.
-     */
-    public function inscritos(Request $request)
-    {
-        $tab     = $request->query('tab') === 'test' ? 'test' : 'alumnos';
-        $q       = trim((string) $request->query('q', ''));
-        $perPage = 50;
-
-        // Usuarios con cuenta (no admin), indexados por correo en minúsculas para cruzar.
-        $usuarios = User::where('is_admin', false)->get()
-            ->keyBy(fn ($u) => mb_strtolower(trim((string) $u->email)));
-
-        // Totales sobre TODA la lista (no solo la página actual).
-        $autorizados      = config('registrantes.autorizados', []);
-        $totalAutorizados = count($autorizados);
-        $registrados = collect($autorizados)->keys()
-            ->filter(fn ($email) => $usuarios->has(mb_strtolower(trim((string) $email))))->count();
-        $pendientes = $totalAutorizados - $registrados;
-        $totalTest  = $usuarios->filter(fn ($u) => (bool) $u->is_test)->count();
-
-        if ($tab === 'test') {
-            // Cuentas de prueba (is_test = true).
-            $base = $usuarios->filter(fn ($u) => (bool) $u->is_test)->map(fn ($u) => [
-                'email'      => $u->email,
-                'documento'  => $u->document_id,
-                'nombre'     => trim($u->name.' '.$u->last_name),
-                'registrado' => true,
-                'fecha'      => $u->created_at,
-            ])->values();
-        } else {
-            // Autorizados: registrados primero (verde), luego pendientes.
-            $base = collect($autorizados)->map(function ($doc, $email) use ($usuarios) {
-                $u = $usuarios->get(mb_strtolower(trim((string) $email)));
-                return [
-                    'email'      => $email,
-                    'documento'  => $doc,
-                    'nombre'     => $u ? trim($u->name.' '.$u->last_name) : null,
-                    'registrado' => (bool) $u,
-                    'fecha'      => $u?->created_at,
-                ];
-            })->values()->sortByDesc('registrado')->values();
-        }
-
-        // Buscador por nombre / correo / documento.
-        if ($q !== '') {
-            $needle = mb_strtolower($q);
-            $base = $base->filter(fn ($r) =>
-                str_contains(mb_strtolower((string) $r['email']), $needle)
-                || str_contains(mb_strtolower((string) ($r['nombre'] ?? '')), $needle)
-                || str_contains(mb_strtolower((string) $r['documento']), $needle)
-            )->values();
-        }
-
-        $page  = max(1, (int) $request->query('page', 1));
-        $items = (new LengthAwarePaginator(
-            $base->forPage($page, $perPage)->values(),
-            $base->count(), $perPage, $page,
-            ['path' => $request->url()]
-        ))->appends($request->except('page'));
-
-        return view('admin.inscritos', compact(
-            'items', 'tab', 'q', 'totalAutorizados', 'registrados', 'pendientes', 'totalTest'
-        ));
-    }
-
-    /** Panel de administración: métricas de progreso de los alumnos. */
+    /** Panel de administración: métricas de progreso + lista de inscritos. */
     public function dashboard()
     {
         // Alumnos = usuarios NO administradores. Los marcados como TEST no cuentan en las métricas.
@@ -135,26 +67,23 @@ class AdminController extends Controller
         $maxIntentos = (int) (config('curso.evaluacion.max_intentos') ?? 2);
         $acreditadas = array_map(fn ($e) => mb_strtolower(trim($e)), config('curso.diploma_uems_especialidades', []));
 
-        $alumnos = User::where('is_admin', false)->orderByDesc('id')->get()->map(function ($u) use ($progresos, $progresosTest, $maxIntentos, $acreditadas) {
-            $filas = $progresos->get($u->id) ?? $progresosTest->get($u->id) ?? collect();
-            $estado = function ($m) use ($filas) {
-                $f = $filas->firstWhere('module_key', $m);
-                return $f->status ?? 'locked';
-            };
-            $ev = $filas->firstWhere('module_key', 'evaluacion');
-            $evMeta = $ev->etapas ?? [];
+        // ===== Lista de INSCRITOS: los 352 AUTORIZADOS con su estado + datos de registro =====
+        $tab     = request()->query('tab') === 'test' ? 'test' : 'alumnos';
+        $q       = trim((string) request()->query('q', ''));
+        $perPage = 50;
+
+        // Fila completa de un alumno YA registrado (usuario + su progreso).
+        $fila = function ($u, $filas) use ($maxIntentos, $acreditadas) {
+            $estado = fn ($m) => optional($filas->firstWhere('module_key', $m))->status ?? 'locked';
+            $evMeta = optional($filas->firstWhere('module_key', 'evaluacion'))->etapas ?? [];
             $apto = ! empty($evMeta['apto']);
             $intentos = (int) ($evMeta['intentos'] ?? 0);
-            // Estado de la evaluación: APTO / NO APTO / EN CURSO.
             $estadoEval = $apto ? 'apto' : ($intentos >= $maxIntentos ? 'no_apto' : 'en_curso');
-
-            $dip = $filas->firstWhere('module_key', 'diploma');
-            $diplomaDescargado = ! empty(($dip->etapas ?? [])['descargado']);
-
+            $diplomaDescargado = ! empty((optional($filas->firstWhere('module_key', 'diploma'))->etapas ?? [])['descargado']);
             $espec = trim((string) ($u->specialty ?? ''));
-            $acreditada = $espec !== '' && in_array(mb_strtolower($espec), $acreditadas, true);
 
             return [
+                'registrado'  => true,
                 'id'          => $u->id,
                 'nombre'      => trim($u->name.' '.($u->last_name ?? '')) ?: '—',
                 'email'       => $u->email,
@@ -163,27 +92,69 @@ class AdminController extends Controller
                 'provincia'   => trim((string) $u->province) ?: '—',
                 'poblacion'   => trim((string) $u->city) ?: '—',
                 'perfil'      => trim((string) $u->experience_level) ?: '—',
-                'acreditada'  => $acreditada,
-                'i1'          => $estado('ingreso-1'),
-                'i2'          => $estado('ingreso-2'),
-                'i3'          => $estado('ingreso-3'),
-                'apto'        => $apto,
+                'acreditada'  => $espec !== '' && in_array(mb_strtolower($espec), $acreditadas, true),
+                'i1' => $estado('ingreso-1'), 'i2' => $estado('ingreso-2'), 'i3' => $estado('ingreso-3'),
                 'estado_eval' => $estadoEval,
-                'nota'        => $evMeta['ultima_nota'] ?? null,
-                'nota1'       => $evMeta['nota_intento1'] ?? null,
-                'nota2'       => $evMeta['nota_intento2'] ?? null,
+                'nota1' => $evMeta['nota_intento1'] ?? null, 'nota2' => $evMeta['nota_intento2'] ?? null,
                 'diploma'     => $diplomaDescargado,
                 'registro'    => $u->created_at,
                 'is_test'     => (bool) $u->is_test,
                 'cert_icomem' => (bool) $u->cert_icomem,
             ];
-        });
+        };
+
+        // Fila de un autorizado AÚN NO registrado (solo correo + documento).
+        $filaPendiente = fn ($email, $doc) => [
+            'registrado' => false, 'id' => null, 'nombre' => '—', 'email' => $email,
+            'especialidad' => '—', 'dni' => $doc ?: '—', 'provincia' => '—', 'poblacion' => '—',
+            'perfil' => '—', 'acreditada' => false, 'i1' => 'locked', 'i2' => 'locked', 'i3' => 'locked',
+            'estado_eval' => null, 'nota1' => null, 'nota2' => null, 'diploma' => false,
+            'registro' => null, 'is_test' => false, 'cert_icomem' => false,
+        ];
+
+        // "Registrado" = cuenta REAL (is_test=false). Las de prueba (is_test=true) van en su pestaña.
+        $reales  = User::where('is_admin', false)->where('is_test', false)->get()
+            ->keyBy(fn ($u) => mb_strtolower(trim((string) $u->email)));
+        $testCol = User::where('is_admin', false)->where('is_test', true)->get();
+
+        $autorizados      = config('registrantes.autorizados', []);
+        $totalAutorizados = count($autorizados);
+        $registradosN = collect($autorizados)->keys()
+            ->filter(fn ($e) => $reales->has(mb_strtolower(trim((string) $e))))->count();
+        $pendientesN = $totalAutorizados - $registradosN;
+        $testN = $testCol->count();
+
+        if ($tab === 'test') {
+            $base = $testCol->map(fn ($u) => $fila($u, $progresosTest->get($u->id) ?? collect()))->values();
+        } else {
+            $base = collect($autorizados)->map(function ($doc, $email) use ($reales, $progresos, $fila, $filaPendiente) {
+                $u = $reales->get(mb_strtolower(trim((string) $email)));
+                return $u ? $fila($u, $progresos->get($u->id) ?? collect()) : $filaPendiente($email, $doc);
+            })->values()->sortByDesc('registrado')->values();
+        }
+
+        if ($q !== '') {
+            $needle = mb_strtolower($q);
+            $base = $base->filter(fn ($r) =>
+                str_contains(mb_strtolower((string) $r['email']), $needle)
+                || str_contains(mb_strtolower((string) $r['nombre']), $needle)
+                || str_contains(mb_strtolower((string) $r['dni']), $needle)
+                || str_contains(mb_strtolower((string) $r['especialidad']), $needle)
+            )->values();
+        }
+
+        $page  = max(1, (int) request()->query('page', 1));
+        $items = (new LengthAwarePaginator(
+            $base->forPage($page, $perPage)->values(), $base->count(), $perPage, $page,
+            ['path' => request()->url()]
+        ))->appends(request()->except('page'));
 
         // ¿Existe el informe final para ofrecer su descarga?
         $informeDisponible = is_file($this->informePath());
 
         return view('admin.dashboard', compact(
-            'totalAlumnos', 'stats', 'aptos', 'mediaNota', 'cursoCompleto', 'nuevos7d', 'alumnos', 'informeDisponible'
+            'totalAlumnos', 'stats', 'aptos', 'mediaNota', 'cursoCompleto', 'nuevos7d', 'informeDisponible',
+            'items', 'tab', 'q', 'totalAutorizados', 'registradosN', 'pendientesN', 'testN'
         ));
     }
 

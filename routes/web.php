@@ -35,7 +35,6 @@ Route::post('/restablecer', [PasswordResetController::class, 'reset'])->name('pa
 // Curso (requiere sesión iniciada)
 Route::middleware('auth')->group(function () {
     Route::get('/admin', [AdminController::class, 'dashboard'])->middleware('admin')->name('admin');
-    Route::get('/admin/inscritos', [AdminController::class, 'inscritos'])->middleware('admin')->name('admin.inscritos');
     Route::post('/admin/alumno/{user}/test', [AdminController::class, 'toggleTest'])->middleware('admin')->name('admin.toggle-test');
     Route::post('/admin/alumno/{user}/cert-icomem', [AdminController::class, 'toggleCertIcomem'])->middleware('admin')->name('admin.toggle-cert-icomem');
     Route::get('/admin/informe', [AdminController::class, 'informe'])->middleware('admin')->name('admin.informe');

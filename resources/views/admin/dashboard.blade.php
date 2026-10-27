@@ -69,6 +69,25 @@
   tr.es-test td.col-test { opacity: 1; } /* el checkbox siempre visible */
   .pill.test { background: rgba(5,186,238,.16); color: #7fe3ff; }
 
+  /* Inscritos: cabecera con pestañas + buscador, fila registrada en verde, paginación */
+  .insc-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin: 30px 4px 14px; }
+  .tabs { display: inline-flex; gap: 6px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.09); border-radius: 10px; padding: 4px; }
+  .tab { padding: 7px 14px; border-radius: 7px; font-size: 13.5px; color: #b9c8d0; text-decoration: none; font-weight: 600; }
+  .tab.active { background: #05BAEE; color: #06232b; }
+  .search { display: flex; gap: 8px; }
+  .search input { font: inherit; font-size: 13.5px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); color: #e7eef2; border-radius: 8px; padding: 8px 12px; width: 230px; }
+  .search input::placeholder { color: #7f97a2; }
+  .search button { background: #05BAEE; color: #06232b; font-weight: 700; border: 0; border-radius: 8px; padding: 8px 13px; cursor: pointer; font-size: 13.5px; }
+  .search .clear { background: transparent; color: #b9c8d0; border: 1px solid rgba(255,255,255,.16); text-decoration: none; display: inline-flex; align-items: center; padding: 8px 11px; border-radius: 8px; font-size: 13.5px; }
+  tr.reg td { background: rgba(22,163,74,.09); }
+  tr.reg td:first-child { box-shadow: inset 3px 0 0 #16a34a; }
+  tr.reg:hover td { background: rgba(22,163,74,.14); }
+  .pager { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 16px; }
+  .pg { font-size: 14px; text-decoration: none; color: #e7eef2; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); border-radius: 8px; padding: 8px 14px; }
+  .pg:hover { border-color: rgba(255,255,255,.4); }
+  .pg.disabled { opacity: .4; pointer-events: none; }
+  .pg-info { font-size: 13px; color: #9fb4bf; }
+
   @media (max-width: 900px) {
     .cards { grid-template-columns: repeat(2, 1fr); }
     .ing-grid { grid-template-columns: 1fr; }
@@ -80,10 +99,6 @@
   <div class="topbar">
     <div class="brand"><b>Lp(a)ction</b><span>Panel de administración</span></div>
     <div class="topbar-actions">
-      <a class="btn btn-ghost" href="{{ route('admin.inscritos') }}" title="Lista de inscritos autorizados y quién ya se registró">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        Inscritos
-      </a>
       <a class="btn btn-cyan" href="{{ route('admin.informe.dinamico') }}" target="_blank" rel="noopener">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8M16 17H8M10 9H8"/></svg>
         Informe de resultados
@@ -146,15 +161,35 @@
       @endforeach
     </div>
 
-    {{-- Tabla de alumnos --}}
-    <div class="h-sec">Alumnos ({{ $totalAlumnos }})</div>
+    {{-- ===== Inscritos: los autorizados; en verde los que YA se registraron ===== --}}
+    <div class="insc-head">
+      <div class="h-sec" style="margin:0">
+        Inscritos ·
+        <span style="color:#6ee7a8">{{ $registradosN }} registrados</span> ·
+        <span style="color:#f4d06a">{{ $pendientesN }} pendientes</span> ·
+        {{ $totalAutorizados }} en total
+      </div>
+      <div style="display:flex; gap:14px; align-items:center; flex-wrap:wrap;">
+        <div class="tabs">
+          <a class="tab {{ $tab === 'alumnos' ? 'active' : '' }}" href="{{ route('admin', ['tab' => 'alumnos', 'q' => $q ?: null]) }}">Alumnos ({{ $totalAutorizados }})</a>
+          <a class="tab {{ $tab === 'test' ? 'active' : '' }}" href="{{ route('admin', ['tab' => 'test', 'q' => $q ?: null]) }}">Test ({{ $testN }})</a>
+        </div>
+        <form class="search" method="GET" action="{{ route('admin') }}">
+          <input type="hidden" name="tab" value="{{ $tab }}">
+          <input type="text" name="q" value="{{ $q }}" placeholder="Buscar nombre, correo, documento…">
+          <button type="submit">Buscar</button>
+          @if ($q !== '')<a class="clear" href="{{ route('admin', ['tab' => $tab]) }}">Limpiar</a>@endif
+        </form>
+      </div>
+    </div>
     <div class="panel scroll-x">
       <table>
         <thead>
           <tr>
+            <th>Inscripción</th>
             <th>Alumno</th>
             <th>Especialidad</th>
-            <th>DNI</th>
+            <th>Documento</th>
             <th>Provincia</th>
             <th>Población</th>
             <th>Perfil profesional</th>
@@ -162,8 +197,7 @@
             <th class="center">Ingreso 1</th>
             <th class="center">Ingreso 2</th>
             <th class="center">Ingreso 3</th>
-            <th class="center" title="Nota del 1.er y del 2.º intento">Evaluación (1º / 2º)</th>
-            <th class="center">Estado</th>
+            <th class="center">Evaluación</th>
             <th class="center" title="SÍ = el alumno abrió/descargó su diploma">Diploma</th>
             <th>Registro</th>
             <th class="center" title="Marcar como cuenta de prueba: no cuenta en las métricas ni en el informe">Test</th>
@@ -172,74 +206,89 @@
         </thead>
         <tbody>
           @php
-            $pill = function ($st) {
-              return match ($st) {
-                'completed'   => '<span class="pill ok">✓ Completado</span>',
-                'in_progress' => '<span class="pill prog">En curso</span>',
-                default       => '<span class="pill none">—</span>',
-              };
+            $pill = fn ($st) => match ($st) {
+              'completed'   => '<span class="pill ok">✓</span>',
+              'in_progress' => '<span class="pill prog">En curso</span>',
+              default       => '<span class="pill none">—</span>',
             };
             $perfilLbl = ['0-7' => '0-7 años', '8-15' => '8-15 años', '16+' => '≥16 años'];
           @endphp
-          @forelse ($alumnos as $a)
-            <tr class="{{ $a['is_test'] ? 'es-test' : '' }}">
+          @forelse ($items as $a)
+            <tr class="{{ $a['is_test'] ? 'es-test' : ($a['registrado'] ? 'reg' : '') }}">
               <td>
-                <div>{{ $a['nombre'] }} @if ($a['is_test'])<span class="pill test">TEST</span>@endif</div>
+                @if ($a['is_test']) <span class="pill test">TEST</span>
+                @elseif ($a['registrado']) <span class="pill ok">✓ Registrado</span>
+                @else <span class="pill none">Pendiente</span> @endif
+              </td>
+              <td>
+                <div>{{ $a['nombre'] }}</div>
                 <div class="muted">{{ $a['email'] }}</div>
               </td>
               <td>{{ $a['especialidad'] }}</td>
-              <td>{{ $a['dni'] }}</td>
+              <td class="muted">{{ $a['dni'] }}</td>
               <td>{{ $a['provincia'] }}</td>
               <td>{{ $a['poblacion'] }}</td>
               <td>{{ $perfilLbl[$a['perfil']] ?? $a['perfil'] }}</td>
               <td class="center">
-                @if ($a['acreditada']) <span class="pill ok">SÍ</span> @else <span class="pill none">NO</span> @endif
+                @if (! $a['registrado']) <span class="pill none">—</span>
+                @elseif ($a['acreditada']) <span class="pill ok">SÍ</span> @else <span class="pill none">NO</span> @endif
               </td>
               <td class="center">{!! $pill($a['i1']) !!}</td>
               <td class="center">{!! $pill($a['i2']) !!}</td>
               <td class="center">{!! $pill($a['i3']) !!}</td>
               <td class="center">
-                @if ($a['nota1'] !== null || $a['nota2'] !== null)
-                  <span>1º: {{ $a['nota1'] !== null ? $a['nota1'].'/10' : '—' }}</span><br>
-                  <span class="muted">2º: {{ $a['nota2'] !== null ? $a['nota2'].'/10' : '—' }}</span>
+                @if (! $a['registrado']) <span class="pill none">—</span>
                 @else
-                  <span class="pill none">—</span>
+                  @switch($a['estado_eval'])
+                    @case('apto')    <span class="pill ok">APTO</span> @break
+                    @case('no_apto') <span class="pill no">NO APTO</span> @break
+                    @default         <span class="pill prog">EN CURSO</span>
+                  @endswitch
                 @endif
               </td>
               <td class="center">
-                @switch($a['estado_eval'])
-                  @case('apto')    <span class="pill ok">APTO</span> @break
-                  @case('no_apto') <span class="pill no">NO APTO</span> @break
-                  @default         <span class="pill prog">EN CURSO</span>
-                @endswitch
+                @if (! $a['registrado']) <span class="pill none">—</span>
+                @elseif ($a['diploma']) <span class="pill ok">SÍ</span> @else <span class="pill none">NO</span> @endif
               </td>
-              <td class="center">
-                @if ($a['diploma']) <span class="pill ok">SÍ</span> @else <span class="pill none">NO</span> @endif
-              </td>
-              <td class="muted">{{ optional($a['registro'])->format('d/m/Y') ?? '—' }}</td>
+              <td class="muted">{{ $a['registro'] ? \Illuminate\Support\Carbon::parse($a['registro'])->format('d/m/Y') : '—' }}</td>
               <td class="center col-test">
-                <form method="POST" action="{{ route('admin.toggle-test', $a['id']) }}">
-                  @csrf
-                  <input type="checkbox" class="chk-test" onchange="this.form.submit()"
-                         {{ $a['is_test'] ? 'checked' : '' }}
-                         title="{{ $a['is_test'] ? 'Quitar marca de prueba' : 'Marcar como cuenta de prueba' }}">
-                </form>
+                @if ($a['registrado'] && $a['id'])
+                  <form method="POST" action="{{ route('admin.toggle-test', $a['id']) }}">@csrf
+                    <input type="checkbox" class="chk-test" onchange="this.form.submit()"
+                           {{ $a['is_test'] ? 'checked' : '' }}
+                           title="{{ $a['is_test'] ? 'Quitar marca de prueba' : 'Marcar como cuenta de prueba' }}">
+                  </form>
+                @else <span class="muted">—</span> @endif
               </td>
               <td class="center col-test">
-                <form method="POST" action="{{ route('admin.toggle-cert-icomem', $a['id']) }}">
-                  @csrf
-                  <input type="checkbox" class="chk-test" onchange="this.form.submit()"
-                         {{ $a['cert_icomem'] ? 'checked' : '' }}
-                         title="{{ $a['cert_icomem'] ? 'Certificado ICOMEM. Desmarcar → CASEC.' : 'Certificado CASEC. Marcar → ICOMEM/SEAFORMEC.' }}">
-                </form>
+                @if ($a['registrado'] && $a['id'])
+                  <form method="POST" action="{{ route('admin.toggle-cert-icomem', $a['id']) }}">@csrf
+                    <input type="checkbox" class="chk-test" onchange="this.form.submit()"
+                           {{ $a['cert_icomem'] ? 'checked' : '' }}
+                           title="{{ $a['cert_icomem'] ? 'Certificado ICOMEM. Desmarcar → CASEC.' : 'Certificado CASEC. Marcar → ICOMEM/SEAFORMEC.' }}">
+                  </form>
+                @else <span class="muted">—</span> @endif
               </td>
             </tr>
           @empty
-            <tr><td colspan="16" class="center muted" style="padding:26px;">Aún no hay alumnos registrados.</td></tr>
+            <tr><td colspan="16" class="center muted" style="padding:26px;">
+              @if ($q !== '') Sin resultados para “{{ $q }}”. @else No hay inscritos en esta lista. @endif
+            </td></tr>
           @endforelse
         </tbody>
       </table>
     </div>
+
+    {{-- Paginación --}}
+    @if ($items->hasPages())
+      <div class="pager">
+        @if ($items->onFirstPage()) <span class="pg disabled">‹ Anterior</span>
+        @else <a class="pg" href="{{ $items->previousPageUrl() }}">‹ Anterior</a> @endif
+        <span class="pg-info">Página {{ $items->currentPage() }} de {{ $items->lastPage() }} · {{ $items->total() }} en total</span>
+        @if ($items->hasMorePages()) <a class="pg" href="{{ $items->nextPageUrl() }}">Siguiente ›</a>
+        @else <span class="pg disabled">Siguiente ›</span> @endif
+      </div>
+    @endif
 
   </div>
 </body>
