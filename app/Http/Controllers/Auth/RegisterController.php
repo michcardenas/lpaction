@@ -41,7 +41,9 @@ class RegisterController extends Controller
             'document_id'      => ['required', 'string', 'max:50'],
             // 'email:rfc' + regex: exige dominio con punto y TLD (rechaza "prueba@ejemplo").
             // Además: solo se permiten correos de la lista blanca de inscripción (si hay lista).
-            'email'            => ['required', 'email:rfc', 'regex:/^[^@\s]+@[^@\s]+\.[A-Za-z]{2,}$/', 'max:255', 'confirmed', 'unique:users,email'],
+            // Sin 'unique': una cuenta PRE-CARGADA (semilla is_test=true) se puede reclamar al
+            // registrarse. El bloqueo de re-registro de cuentas YA reales se hace en el after().
+            'email'            => ['required', 'email:rfc', 'regex:/^[^@\s]+@[^@\s]+\.[A-Za-z]{2,}$/', 'max:255', 'confirmed'],
             'password'         => ['required', 'confirmed', Password::min(8)],
             // 2. Datos profesionales
             'specialty'        => ['required', 'string', 'max:150'],
@@ -71,6 +73,12 @@ class RegisterController extends Controller
         // RESTRICCIÓN DE INSCRIPCIÓN: solo pueden registrarse las personas de la lista de autorizados,
         // identificadas por CORREO + DOCUMENTO (ambos deben coincidir con el mismo registro).
         $validator->after(function ($v) use ($request, $autorizados) {
+            // No se puede volver a registrar un correo que YA tiene cuenta REAL (is_test=false).
+            // Las cuentas PRE-CARGADAS de prueba (is_test=true) SÍ se pueden reclamar al registrarse.
+            $existente = User::where('email', $request->input('email'))->first();
+            if ($existente && ! $existente->is_test) {
+                $v->errors()->add('email', 'Este correo electrónico ya está registrado. Si ya tienes una cuenta, inicia sesión.');
+            }
             if (empty($autorizados)) {
                 return; // lista vacía = registro abierto
             }
@@ -96,7 +104,12 @@ class RegisterController extends Controller
             ? trim($data['specialty_other'])
             : $data['specialty'];
 
-        $user = User::create([
+        // Si el correo ya existía PRE-CARGADO (semilla is_test=true), se RECLAMA esa cuenta: pasa a
+        // registrada (is_test=false) con los datos que la persona rellena en el formulario. Si no
+        // existía, se crea nueva. (Las cuentas reales ya se rechazaron en la validación.)
+        $existente = User::where('email', $data['email'])->first();
+        $user = $existente ?: new User();
+        $user->fill([
             'name'              => $data['name'],
             'last_name'         => $data['last_name'],
             'document_id'       => $data['document_id'],
@@ -105,8 +118,10 @@ class RegisterController extends Controller
             'specialty'         => $specialty,
             'experience_level'  => $data['experience_level'],
             'accepted_privacy'  => true,
-            'accepted_novartis' => false,
         ]);
+        $user->is_test = false;                       // al registrarse queda identificado como REAL
+        if (! $existente) $user->accepted_novartis = false;
+        $user->save();
 
         // Progreso inicial del curso: ingreso 1 disponible, resto bloqueado.
         CourseProgress::seedFor($user);
