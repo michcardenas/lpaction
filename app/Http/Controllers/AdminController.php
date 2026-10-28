@@ -69,9 +69,16 @@ class AdminController extends Controller
         // Progreso de las cuentas de prueba (para su pestaña).
         $progresosTest = CourseProgress::whereIn('user_id', $testCol->pluck('id'))->get()->groupBy('user_id');
 
-        // Especialidades que pueden optar a los créditos oficiales (reciben el diploma UEMS) → "Acreditación: SÍ".
+        // Especialidades acreditadas (diploma UEMS) → "Acreditación: SÍ". Comparación INSENSIBLE a
+        // tildes y mayúsculas, para que "Cardiologia"/"CARDIOLOGIA" cuenten igual que "Cardiología".
         $maxIntentos = (int) (config('curso.evaluacion.max_intentos') ?? 2);
-        $acreditadas = array_map(fn ($e) => mb_strtolower(trim($e)), config('curso.diploma_uems_especialidades', []));
+        $norm = fn ($s) => strtr(mb_strtolower(trim((string) $s)),
+            ['á'=>'a','é'=>'e','í'=>'i','ó'=>'o','ú'=>'u','ü'=>'u','ñ'=>'n']);
+        $acreditadas = array_map($norm, config('curso.diploma_uems_especialidades', []));
+        // Mapa (sin tildes) → nombre canónico, para MOSTRAR bien la especialidad (p. ej. un dato
+        // importado como "Cardiologia" se muestra "Cardiología").
+        $canon = [];
+        foreach (config('curso.diploma_uems_especialidades', []) as $e) { $canon[$norm($e)] = $e; }
 
         // ===== Lista de INSCRITOS: los 352 AUTORIZADOS con su estado + datos de registro =====
         $tab     = request()->query('tab') === 'test' ? 'test' : 'alumnos';
@@ -79,7 +86,7 @@ class AdminController extends Controller
         $perPage = 50;
 
         // Fila completa de un alumno YA registrado (usuario + su progreso).
-        $fila = function ($u, $filas) use ($maxIntentos, $acreditadas) {
+        $fila = function ($u, $filas) use ($maxIntentos, $acreditadas, $norm, $canon) {
             $estado = fn ($m) => optional($filas->firstWhere('module_key', $m))->status ?? 'locked';
             $evMeta = optional($filas->firstWhere('module_key', 'evaluacion'))->etapas ?? [];
             $apto = ! empty($evMeta['apto']);
@@ -93,12 +100,12 @@ class AdminController extends Controller
                 'id'          => $u->id,
                 'nombre'      => trim($u->name.' '.($u->last_name ?? '')) ?: '—',
                 'email'       => $u->email,
-                'especialidad'=> $espec !== '' ? $espec : '—',
+                'especialidad'=> $espec !== '' ? ($canon[$norm($espec)] ?? $espec) : '—',
                 'dni'         => trim((string) $u->document_id) ?: '—',
                 'provincia'   => trim((string) $u->province) ?: '—',
                 'poblacion'   => trim((string) $u->city) ?: '—',
                 'perfil'      => trim((string) $u->experience_level) ?: '—',
-                'acreditada'  => $espec !== '' && in_array(mb_strtolower($espec), $acreditadas, true),
+                'acreditada'  => $espec !== '' && in_array($norm($espec), $acreditadas, true),
                 'i1' => $estado('ingreso-1'), 'i2' => $estado('ingreso-2'), 'i3' => $estado('ingreso-3'),
                 'estado_eval' => $estadoEval,
                 'nota1' => $evMeta['nota_intento1'] ?? null, 'nota2' => $evMeta['nota_intento2'] ?? null,
