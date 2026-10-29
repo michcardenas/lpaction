@@ -18,6 +18,10 @@ return [
         'prueba1@lpatest.es' => 'TEST1',
         'prueba2@lpatest.es' => 'TEST2',
         'prueba3@lpatest.es' => 'TEST3',
+        // --- Correos de prueba pedidos por el cliente (verificar puntos 1 y 2).
+        'prueba@p.org' => 'PRUEBA1',
+        'prueba2@p.org' => 'PRUEBA2',
+        'prueba3@p.org' => 'PRUEBA3',
         '20151spm@comb.cat' => '38497432D',
         'a.mateos.p.2@gmail.com' => '09773349M',
         'acarrioncavero@gmail.com' => '07262072Y',
