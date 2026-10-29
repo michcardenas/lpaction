@@ -13,6 +13,11 @@
 
 return [
     'autorizados' => [
+        // --- Correos de PRUEBA dedicados (para probar el flujo de registro sin tocar a gente real).
+        //     Documento: TEST1 / TEST2 / TEST3. Se pueden borrar cuando ya no se necesiten.
+        'prueba1@lpatest.es' => 'TEST1',
+        'prueba2@lpatest.es' => 'TEST2',
+        'prueba3@lpatest.es' => 'TEST3',
         '20151spm@comb.cat' => '38497432D',
         'a.mateos.p.2@gmail.com' => '09773349M',
         'acarrioncavero@gmail.com' => '07262072Y',
