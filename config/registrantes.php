@@ -216,7 +216,6 @@ return [
         'jokin.rodriguez-navasarruti@osakidetza.eus' => '73042361L',
         'jorgefuengar@gmail.com' => '11866419Y',
         'jorgemartinezmedi@hotmail.com' => '53348415F',
-        'joscar83@gmail.com' => 'AP972473',
         'jose-mont@hotmail.es' => '75168882Y',
         'jose.rmot19@gmail.com' => '04856624J',
         'joseluis_martos@yahoo.es' => '75881439T',
