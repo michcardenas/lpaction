@@ -38,6 +38,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/admin/alumno/{user}/test', [AdminController::class, 'toggleTest'])->middleware('admin')->name('admin.toggle-test');
     Route::post('/admin/alumno/{user}/cert-icomem', [AdminController::class, 'toggleCertIcomem'])->middleware('admin')->name('admin.toggle-cert-icomem');
     Route::post('/admin/alumno/{user}/desregistrar', [AdminController::class, 'desregistrar'])->middleware('admin')->name('admin.desregistrar');
+    Route::get('/admin/registrantes/plantilla', [AdminController::class, 'plantillaRegistrantes'])->middleware('admin')->name('admin.registrantes.plantilla');
+    Route::post('/admin/registrantes/importar', [AdminController::class, 'importarRegistrantes'])->middleware('admin')->name('admin.registrantes.importar');
     Route::get('/admin/informe', [AdminController::class, 'informe'])->middleware('admin')->name('admin.informe');
     Route::get('/admin/informe-dinamico', [AdminController::class, 'informeDinamico'])->middleware('admin')->name('admin.informe.dinamico');
     Route::get('/admin/encuestas', [AdminController::class, 'encuestas'])->middleware('admin')->name('admin.encuestas');

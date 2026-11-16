@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AuthorizedRegistrant;
 use App\Models\CourseProgress;
 use App\Models\User;
+use App\Support\Registrantes;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -16,7 +18,8 @@ class AdminController extends Controller
         // Las métricas excluyen las cuentas de prueba (is_test=true) Y las cuentas antiguas que NO
         // están en la lista de inscritos (p. ej. demos con progreso completo que inflaban el avance,
         // como "19 completados" del Ingreso 3 que está No disponible).
-        $autorizados      = config('registrantes.autorizados', []);
+        $autorizados      = Registrantes::autorizados();
+        $nombresPend      = Registrantes::nombres(); // nombres de los cargados por Excel (pendientes)
         $totalAutorizados = count($autorizados);
         $realesEmail = User::where('is_admin', false)->where('is_test', false)->get()
             ->keyBy(fn ($u) => mb_strtolower(trim((string) $u->email)));
@@ -116,9 +119,10 @@ class AdminController extends Controller
             ];
         };
 
-        // Fila de un autorizado AÚN NO registrado (solo correo + documento).
+        // Fila de un autorizado AÚN NO registrado (solo correo + documento + nombre si vino por Excel).
         $filaPendiente = fn ($email, $doc) => [
-            'registrado' => false, 'id' => null, 'nombre' => '—', 'email' => $email,
+            'registrado' => false, 'id' => null,
+            'nombre' => $nombresPend[mb_strtolower(trim((string) $email))] ?? '—', 'email' => $email,
             'especialidad' => '—', 'dni' => $doc ?: '—', 'provincia' => '—', 'poblacion' => '—',
             'perfil' => '—', 'acreditada' => false, 'i1' => 'locked', 'i2' => 'locked', 'i3' => 'locked',
             'estado_eval' => null, 'nota1' => null, 'nota2' => null, 'diploma' => false,
@@ -164,6 +168,108 @@ class AdminController extends Controller
             'totalAlumnos', 'stats', 'aptos', 'mediaNota', 'cursoCompleto', 'nuevos7d', 'informeDisponible',
             'items', 'tab', 'q', 'totalAutorizados', 'registradosN', 'pendientesN', 'testN'
         ));
+    }
+
+    /** Descarga la plantilla CSV (correo; documento; nombre) para cargar inscritos. */
+    public function plantillaRegistrantes()
+    {
+        $sep = ';'; // ';' abre en columnas en Excel en español
+        $filas = [
+            ['correo', 'documento', 'nombre'],
+            ['ejemplo1@correo.com', '12345678A', 'Nombre Apellidos'],
+            ['ejemplo2@correo.com', '', 'Sin documento (basta el correo)'],
+        ];
+        $csv = "\xEF\xBB\xBF"; // BOM UTF-8 para que Excel muestre bien las tildes
+        foreach ($filas as $f) {
+            $csv .= implode($sep, array_map(fn ($c) => '"' . str_replace('"', '""', $c) . '"', $f)) . "\r\n";
+        }
+
+        return response($csv, 200, [
+            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="plantilla_inscritos_lpaction.csv"',
+        ]);
+    }
+
+    /** Carga inscritos autorizados desde un CSV (correo + documento opcional + nombre opcional). */
+    public function importarRegistrantes(Request $request)
+    {
+        $request->validate(
+            ['archivo' => ['required', 'file', 'max:5120']],
+            [
+                'archivo.required' => 'Selecciona un archivo CSV.',
+                'archivo.file'     => 'El archivo no es válido.',
+                'archivo.max'      => 'El archivo no puede superar 5 MB.',
+            ]
+        );
+
+        $ext = strtolower($request->file('archivo')->getClientOriginalExtension());
+        if (! in_array($ext, ['csv', 'txt'], true)) {
+            return back()->with('error', 'El archivo debe ser CSV. En Excel usa «Guardar como → CSV UTF-8».');
+        }
+
+        $raw = file_get_contents($request->file('archivo')->getRealPath());
+        if ($raw === false || trim($raw) === '') {
+            return back()->with('error', 'El archivo está vacío o no se pudo leer.');
+        }
+
+        $raw    = preg_replace('/^\xEF\xBB\xBF/', '', $raw);   // quitar BOM
+        $lineas = preg_split('/\r\n|\r|\n/', $raw);
+
+        // Detectar el separador (coma, punto y coma o tabulador) por la primera línea con contenido.
+        $sep = ',';
+        foreach ($lineas as $l) {
+            if (trim($l) === '') continue;
+            $pc = substr_count($l, ';'); $co = substr_count($l, ','); $tb = substr_count($l, "\t");
+            $sep = ($pc >= $co && $pc >= $tb) ? ';' : (($tb > $co) ? "\t" : ',');
+            break;
+        }
+
+        $agregados = $actualizados = $invalidos = $duplicados = 0;
+        $vistos    = [];
+        $primera   = true;
+
+        foreach ($lineas as $linea) {
+            if (trim($linea) === '') continue;
+            $cols   = str_getcsv($linea, $sep);
+            $correo = Registrantes::normalizarEmail($cols[0] ?? '');
+            $doc    = Registrantes::normalizarDoc($cols[1] ?? '');
+            $nombre = trim((string) ($cols[2] ?? ''));
+
+            // La primera fila con contenido puede ser la cabecera (correo/email): si no es un correo
+            // válido, se salta como encabezado; si lo es, se procesa como dato.
+            if ($primera) {
+                $primera = false;
+                if (! filter_var($correo, FILTER_VALIDATE_EMAIL)) continue;
+            }
+
+            if (! filter_var($correo, FILTER_VALIDATE_EMAIL)) { $invalidos++; continue; }
+            if (isset($vistos[$correo])) { $duplicados++; continue; }
+            $vistos[$correo] = true;
+
+            $fila = AuthorizedRegistrant::firstOrNew(['email' => $correo]);
+            if ($fila->exists) {
+                $fila->document = $doc;
+                if ($nombre !== '') $fila->name = $nombre;
+                $fila->save();
+                $actualizados++;
+            } else {
+                $fila->document = $doc;
+                $fila->name     = $nombre !== '' ? $nombre : null;
+                $fila->save();
+                $agregados++;
+            }
+        }
+
+        if ($agregados === 0 && $actualizados === 0) {
+            return back()->with('error', 'No se cargó ningún inscrito. Revisa que la 1ª columna sea el correo.'
+                . ($invalidos ? " ({$invalidos} filas sin correo válido)." : ''));
+        }
+
+        $msg = "Carga completada: {$agregados} nuevos, {$actualizados} actualizados"
+            . ($duplicados ? ", {$duplicados} repetidos en el archivo" : '')
+            . ($invalidos ? ", {$invalidos} filas sin correo válido (ignoradas)" : '') . '.';
+
+        return back()->with('status', $msg);
     }
 
     /** Visor de la ENCUESTA de satisfacción: puntuación por dimensión + comentario de cada alumno. */

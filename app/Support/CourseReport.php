@@ -24,7 +24,7 @@ class CourseReport
         // Alumnos REALES del curso = inscritos de la lista AUTORIZADA que ya tienen cuenta real
         // (is_test=false). Excluye cuentas de prueba Y cuentas antiguas que no están en la lista
         // (demos con progreso completo que falseaban el informe).
-        $autorizados = config('registrantes.autorizados', []);
+        $autorizados = \App\Support\Registrantes::autorizados();
         $students = User::where('is_admin', false)->where('is_test', false)->with('progress')->get()
             ->filter(fn ($u) => array_key_exists(mb_strtolower(trim((string) $u->email)), $autorizados))
             ->values();

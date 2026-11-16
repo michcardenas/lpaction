@@ -32,7 +32,7 @@ class RegisterController extends Controller
         // Inscritos AUTORIZADOS a registrarse (config/registrantes.php): mapa correo => documento.
         // SOLO estas personas pueden crear cuenta, identificándose por CORREO + DOCUMENTO (ambos
         // deben coincidir). Si la lista está vacía, el registro queda abierto a todos.
-        $autorizados = config('registrantes.autorizados', []);
+        $autorizados = \App\Support\Registrantes::autorizados();
 
         $rules = [
             // 1. Datos personales

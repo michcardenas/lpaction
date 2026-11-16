@@ -128,6 +128,33 @@
     @if (session('status'))
       <div class="flash">{{ session('status') }}</div>
     @endif
+    @if (session('error'))
+      <div class="flash" style="background:rgba(220,38,38,.14);border-color:rgba(220,38,38,.4);color:#fca5a5;">{{ session('error') }}</div>
+    @endif
+    @if ($errors->any())
+      <div class="flash" style="background:rgba(220,38,38,.14);border-color:rgba(220,38,38,.4);color:#fca5a5;">{{ $errors->first() }}</div>
+    @endif
+
+    {{-- Cargar inscritos desde Excel/CSV --}}
+    <div class="panel" style="padding:16px 18px; margin-bottom:18px;">
+      <div style="display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; align-items:center;">
+        <div>
+          <div style="font-weight:700; margin-bottom:4px;">Cargar inscritos desde Excel</div>
+          <div style="font-size:13px; color:#9aa4b2; max-width:52ch;">
+            Sube un CSV con <b>correo</b>, <b>documento</b> (opcional) y <b>nombre</b> (opcional).
+            Quedan autorizados a registrarse al instante. En Excel: «Guardar como → CSV UTF-8».
+          </div>
+        </div>
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+          <a class="btn btn-ghost" href="{{ route('admin.registrantes.plantilla') }}">Descargar plantilla</a>
+          <form method="POST" action="{{ route('admin.registrantes.importar') }}" enctype="multipart/form-data" style="display:flex; gap:8px; align-items:center;">
+            @csrf
+            <input type="file" name="archivo" accept=".csv,text/csv" required style="font-size:13px; color:#cbd5e1; max-width:230px;">
+            <button class="btn btn-cyan" type="submit">Subir</button>
+          </form>
+        </div>
+      </div>
+    </div>
 
     {{-- KPIs principales --}}
     <div class="cards">
