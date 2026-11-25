@@ -92,11 +92,18 @@ class CursoController extends Controller
         $ingresos = $curso['ingresos'] ?? [];
         $activo = $curso['paciente'];   // fallback: Ingreso 1
 
+        // Ingresos "No disponible" (retenidos hasta su lanzamiento): el avatar NO debe avanzar a ellos
+        // aunque la BD tenga el módulo como available/completed (p. ej. estados de prueba). Mientras el
+        // Ingreso 3 salga "No disponible" para todos, Juan se queda en el paciente del Ingreso 2.
+        $bloqueados = config('curso.modulos_bloqueados', []);
+
         foreach ($ingresos as $idx => $ing) {
             $p = $progress[$ing['key']] ?? null;
             if (! $p) continue;
             // Un ingreso "activa" su paciente cuando ya está disponible/en curso/completado.
             if (! in_array($p->status, ['available', 'in_progress', 'completed'])) continue;
+            // ...salvo que aún no se haya lanzado (bloqueado): no se adelanta el avatar.
+            if (in_array($ing['key'], $bloqueados, true)) continue;
 
             if ($idx === 0) {
                 $activo = $curso['paciente'] ?? $activo;
