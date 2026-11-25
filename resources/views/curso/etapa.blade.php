@@ -211,8 +211,10 @@
         .video-player img, .video-player video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
         .video-controls { position: absolute; left: 0; right: 0; bottom: 0; display: flex; align-items: center; gap: 12px; padding: 12px; background: linear-gradient(0deg, rgba(0,0,0,0.40), rgba(0,0,0,0)); }
         .vid-btn { width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: rgba(15,18,20,0.55); border: 0; border-radius: 7px; color: #fff; cursor: pointer; -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
-        .vid-bar { flex: 1; height: 4px; background: rgba(255,255,255,0.30); border-radius: 99px; overflow: hidden; }
+        .vid-bar { flex: 1; height: 6px; background: rgba(255,255,255,0.30); border-radius: 99px; overflow: hidden; cursor: pointer; }
         .vid-bar > i { display: block; height: 100%; width: 0; background: #fff; }
+        /* Tiempo del vídeo (actual / duración); se inyecta por JS junto a la barra. */
+        .vid-time { flex-shrink: 0; min-width: 82px; text-align: right; font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 12px; color: #fff; font-variant-numeric: tabular-nums; letter-spacing: .02em; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
         .video-cap { font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 13px; line-height: 148%; color: #aab7bb; margin: 10px 0 0; }
         /* Reproductor grande (Puntos clave): ancho completo */
         .video-full { margin: 0; max-width: 1010px; }
@@ -2116,7 +2118,55 @@
                     media.addEventListener('pause', syncIcon);
                     media.addEventListener('ended', syncIcon);
                     if (expand) expand.addEventListener('click', function () { if (media.requestFullscreen) media.requestFullscreen(); });
-                    media.addEventListener('timeupdate', function () { if (bar && media.duration) bar.style.width = (media.currentTime / media.duration * 100) + '%'; });
+
+                    // Contador de tiempo (actual / duración): se crea aquí para no tocar cada plantilla.
+                    var barWrap = p.querySelector('.vid-bar');
+                    var timeEl  = p.querySelector('.vid-time');
+                    if (!timeEl && barWrap) {
+                        timeEl = document.createElement('span');
+                        timeEl.className = 'vid-time';
+                        barWrap.insertAdjacentElement('afterend', timeEl);
+                    }
+                    var fmt = function (t) {
+                        if (!isFinite(t) || t < 0) t = 0;
+                        var m = Math.floor(t / 60), s = Math.floor(t % 60);
+                        return m + ':' + (s < 10 ? '0' + s : s);
+                    };
+                    var pintarTiempo = function () {
+                        if (timeEl) timeEl.textContent = fmt(media.currentTime) + ' / ' + fmt(media.duration || 0);
+                    };
+                    media.addEventListener('loadedmetadata', pintarTiempo);
+                    media.addEventListener('durationchange', pintarTiempo);
+                    pintarTiempo();
+
+                    media.addEventListener('timeupdate', function () {
+                        if (bar && media.duration) bar.style.width = (media.currentTime / media.duration * 100) + '%';
+                        pintarTiempo();
+                    });
+
+                    // Avanzar/retroceder: clic o arrastre sobre la barra fija el minuto del vídeo.
+                    if (barWrap) {
+                        var buscando = false;
+                        var seekAt = function (clientX) {
+                            if (!media.duration || !isFinite(media.duration)) return;
+                            var r = barWrap.getBoundingClientRect();
+                            var ratio = r.width ? (clientX - r.left) / r.width : 0;
+                            ratio = Math.max(0, Math.min(1, ratio));
+                            media.currentTime = ratio * media.duration;
+                            if (bar) bar.style.width = (ratio * 100) + '%';
+                            pintarTiempo();
+                        };
+                        barWrap.addEventListener('pointerdown', function (e) {
+                            buscando = true;
+                            if (barWrap.setPointerCapture) { try { barWrap.setPointerCapture(e.pointerId); } catch (x) {} }
+                            seekAt(e.clientX);
+                            e.preventDefault();
+                        });
+                        barWrap.addEventListener('pointermove', function (e) { if (buscando) seekAt(e.clientX); });
+                        var finBusqueda = function () { buscando = false; };
+                        barWrap.addEventListener('pointerup', finBusqueda);
+                        barWrap.addEventListener('pointercancel', finBusqueda);
+                    }
                 } else {
                     var open = function () { abrir(media.getAttribute('src'), txt); };
                     if (play) play.addEventListener('click', open);
