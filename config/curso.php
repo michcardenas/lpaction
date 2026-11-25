@@ -483,7 +483,9 @@ return [
         'nombre' => 'Juan',
         'imagen'            => 'images/paciente_pantalla_2.png',    // Ingreso 2 recién activado (polo a rayas)
         'imagen_progreso'   => 'images/paciente_pantalla_2b.png',   // Ingreso 2 en progreso (camisa gris)
-        'imagen_completado' => 'images/paciente_pantalla_2c.png',   // Ingreso 2 aprobado (Juan sano, brazos cruzados)
+        // Ingreso 2 completado → cara NEUTRAL (acaba de sufrir su 2.º evento): NO la sonriente
+        // (paciente_pantalla_2c), petición del cliente. Misma imagen neutral que usa el home del Ingreso 3.
+        'imagen_completado' => 'images/paciente_pantalla_3.png',    // Ingreso 2 aprobado (Juan neutral, camisa gris)
         'datos'  => [
             ['icon' => 'edad',  'texto' => '53 años'],
             ['icon' => 'fuma',  'texto' => 'Exfumador'],
