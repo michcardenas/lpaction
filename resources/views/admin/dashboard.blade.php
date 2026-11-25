@@ -141,8 +141,9 @@
         <div>
           <div style="font-weight:700; margin-bottom:4px;">Cargar inscritos desde Excel</div>
           <div style="font-size:13px; color:#9aa4b2; max-width:52ch;">
-            Sube un CSV con <b>correo</b>, <b>documento</b> (opcional) y <b>nombre</b> (opcional).
-            Quedan autorizados a registrarse al instante. En Excel: «Guardar como → CSV UTF-8».
+            Sube un CSV con una sola columna: el <b>correo</b> de cada inscrito.
+            Quedan autorizados a registrarse al instante (solo con su correo).
+            En Excel: «Guardar como → CSV UTF-8».
           </div>
         </div>
         <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">

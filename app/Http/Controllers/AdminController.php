@@ -174,10 +174,12 @@ class AdminController extends Controller
     public function plantillaRegistrantes()
     {
         $sep = ';'; // ';' abre en columnas en Excel en español
+        // Solo se exige el CORREO. El importador sigue aceptando columnas extra (documento/nombre)
+        // si alguien las añade, pero la plantilla oficial lleva únicamente el correo.
         $filas = [
-            ['correo', 'documento', 'nombre'],
-            ['ejemplo1@correo.com', '12345678A', 'Nombre Apellidos'],
-            ['ejemplo2@correo.com', '', 'Sin documento (basta el correo)'],
+            ['correo'],
+            ['ejemplo1@correo.com'],
+            ['ejemplo2@correo.com'],
         ];
         $csv = "\xEF\xBB\xBF"; // BOM UTF-8 para que Excel muestre bien las tildes
         foreach ($filas as $f) {
